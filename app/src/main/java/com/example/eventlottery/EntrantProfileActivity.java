@@ -63,7 +63,7 @@ public class EntrantProfileActivity extends AppCompatActivity {
                 .add(entrant)
                 .addOnSuccessListener(documentReference -> {
                     Toast.makeText(EntrantProfileActivity.this, "Profile Saved!", Toast.LENGTH_SHORT).show();
-                    // Navigate to next screen (e.g., QR Scanner)
+                    // Navigate to next screen (e.g., QR Scanner.)
                 })
                 .addOnFailureListener(e -> {
                     Log.e("FirebaseError", "Error adding document", e);
