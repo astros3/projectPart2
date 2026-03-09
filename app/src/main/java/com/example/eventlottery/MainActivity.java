@@ -9,8 +9,21 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+//QR scanner imports
+import com.journeyapps.barcodescanner.ScanContract;
+import com.journeyapps.barcodescanner.ScanOptions;
+import androidx.activity.result.ActivityResultLauncher;
+
 public class MainActivity extends AppCompatActivity {
-//
+
+//creates a QR scanner launcher that opens the camera and gives us the scanned QR code when the scan finishes
+    private ActivityResultLauncher<ScanOptions> qrScanner =
+        registerForActivityResult(new ScanContract(), result -> {
+            if (result.getContents() != null) {
+                String scannedValue = result.getContents();
+            }
+        });
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -21,6 +34,15 @@ public class MainActivity extends AppCompatActivity {
 
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
+
+        //QR scanner configuration
+        ScanOptions options = new ScanOptions();
+        options.setDesiredBarcodeFormats(ScanOptions.QR_CODE);
+        options.setPrompt("Scan event QR code");
+
+        //opens the QR scanner camera
+        qrScanner.launch(options);
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);

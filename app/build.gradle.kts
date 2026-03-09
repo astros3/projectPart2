@@ -48,4 +48,7 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:34.10.0"))
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-firestore")
+
+    //This library gives us a ready-made QR scanner using the phone camera, so we don't have to implement QR detection ourselves.
+    implementation("com.journeyapps:zxing-android-embedded:4.3.0")
 }
