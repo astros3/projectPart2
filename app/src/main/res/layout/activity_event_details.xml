@@ -11,10 +11,8 @@
         android:id="@+id/toolbar_event_details"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="@color/black"
         app:navigationIcon="@drawable/ic_back_arrow"
-        app:title="@string/event_details"
-        app:titleTextColor="@android:color/white" />
+        app:title="@string/event_details" />
 
     <ScrollView
         android:layout_width="match_parent"

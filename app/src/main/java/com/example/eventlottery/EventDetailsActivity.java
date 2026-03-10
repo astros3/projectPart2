@@ -1,13 +1,16 @@
 package com.example.eventlottery;
 
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -26,6 +29,8 @@ import java.util.Locale;
 public class EventDetailsActivity extends AppCompatActivity {
 
     public static final String EXTRA_EVENT_ID = "event_id";
+    /** When true, toolbar is white (entrant view); when false, black (organizer view). */
+    public static final String EXTRA_VIEW_AS_ENTRANT = "view_as_entrant";
 
     private FirebaseFirestore db;
     private String eventId;
@@ -56,6 +61,7 @@ public class EventDetailsActivity extends AppCompatActivity {
     }
 
     private void setupToolbar() {
+        boolean viewAsEntrant = getIntent().getBooleanExtra(EXTRA_VIEW_AS_ENTRANT, true);
         Toolbar toolbar = findViewById(R.id.toolbar_event_details);
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
@@ -63,6 +69,19 @@ public class EventDetailsActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
         toolbar.setNavigationOnClickListener(v -> onBackPressed());
+
+        @ColorInt int toolbarBg = viewAsEntrant
+                ? ContextCompat.getColor(this, android.R.color.white)
+                : ContextCompat.getColor(this, R.color.black);
+        @ColorInt int toolbarContent = viewAsEntrant
+                ? ContextCompat.getColor(this, R.color.toolbar_content_dark)
+                : ContextCompat.getColor(this, android.R.color.white);
+
+        toolbar.setBackgroundColor(toolbarBg);
+        toolbar.setTitleTextColor(toolbarContent);
+        if (toolbar.getNavigationIcon() != null) {
+            toolbar.getNavigationIcon().setColorFilter(toolbarContent, PorterDuff.Mode.SRC_IN);
+        }
     }
 
     private void bindViews() {

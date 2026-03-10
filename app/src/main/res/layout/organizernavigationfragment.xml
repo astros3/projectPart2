@@ -46,15 +46,13 @@
                 android:backgroundTint="@color/black"
                 android:textColor="#FFFFFF"/>
 
-            <!-- Geo button (optional feature)
-            <Button
+            //<Button
                 android:id="@+id/buttonGeo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/view_geolocation"
                 android:backgroundTint="@color/black"
                 android:textColor="#FFFFFF"/>
-            -->
 
             <Button
                 android:id="@+id/buttonLottery"
