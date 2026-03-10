@@ -32,6 +32,5 @@ public class OrganizerNavigationFragment extends Fragment {
                 NavHostFragment.findNavController(OrganizerNavigationFragment.this)
                         .navigate(R.id.OrganizerNavigationFragment_to_Selected_list)
         );
-
     }
 }
