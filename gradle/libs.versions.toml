@@ -10,6 +10,8 @@ constraintlayout = "2.2.1"
 fragment = "1.8.9"
 navigationFragmentKtx = "2.9.7"
 navigationUiKtx = "2.9.7"
+firebaseFirestore = "26.1.1"
+playServicesMaps = "20.0.0"
 
 [libraries]
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -22,7 +24,8 @@ constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayo
 fragment = { group = "androidx.fragment", name = "fragment", version.ref = "fragment" }
 navigation-fragment-ktx = { group = "androidx.navigation", name = "navigation-fragment-ktx", version.ref = "navigationFragmentKtx" }
 navigation-ui-ktx = { group = "androidx.navigation", name = "navigation-ui-ktx", version.ref = "navigationUiKtx" }
+firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore", version.ref = "firebaseFirestore" }
+play-services-maps = { group = "com.google.android.gms", name = "play-services-maps", version.ref = "playServicesMaps" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
-

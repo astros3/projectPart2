@@ -3,7 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <!--tells android that the app needs permission to use the camera, which is required for QR scanning -->
-    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
 
     <!--Allows app to still install on devies without cameras -->
     <uses-feature

@@ -12,9 +12,11 @@
         <action
             android:id="@+id/OrganizerNavigationFragment_to_LotteryDraw"
             app:destination="@id/LotteryDraw" />
+
         <action
             android:id="@+id/OrganizerNavigationFragment_to_Waiting_list"
             app:destination="@id/Waiting_list" />
+
         <action
             android:id="@+id/OrganizerNavigationFragment_to_Selected_list"
             app:destination="@id/Selected_list" />
@@ -29,23 +31,33 @@
             android:id="@+id/LotteryDraw_to_OrganizerNavigationFragment"
             app:destination="@id/OrganizerNavigationFragment" />
     </fragment>
+
     <fragment
         android:id="@+id/Waiting_list"
         android:name="com.example.projectpart_3.Waiting_list"
         android:label="Waiting List">
+
         <action
             android:id="@+id/Waiting_list_to_OrganizerNavigationFragment"
             app:destination="@id/OrganizerNavigationFragment" />
+
+        <action
+            android:id="@+id/Waiting_list_to_GeolocationFragment"
+            app:destination="@id/GeolocationFragment" />
     </fragment>
+
     <fragment
         android:id="@+id/Selected_list"
         android:name="com.example.projectpart_3.Selected_list"
         android:label="Selected list">
+
         <action
             android:id="@+id/Selected_list_to_OrganizerNavigationFragment"
             app:destination="@id/OrganizerNavigationFragment" />
     </fragment>
 
-
-
+    <fragment
+        android:id="@+id/GeolocationFragment"
+        android:name="com.example.eventlottery.GeolocationFragment"
+        android:label="Geolocation" />
 </navigation>

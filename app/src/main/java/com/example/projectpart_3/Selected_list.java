@@ -2,7 +2,7 @@ package com.example.projectpart_3;
 
 import android.os.Bundle;
 import android.view.View;
-import android.widget.TextView;
+import android.widget.ListView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -12,7 +12,12 @@ import androidx.navigation.fragment.NavHostFragment;
 import java.util.ArrayList;
 
 public class Selected_list extends Fragment {
-    public Selected_list(){
+
+    private ArrayList<WaitingListEntry> selectedEntries;
+    private SelectedEntryAdapter adapter;
+    private Event event;
+
+    public Selected_list() {
         super(R.layout.selected_list);
     }
 
@@ -20,20 +25,35 @@ public class Selected_list extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        TextView textSelected = view.findViewById(R.id.textSelectedList);
+        event = EventRepository.getInstance().getCurrentEvent();
 
-        ArrayList<String> selectedList =
-                EntrantListManager.getInstance().getSelectedList();
+        ListView listSelectedEntrants = view.findViewById(R.id.listSelectedEntrants);
 
-        StringBuilder sb = new StringBuilder("Selected Entrants:\n\n");
+        selectedEntries = new ArrayList<>(event.getSelectedEntrants());
 
-        for (String entrant : selectedList) {
-            sb.append(entrant).append("\n");
-        }
+        adapter = new SelectedEntryAdapter(requireActivity(), selectedEntries, entry -> {
+            event.cancelEntrant(entry.getEntrant());
 
-        textSelected.setText(sb.toString());
+            selectedEntries.clear();
+            selectedEntries.addAll(event.getSelectedEntrants());
+            adapter.notifyDataSetChanged();
+        });
+
+        listSelectedEntrants.setAdapter(adapter);
 
         view.findViewById(R.id.buttonBack).setOnClickListener(v ->
                 NavHostFragment.findNavController(Selected_list.this)
                         .navigate(R.id.Selected_list_to_OrganizerNavigationFragment));
-    }}
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if (event != null && selectedEntries != null && adapter != null) {
+            selectedEntries.clear();
+            selectedEntries.addAll(event.getSelectedEntrants());
+            adapter.notifyDataSetChanged();
+        }
+    }
+}
