@@ -1,4 +1,6 @@
-package com.example.projectpart_3;
+package com.example.eventlottery;
+
+
 
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -11,6 +13,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
+
+import com.example.eventlottery.EntrantListManager;
+import com.example.eventlottery.R;
 
 import java.util.ArrayList;
 

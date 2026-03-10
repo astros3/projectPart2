@@ -10,4 +10,72 @@
     <string name="view_qr_code">View QR Code</string>
     <string name="update_event_information">Update Event Information</string>
     <string name="app_name">EventLottery</string>
+
+    <!-- Event Details (US 01.01.01, 01.01.02, 01.06.02) -->
+    <string name="event_details">Event Details</string>
+    <string name="event_poster">Event poster</string>
+    <string name="request_to_join">Request to Join</string>
+    <string name="leave_waiting_list">Leave the Waiting List</string>
+    <string name="status_not_joined">STATUS: NOT JOINED</string>
+    <string name="status_pending">STATUS: PENDING</string>
+    <string name="about_event">ABOUT EVENT</string>
+    <string name="selection_criteria">SELECTION CRITERIA</string>
+    <string name="selection_criteria_placeholder">• Entries are limited to one per verified person.\n• Selected entrants will have 24 hours to confirm.\n• Must have attended at least one previous community meetup.\n• Geographical proximity to the venue may be considered.</string>
+
+    <!-- Event Edit Screen (US 02.01.01, 02.01.04) -->
+    <string name="my_event_information">My Event Information</string>
+    <string name="event_name">Event Name</string>
+    <string name="event_name_hint">Enter event name</string>
+    <string name="event_description">Event Description</string>
+    <string name="event_description_hint">Enter event description</string>
+    <string name="event_image">Event Image</string>
+    <string name="event_type">Event Type</string>
+    <string name="event_location">Event Location</string>
+    <string name="event_location_hint">Enter event location</string>
+    <string name="registration_start_date">Event Registration Start Date</string>
+    <string name="registration_end_date">Event Registration End Date</string>
+    <string name="date_hint">Select date</string>
+    <string name="select_date">Select date</string>
+    <string name="geolocation_requirement">Require Geolocation from users</string>
+    <string name="limit_entrants">Limit number of entrants</string>
+    <string name="limit_entrants_hint">0 = unlimited</string>
+    <string name="confirm">Confirm</string>
+
+    <!-- QR Code Screen (US 02.01.01) -->
+    <string name="qr_code_title">QR Code</string>
+    <string name="randomized_code">Randomized Code</string>
+    <string name="event_created_success">Event created successfully</string>
+    <string name="event_updated_success">Event updated successfully</string>
+    <string name="fill_required_fields">Please fill in event name and registration dates</string>
+    <string name="registration_end_after_start">Registration end must be after start date</string>
+    <string name="only_organizers_create">Only organizer accounts can create events.</string>
+    <string name="register_as_organizer">Register this device as an organizer?</string>
+    <string name="register">Register</string>
+    <string name="only_organizer_edit">Only the event organizer can edit this event.</string>
+
+    <!-- Organizer Dashboard -->
+    <string name="organizer_dashboard">Organizer Dashboard</string>
+    <string name="create_new_event">Create a New Event</string>
+    <string name="profile">PROFILE</string>
+    <string name="edit_view">EDIT/VIEW</string>
+    <string name="no_events_yet">No events yet. Create your first event.</string>
+    <string name="organizer_profile">Organizer Profile</string>
+    <string name="first_name">First Name</string>
+    <string name="last_name">Last Name</string>
+    <string name="email">Email</string>
+    <string name="phone">Phone</string>
+    <string name="save_changes">Save Changes</string>
+    <string name="organizer_profile_saved">Profile saved</string>
+
+    <string name="qr_scan_hint">Scan this QR code to view event details and join the waiting list</string>
+
+    <!-- Event types for spinner -->
+    <string-array name="event_types">
+        <item>Swimming</item>
+        <item>Dance</item>
+        <item>Music</item>
+        <item>Sports</item>
+        <item>Workshop</item>
+        <item>Other</item>
+    </string-array>
 </resources>

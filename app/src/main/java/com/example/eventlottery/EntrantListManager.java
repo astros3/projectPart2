@@ -1,4 +1,4 @@
-package com.example.projectpart_3;
+package com.example.eventlottery;
 
 import java.util.ArrayList;
 import java.util.Collections;

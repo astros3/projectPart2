@@ -15,12 +15,13 @@ public class EventRepository {
                 "Sample Event",
                 "Sample Description",
                 "Edmonton",
-                dummyOrganizer,
+                dummyOrganizer.getOrganizerId(),
+                dummyOrganizer.getDisplayName(),
                 5,
                 0,
-                new Date(System.currentTimeMillis() - 100000),
-                new Date(System.currentTimeMillis() + 100000000),
-                new Date(System.currentTimeMillis() + 200000000),
+                System.currentTimeMillis() - 100000,
+                System.currentTimeMillis() + 100000000,
+                System.currentTimeMillis() + 200000000,
                 true,
                 0.0
         );

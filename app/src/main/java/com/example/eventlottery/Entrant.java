@@ -1,5 +1,10 @@
 package com.example.eventlottery;
 
+/**
+ * Represents an entrant (CRC: Entrant): a person entering/joining events.
+ * Stored in Firestore at users/{deviceId}. Used for profile and for joining waiting lists.
+ * Entrants and organizers are separate account types; only organizers create/edit events.
+ */
 public class Entrant {
     private String firstName;
     private String lastName;

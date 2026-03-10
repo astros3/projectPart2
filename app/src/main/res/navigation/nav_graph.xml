@@ -2,11 +2,16 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/OrganizerNavigationFragment">
+    app:startDestination="@id/OrganizerDashboardFragment">
+
+    <fragment
+        android:id="@+id/OrganizerDashboardFragment"
+        android:name="com.example.eventlottery.OrganizerDashboardFragment"
+        android:label="@string/organizer_dashboard" />
 
     <fragment
         android:id="@+id/OrganizerNavigationFragment"
-        android:name="com.example.projectpart_3.OrganizerNavigationFragment"
+        android:name="com.example.eventlottery.OrganizerNavigationFragment"
         android:label="Organizer Navigation">
 
         <action
@@ -24,7 +29,7 @@
 
     <fragment
         android:id="@+id/LotteryDraw"
-        android:name="com.example.projectpart_3.LotteryDraw"
+        android:name="com.example.eventlottery.LotteryDraw"
         android:label="Lottery Draw">
 
         <action
@@ -34,7 +39,7 @@
 
     <fragment
         android:id="@+id/Waiting_list"
-        android:name="com.example.projectpart_3.Waiting_list"
+        android:name="com.example.eventlottery.Waiting_list"
         android:label="Waiting List">
 
         <action
@@ -48,7 +53,7 @@
 
     <fragment
         android:id="@+id/Selected_list"
-        android:name="com.example.projectpart_3.Selected_list"
+        android:name="com.example.eventlottery.Selected_list"
         android:label="Selected list">
 
         <action
