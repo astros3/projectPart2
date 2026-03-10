@@ -13,8 +13,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 /**
  * Displays the event's promotional QR code (US 02.01.01).
- * The QR code encodes the event ID so scanning it opens EventDetailsActivity.
- * The promo code is shown and can be modified (saved back to Firestore).
+ * Only the organizer who created the event can view or modify the QR/promo code.
+ * The QR code encodes the event ID so scanning it opens EventDetailsActivity for entrants.
  */
 public class QRCodeActivity extends AppCompatActivity {
 
@@ -42,9 +42,32 @@ public class QRCodeActivity extends AppCompatActivity {
 
         bindViews();
         setupToolbar();
-        generateAndDisplayQrCode();
-        loadPromoCode();
-        setupPromoCodeSave();
+        // Only the event's organizer can view/edit QR; verify before showing content
+        verifyOrganizerThenLoad();
+    }
+
+    private void verifyOrganizerThenLoad() {
+        db.collection("events").document(eventId).get()
+                .addOnSuccessListener(doc -> {
+                    if (!doc.exists()) {
+                        Toast.makeText(this, "Event not found", Toast.LENGTH_SHORT).show();
+                        finish();
+                        return;
+                    }
+                    Event event = doc.toObject(Event.class);
+                    if (event == null || !DeviceIdManager.getDeviceId(this).equals(event.getOrganizerId())) {
+                        Toast.makeText(this, getString(R.string.only_organizer_edit), Toast.LENGTH_SHORT).show();
+                        finish();
+                        return;
+                    }
+                    generateAndDisplayQrCode();
+                    loadPromoCode();
+                    setupPromoCodeSave();
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Could not load event", Toast.LENGTH_SHORT).show();
+                    finish();
+                });
     }
 
     private void bindViews() {

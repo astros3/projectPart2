@@ -48,6 +48,10 @@
     <string name="event_updated_success">Event updated successfully</string>
     <string name="fill_required_fields">Please fill in event name and registration dates</string>
     <string name="registration_end_after_start">Registration end must be after start date</string>
+    <string name="only_organizers_create">Only organizer accounts can create events.</string>
+    <string name="register_as_organizer">Register this device as an organizer?</string>
+    <string name="register">Register</string>
+    <string name="only_organizer_edit">Only the event organizer can edit this event.</string>
 
     <string name="qr_scan_hint">Scan this QR code to view event details and join the waiting list</string>
 

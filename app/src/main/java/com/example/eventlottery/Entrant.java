@@ -1,9 +1,9 @@
 package com.example.eventlottery;
 
 /**
- * Purpose: Represents a user participating in the event lottery system.
- * This class holds personal identification data and maps to Firebase document structures.
- * Outstanding Issues: Needs integration with Firebase Auth UID for unique identification.
+ * Represents an entrant (CRC: Entrant): a person entering/joining events.
+ * Stored in Firestore at users/{deviceId}. Used for profile and for joining waiting lists.
+ * Entrants and organizers are separate account types; only organizers create/edit events.
  */
 public class Entrant {
     private String firstName;

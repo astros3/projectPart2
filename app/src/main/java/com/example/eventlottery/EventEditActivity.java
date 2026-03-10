@@ -1,5 +1,6 @@
 package com.example.eventlottery;
 
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -15,6 +16,7 @@ import androidx.appcompat.widget.Toolbar;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.materialswitch.MaterialSwitch;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.Calendar;
@@ -31,6 +33,8 @@ public class EventEditActivity extends AppCompatActivity {
 
     private static final String PREFS_NAME = "EventLotteryPrefs";
     private static final String KEY_CURRENT_EVENT_ID = "organizer_current_event_id";
+    /** Firestore collection for organizer accounts (separate from entrant users). */
+    private static final String COLLECTION_ORGANIZERS = "organizers";
 
     private FirebaseFirestore db;
     private String eventId; // null = create mode
@@ -53,7 +57,7 @@ public class EventEditActivity extends AppCompatActivity {
         eventId = getIntent().getStringExtra(EXTRA_EVENT_ID);
         db = FirebaseFirestore.getInstance();
         deviceId = DeviceIdManager.getDeviceId(this);
-        organizerName = "Organizer1"; // TODO: from auth/profile
+        organizerName = null; // Set from organizer account when creating; from event when editing
 
         bindViews();
         setupToolbar();
@@ -63,6 +67,9 @@ public class EventEditActivity extends AppCompatActivity {
 
         if (eventId != null && !eventId.isEmpty()) {
             loadEvent();
+        } else {
+            // Create mode: only organizer accounts can create events
+            ensureOrganizerAccountThenAllowCreate();
         }
     }
 
@@ -131,16 +138,72 @@ public class EventEditActivity extends AppCompatActivity {
     private void loadEvent() {
         db.collection("events").document(eventId).get()
                 .addOnSuccessListener(doc -> {
-                    if (doc.exists() && doc.getData() != null) {
-                        Event event = doc.toObject(Event.class);
-                        if (event != null) {
-                            event.setEventId(doc.getId());
-                            populateForm(event);
-                        }
+                    if (!doc.exists() || doc.getData() == null) {
+                        Toast.makeText(this, "Event not found", Toast.LENGTH_SHORT).show();
+                        finish();
+                        return;
                     }
+                    Event event = doc.toObject(Event.class);
+                    if (event == null) {
+                        Toast.makeText(this, "Could not load event", Toast.LENGTH_SHORT).show();
+                        finish();
+                        return;
+                    }
+                    event.setEventId(doc.getId());
+                    // Only the organizer who created the event can edit it
+                    if (!deviceId.equals(event.getOrganizerId())) {
+                        Toast.makeText(this, R.string.only_organizer_edit, Toast.LENGTH_SHORT).show();
+                        finish();
+                        return;
+                    }
+                    organizerName = event.getOrganizerName();
+                    populateForm(event);
                 })
-                .addOnFailureListener(e ->
-                        Toast.makeText(this, "Could not load event", Toast.LENGTH_SHORT).show());
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Could not load event", Toast.LENGTH_SHORT).show();
+                    finish();
+                });
+    }
+
+    /**
+     * Create mode: ensure current device has an organizer account; if not, offer to register.
+     * Organizers and entrants are separate account types (different collections).
+     */
+    private void ensureOrganizerAccountThenAllowCreate() {
+        db.collection(COLLECTION_ORGANIZERS).document(deviceId).get()
+                .addOnSuccessListener(this::onOrganizerDocFetched)
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Could not verify organizer account", Toast.LENGTH_SHORT).show();
+                    finish();
+                });
+    }
+
+    private void onOrganizerDocFetched(DocumentSnapshot doc) {
+        if (doc.exists()) {
+            Organizer organizer = doc.toObject(Organizer.class);
+            organizerName = organizer != null ? organizer.getFullName() : "Organizer";
+            return;
+        }
+        // No organizer account: only organizer accounts can create events
+        new AlertDialog.Builder(this)
+                .setMessage(getString(R.string.only_organizers_create) + " " + getString(R.string.register_as_organizer))
+                .setNegativeButton(android.R.string.cancel, (d, w) -> finish())
+                .setPositiveButton(R.string.register, (d, w) -> registerAsOrganizer())
+                .setCancelable(false)
+                .show();
+    }
+
+    private void registerAsOrganizer() {
+        Organizer organizer = new Organizer(deviceId, "Organizer"); // placeholder until they set profile
+        db.collection(COLLECTION_ORGANIZERS).document(deviceId).set(organizer)
+                .addOnSuccessListener(aVoid -> {
+                    organizerName = organizer.getFullName();
+                    Toast.makeText(this, "Registered as organizer", Toast.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Failed to register as organizer", Toast.LENGTH_SHORT).show();
+                    finish();
+                });
     }
 
     private void populateForm(@NonNull Event event) {
@@ -198,12 +261,17 @@ public class EventEditActivity extends AppCompatActivity {
 
         boolean isCreate = eventId == null || eventId.isEmpty();
 
+        if (isCreate && (organizerName == null || organizerName.isEmpty())) {
+            Toast.makeText(this, "Organizer account not ready. Please try again.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         Event event = new Event();
         event.setTitle(title);
         event.setDescription(description);
         event.setLocation(location);
         event.setOrganizerId(deviceId);
-        event.setOrganizerName(organizerName);
+        event.setOrganizerName(organizerName != null ? organizerName : "Organizer");
         event.setWaitingListLimit(limit);
         event.setRegistrationStartMillis(registrationStartMillis);
         event.setRegistrationEndMillis(registrationEndMillis);
