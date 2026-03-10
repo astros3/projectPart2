@@ -53,6 +53,20 @@
     <string name="register">Register</string>
     <string name="only_organizer_edit">Only the event organizer can edit this event.</string>
 
+    <!-- Organizer Dashboard -->
+    <string name="organizer_dashboard">Organizer Dashboard</string>
+    <string name="create_new_event">Create a New Event</string>
+    <string name="profile">PROFILE</string>
+    <string name="edit_view">EDIT/VIEW</string>
+    <string name="no_events_yet">No events yet. Create your first event.</string>
+    <string name="organizer_profile">Organizer Profile</string>
+    <string name="first_name">First Name</string>
+    <string name="last_name">Last Name</string>
+    <string name="email">Email</string>
+    <string name="phone">Phone</string>
+    <string name="save_changes">Save Changes</string>
+    <string name="organizer_profile_saved">Profile saved</string>
+
     <string name="qr_scan_hint">Scan this QR code to view event details and join the waiting list</string>
 
     <!-- Event types for spinner -->

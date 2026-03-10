@@ -343,6 +343,14 @@ public class EventEditActivity extends AppCompatActivity {
                 .getString(KEY_CURRENT_EVENT_ID, null);
     }
 
+    /** Call when organizer selects an event (e.g. from dashboard) so QR / nav use it. */
+    public static void setCurrentEventId(Context context, String eventId) {
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+                .edit()
+                .putString(KEY_CURRENT_EVENT_ID, eventId)
+                .apply();
+    }
+
     public static Intent newIntent(Context context, String eventId) {
         Intent i = new Intent(context, EventEditActivity.class);
         i.putExtra(EXTRA_EVENT_ID, eventId);
