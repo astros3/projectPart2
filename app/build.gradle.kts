@@ -55,4 +55,6 @@ dependencies {
 
     //This library gives us a ready-made QR scanner using the phone camera, so we don't have to implement QR detection ourselves.
     implementation("com.journeyapps:zxing-android-embedded:4.3.0")
+    // ZXing core for QR code generation (US 02.01.01)
+    implementation("com.google.zxing:core:3.5.2")
 }

@@ -46,7 +46,7 @@
                 android:backgroundTint="@color/black"
                 android:textColor="#FFFFFF"/>
 
-            //<Button
+            <Button
                 android:id="@+id/buttonGeo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

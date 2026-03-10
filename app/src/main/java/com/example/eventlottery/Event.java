@@ -23,6 +23,8 @@ public class Event {
     private boolean geolocationRequired;
     private String posterUri;
     private String qrCodeUri;
+    /** Human-readable code for manual entry (e.g. "555 555"). */
+    private String promoCode;
     private double price;
     private List<String> selectionCriteria;
 
@@ -84,6 +86,8 @@ public class Event {
     public void setPosterUri(String posterUri) { this.posterUri = posterUri; }
     public String getQrCodeUri() { return qrCodeUri; }
     public void setQrCodeUri(String qrCodeUri) { this.qrCodeUri = qrCodeUri; }
+    public String getPromoCode() { return promoCode; }
+    public void setPromoCode(String promoCode) { this.promoCode = promoCode; }
     public double getPrice() { return price; }
     public void setPrice(double price) { this.price = price; }
     public List<String> getSelectionCriteria() { return selectionCriteria != null ? selectionCriteria : new ArrayList<>(); }

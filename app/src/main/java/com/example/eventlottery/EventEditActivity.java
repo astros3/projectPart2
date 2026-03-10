@@ -1,0 +1,283 @@
+package com.example.eventlottery;
+
+import android.app.DatePickerDialog;
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.materialswitch.MaterialSwitch;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.Calendar;
+import java.util.Locale;
+
+/**
+ * Event creation and edit screen (US 02.01.01, 02.01.04).
+ * - Create new event: no EXTRA_EVENT_ID
+ * - Edit existing: EXTRA_EVENT_ID provided
+ */
+public class EventEditActivity extends AppCompatActivity {
+
+    public static final String EXTRA_EVENT_ID = "event_id";
+
+    private static final String PREFS_NAME = "EventLotteryPrefs";
+    private static final String KEY_CURRENT_EVENT_ID = "organizer_current_event_id";
+
+    private FirebaseFirestore db;
+    private String eventId; // null = create mode
+    private String deviceId;
+    private String organizerName;
+
+    private TextInputEditText inputName, inputDescription, inputLocation, inputRegStart, inputRegEnd, inputLimit;
+    private Spinner spinnerEventType;
+    private MaterialSwitch switchGeolocation;
+    private MaterialButton btnConfirm;
+
+    private long registrationStartMillis = 0;
+    private long registrationEndMillis = 0;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_event_edit);
+
+        eventId = getIntent().getStringExtra(EXTRA_EVENT_ID);
+        db = FirebaseFirestore.getInstance();
+        deviceId = DeviceIdManager.getDeviceId(this);
+        organizerName = "Organizer1"; // TODO: from auth/profile
+
+        bindViews();
+        setupToolbar();
+        setupEventTypeSpinner();
+        setupDatePickers();
+        setupConfirmButton();
+
+        if (eventId != null && !eventId.isEmpty()) {
+            loadEvent();
+        }
+    }
+
+    private void bindViews() {
+        inputName = findViewById(R.id.input_event_name);
+        inputDescription = findViewById(R.id.input_event_description);
+        inputLocation = findViewById(R.id.input_event_location);
+        inputRegStart = findViewById(R.id.input_registration_start);
+        inputRegEnd = findViewById(R.id.input_registration_end);
+        inputLimit = findViewById(R.id.input_waiting_list_limit);
+        spinnerEventType = findViewById(R.id.spinner_event_type);
+        switchGeolocation = findViewById(R.id.switch_geolocation);
+        btnConfirm = findViewById(R.id.btn_confirm);
+    }
+
+    private void setupToolbar() {
+        Toolbar toolbar = findViewById(R.id.toolbar_event_edit);
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+        }
+        toolbar.setNavigationOnClickListener(v -> finish());
+    }
+
+    private void setupEventTypeSpinner() {
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.event_types, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerEventType.setAdapter(adapter);
+    }
+
+    private void setupDatePickers() {
+        inputRegStart.setOnClickListener(v -> showDatePicker(true));
+        findViewById(R.id.btn_calendar_start).setOnClickListener(v -> showDatePicker(true));
+        inputRegEnd.setOnClickListener(v -> showDatePicker(false));
+        findViewById(R.id.btn_calendar_end).setOnClickListener(v -> showDatePicker(false));
+    }
+
+    private void showDatePicker(boolean isStart) {
+        Calendar cal = Calendar.getInstance();
+        if (isStart && registrationStartMillis > 0) cal.setTimeInMillis(registrationStartMillis);
+        else if (!isStart && registrationEndMillis > 0) cal.setTimeInMillis(registrationEndMillis);
+
+        DatePickerDialog dialog = new DatePickerDialog(this,
+                (view, year, month, dayOfMonth) -> {
+                    cal.set(year, month, dayOfMonth, 0, 0, 0);
+                    cal.set(Calendar.MILLISECOND, 0);
+                    String formatted = String.format(Locale.getDefault(), "%04d-%02d-%02d", year, month + 1, dayOfMonth);
+                    if (isStart) {
+                        registrationStartMillis = cal.getTimeInMillis();
+                        inputRegStart.setText(formatted);
+                    } else {
+                        registrationEndMillis = cal.getTimeInMillis();
+                        inputRegEnd.setText(formatted);
+                    }
+                },
+                cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
+        dialog.show();
+    }
+
+    private void setupConfirmButton() {
+        btnConfirm.setOnClickListener(v -> saveEvent());
+    }
+
+    private void loadEvent() {
+        db.collection("events").document(eventId).get()
+                .addOnSuccessListener(doc -> {
+                    if (doc.exists() && doc.getData() != null) {
+                        Event event = doc.toObject(Event.class);
+                        if (event != null) {
+                            event.setEventId(doc.getId());
+                            populateForm(event);
+                        }
+                    }
+                })
+                .addOnFailureListener(e ->
+                        Toast.makeText(this, "Could not load event", Toast.LENGTH_SHORT).show());
+    }
+
+    private void populateForm(@NonNull Event event) {
+        inputName.setText(event.getTitle());
+        inputDescription.setText(event.getDescription());
+        inputLocation.setText(event.getLocation());
+        inputLimit.setText(event.getWaitingListLimit() > 0 ? String.valueOf(event.getWaitingListLimit()) : "");
+        switchGeolocation.setChecked(event.isGeolocationRequired());
+
+        registrationStartMillis = event.getRegistrationStartMillis();
+        registrationEndMillis = event.getRegistrationEndMillis();
+        if (registrationStartMillis > 0) {
+            inputRegStart.setText(formatDateForDisplay(registrationStartMillis));
+        }
+        if (registrationEndMillis > 0) {
+            inputRegEnd.setText(formatDateForDisplay(registrationEndMillis));
+        }
+
+        String type = event.getTitle(); // Event doesn't have type field; use first type for now
+        // Spinner selection by index if we had type stored - skip for simplicity
+    }
+
+    private String formatDateForDisplay(long millis) {
+        Calendar c = Calendar.getInstance();
+        c.setTimeInMillis(millis);
+        return String.format(Locale.getDefault(), "%04d-%02d-%02d",
+                c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 1, c.get(Calendar.DAY_OF_MONTH));
+    }
+
+    private void saveEvent() {
+        String title = inputName.getText() != null ? inputName.getText().toString().trim() : "";
+        if (title.isEmpty()) {
+            Toast.makeText(this, R.string.fill_required_fields, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (registrationStartMillis <= 0 || registrationEndMillis <= 0) {
+            Toast.makeText(this, R.string.fill_required_fields, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (registrationEndMillis <= registrationStartMillis) {
+            Toast.makeText(this, R.string.registration_end_after_start, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String description = inputDescription.getText() != null ? inputDescription.getText().toString().trim() : "";
+        String location = inputLocation.getText() != null ? inputLocation.getText().toString().trim() : "";
+
+        int limit = 0;
+        String limitStr = inputLimit.getText() != null ? inputLimit.getText().toString().trim() : "";
+        if (!limitStr.isEmpty()) {
+            try {
+                limit = Integer.parseInt(limitStr);
+            } catch (NumberFormatException ignored) { }
+        }
+
+        boolean isCreate = eventId == null || eventId.isEmpty();
+
+        Event event = new Event();
+        event.setTitle(title);
+        event.setDescription(description);
+        event.setLocation(location);
+        event.setOrganizerId(deviceId);
+        event.setOrganizerName(organizerName);
+        event.setWaitingListLimit(limit);
+        event.setRegistrationStartMillis(registrationStartMillis);
+        event.setRegistrationEndMillis(registrationEndMillis);
+        event.setEventDateMillis(registrationEndMillis); // Use reg end as placeholder for event date
+        event.setGeolocationRequired(switchGeolocation.isChecked());
+
+        if (isCreate) {
+            eventId = db.collection("events").document().getId();
+            event.setEventId(eventId);
+            event.setPromoCode(QRCodeService.generatePromoCode());
+
+            db.collection("events").document(eventId).set(event)
+                    .addOnSuccessListener(aVoid -> {
+                        saveCurrentEventId(eventId);
+                        Toast.makeText(this, R.string.event_created_success, Toast.LENGTH_SHORT).show();
+                        openQRCodeScreen();
+                        finish();
+                    })
+                    .addOnFailureListener(e ->
+                            Toast.makeText(this, "Failed to create event", Toast.LENGTH_SHORT).show());
+        } else {
+            db.collection("events").document(eventId).get()
+                    .addOnSuccessListener(doc -> {
+                        if (!doc.exists()) {
+                            Toast.makeText(this, "Event not found", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                        Event existing = doc.toObject(Event.class);
+                        if (existing == null) {
+                            Toast.makeText(this, "Could not load event", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                        existing.setEventId(eventId);
+                        existing.setTitle(event.getTitle());
+                        existing.setDescription(event.getDescription());
+                        existing.setLocation(event.getLocation());
+                        existing.setWaitingListLimit(event.getWaitingListLimit());
+                        existing.setRegistrationStartMillis(event.getRegistrationStartMillis());
+                        existing.setRegistrationEndMillis(event.getRegistrationEndMillis());
+                        existing.setEventDateMillis(event.getEventDateMillis());
+                        existing.setGeolocationRequired(event.isGeolocationRequired());
+
+                        db.collection("events").document(eventId).set(existing)
+                                .addOnSuccessListener(aVoid -> {
+                                    Toast.makeText(this, R.string.event_updated_success, Toast.LENGTH_SHORT).show();
+                                    finish();
+                                })
+                                .addOnFailureListener(e ->
+                                        Toast.makeText(this, "Failed to update event", Toast.LENGTH_SHORT).show());
+                    })
+                    .addOnFailureListener(e ->
+                            Toast.makeText(this, "Could not load event", Toast.LENGTH_SHORT).show());
+        }
+    }
+
+    private void openQRCodeScreen() {
+        startActivity(QRCodeActivity.newIntent(this, eventId));
+    }
+
+    private void saveCurrentEventId(String id) {
+        getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+                .edit()
+                .putString(KEY_CURRENT_EVENT_ID, id)
+                .apply();
+    }
+
+    public static String getCurrentEventId(Context context) {
+        return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+                .getString(KEY_CURRENT_EVENT_ID, null);
+    }
+
+    public static Intent newIntent(Context context, String eventId) {
+        Intent i = new Intent(context, EventEditActivity.class);
+        i.putExtra(EXTRA_EVENT_ID, eventId);
+        return i;
+    }
+}
