@@ -1,9 +1,10 @@
 plugins {
     alias(libs.plugins.android.application)
+    id("com.google.gms.google-services")
 }
 
 android {
-    namespace = "com.example.projectpart_3"
+    namespace = "com.example.eventlottery"
     compileSdk {
         version = release(36) {
             minorApiLevel = 1
@@ -11,7 +12,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.example.projectpart_3"
+        applicationId = "com.example.eventlottery"
         minSdk = 24
         targetSdk = 36
         versionCode = 1
@@ -44,6 +45,13 @@ dependencies {
     implementation(libs.navigation.fragment.ktx)
     implementation(libs.navigation.ui.ktx)
     testImplementation(libs.junit)
+    testImplementation(libs.espresso.core)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
+    implementation(platform("com.google.firebase:firebase-bom:34.10.0"))
+    implementation("com.google.firebase:firebase-analytics")
+    implementation("com.google.firebase:firebase-firestore")
+
+    //This library gives us a ready-made QR scanner using the phone camera, so we don't have to implement QR detection ourselves.
+    implementation("com.journeyapps:zxing-android-embedded:4.3.0")
 }

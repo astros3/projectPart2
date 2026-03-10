@@ -22,5 +22,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Project part-3"
+rootProject.name = "EventLottery"
 include(":app")
