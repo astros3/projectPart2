@@ -38,7 +38,7 @@ public class EventDetailsActivity extends AppCompatActivity {
     private String deviceId;
     private boolean onWaitingList;
 
-    private TextView titleView, organizerView, dateView, statusView, descriptionView, criteriaView;
+    private TextView titleView, organizerView, dateView, statusView, descriptionView, criteriaView, waitingListCountView;
     private MaterialButton joinLeaveButton;
 
     @Override
@@ -95,6 +95,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         statusView = findViewById(R.id.event_status);
         descriptionView = findViewById(R.id.event_description);
         criteriaView = findViewById(R.id.event_selection_criteria);
+        waitingListCountView = findViewById(R.id.event_waiting_list_count);
         joinLeaveButton = findViewById(R.id.btn_join_leave);
         joinLeaveButton.setOnClickListener(v -> onJoinLeaveClicked());
     }
@@ -126,6 +127,15 @@ public class EventDetailsActivity extends AppCompatActivity {
                 .addOnSuccessListener(doc -> {
                     onWaitingList = doc != null && doc.exists();
                     updateStatusAndButton();
+                });
+
+        //waiting list count code
+        db.collection("events").document(eventId)
+                .collection("waitingList")
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    int count = querySnapshot.size();
+                    waitingListCountView.setText("Waiting List: " + count);
                 });
     }
 

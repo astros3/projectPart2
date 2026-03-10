@@ -79,6 +79,15 @@
                 android:textColor="#0B162C"
                 android:text="STATUS: NOT JOINED" />
 
+            <!-- Displays the waiting list count -->
+            <TextView
+                android:id="@+id/event_waiting_list_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Waiting List: 0"
+                android:textSize="16sp"
+                android:layout_marginTop="8dp"/>
+
             <!-- Request to Join / Leave the Waiting List -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_join_leave"
