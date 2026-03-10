@@ -21,4 +21,43 @@
     <string name="about_event">ABOUT EVENT</string>
     <string name="selection_criteria">SELECTION CRITERIA</string>
     <string name="selection_criteria_placeholder">• Entries are limited to one per verified person.\n• Selected entrants will have 24 hours to confirm.\n• Must have attended at least one previous community meetup.\n• Geographical proximity to the venue may be considered.</string>
+
+    <!-- Event Edit Screen (US 02.01.01, 02.01.04) -->
+    <string name="my_event_information">My Event Information</string>
+    <string name="event_name">Event Name</string>
+    <string name="event_name_hint">Enter event name</string>
+    <string name="event_description">Event Description</string>
+    <string name="event_description_hint">Enter event description</string>
+    <string name="event_image">Event Image</string>
+    <string name="event_type">Event Type</string>
+    <string name="event_location">Event Location</string>
+    <string name="event_location_hint">Enter event location</string>
+    <string name="registration_start_date">Event Registration Start Date</string>
+    <string name="registration_end_date">Event Registration End Date</string>
+    <string name="date_hint">Select date</string>
+    <string name="select_date">Select date</string>
+    <string name="geolocation_requirement">Require Geolocation from users</string>
+    <string name="limit_entrants">Limit number of entrants</string>
+    <string name="limit_entrants_hint">0 = unlimited</string>
+    <string name="confirm">Confirm</string>
+
+    <!-- QR Code Screen (US 02.01.01) -->
+    <string name="qr_code_title">QR Code</string>
+    <string name="randomized_code">Randomized Code</string>
+    <string name="event_created_success">Event created successfully</string>
+    <string name="event_updated_success">Event updated successfully</string>
+    <string name="fill_required_fields">Please fill in event name and registration dates</string>
+    <string name="registration_end_after_start">Registration end must be after start date</string>
+
+    <string name="qr_scan_hint">Scan this QR code to view event details and join the waiting list</string>
+
+    <!-- Event types for spinner -->
+    <string-array name="event_types">
+        <item>Swimming</item>
+        <item>Dance</item>
+        <item>Music</item>
+        <item>Sports</item>
+        <item>Workshop</item>
+        <item>Other</item>
+    </string-array>
 </resources>

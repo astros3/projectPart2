@@ -1,14 +1,14 @@
 package com.example.eventlottery;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
-
-import com.example.eventlottery.R;
 
 public class OrganizerNavigationFragment extends Fragment {
 
@@ -19,6 +19,22 @@ public class OrganizerNavigationFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        // Update Event Information (US 02.01.01, 02.01.04)
+        view.findViewById(R.id.buttonUpdate).setOnClickListener(v -> {
+            String eventId = EventEditActivity.getCurrentEventId(requireContext());
+            startActivity(EventEditActivity.newIntent(requireContext(), eventId));
+        });
+
+        // View QR Code (US 02.01.01)
+        view.findViewById(R.id.buttonQR).setOnClickListener(v -> {
+            String eventId = EventEditActivity.getCurrentEventId(requireContext());
+            if (eventId == null || eventId.isEmpty()) {
+                Toast.makeText(requireContext(), "Create an event first", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            startActivity(QRCodeActivity.newIntent(requireContext(), eventId));
+        });
 
         view.findViewById(R.id.buttonLottery).setOnClickListener(v ->
                 NavHostFragment.findNavController(OrganizerNavigationFragment.this)
@@ -32,6 +48,5 @@ public class OrganizerNavigationFragment extends Fragment {
                 NavHostFragment.findNavController(OrganizerNavigationFragment.this)
                         .navigate(R.id.OrganizerNavigationFragment_to_Selected_list)
         );
-
     }
 }
