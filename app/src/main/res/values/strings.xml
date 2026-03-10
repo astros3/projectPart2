@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Project part-3</string>
+    <string name="delete_event">Delete Event</string>
+    <string name="final_list">Final List</string>
+    <string name="notifications">Notifications</string>
+    <string name="cancelled_entrants">Cancelled Entrants</string>
+    <string name="selected_entrants">Selected Entrants</string>
+    <string name="waiting_list_decision_making">Waiting List (Decision Making)</string>
+    <string name="lottery_draw">Lottery Draw</string>
+    <string name="view_geolocation">View Geolocation</string>
+    <string name="view_qr_code">View QR Code</string>
+    <string name="update_event_information">Update Event Information</string>
+</resources>
