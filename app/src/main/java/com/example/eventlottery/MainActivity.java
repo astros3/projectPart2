@@ -1,5 +1,6 @@
 package com.example.eventlottery;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -10,7 +11,6 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.example.eventlottery.R;
 import com.journeyapps.barcodescanner.ScanContract;
 import com.journeyapps.barcodescanner.ScanOptions;
 
@@ -19,8 +19,11 @@ public class MainActivity extends AppCompatActivity {
     private final ActivityResultLauncher<ScanOptions> qrScanner =
             registerForActivityResult(new ScanContract(), result -> {
                 if (result.getContents() != null) {
-                    String scannedValue = result.getContents();
+                    String scannedValue = result.getContents().trim();
                     Log.d("QR_SCAN", scannedValue);
+                    Intent intent = new Intent(MainActivity.this, EventDetailsActivity.class);
+                    intent.putExtra(EventDetailsActivity.EXTRA_EVENT_ID, scannedValue);
+                    startActivity(intent);
                 }
             });
 

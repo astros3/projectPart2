@@ -2,4 +2,6 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <!-- Text/icon on entrant (white) toolbar -->
+    <color name="toolbar_content_dark">#FF000000</color>
 </resources>

@@ -10,4 +10,15 @@
     <string name="view_qr_code">View QR Code</string>
     <string name="update_event_information">Update Event Information</string>
     <string name="app_name">EventLottery</string>
+
+    <!-- Event Details (US 01.01.01, 01.01.02, 01.06.02) -->
+    <string name="event_details">Event Details</string>
+    <string name="event_poster">Event poster</string>
+    <string name="request_to_join">Request to Join</string>
+    <string name="leave_waiting_list">Leave the Waiting List</string>
+    <string name="status_not_joined">STATUS: NOT JOINED</string>
+    <string name="status_pending">STATUS: PENDING</string>
+    <string name="about_event">ABOUT EVENT</string>
+    <string name="selection_criteria">SELECTION CRITERIA</string>
+    <string name="selection_criteria_placeholder">• Entries are limited to one per verified person.\n• Selected entrants will have 24 hours to confirm.\n• Must have attended at least one previous community meetup.\n• Geographical proximity to the venue may be considered.</string>
 </resources>
