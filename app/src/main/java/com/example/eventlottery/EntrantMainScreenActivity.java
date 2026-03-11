@@ -11,6 +11,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import com.example.eventlottery.DeviceIdManager;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -64,6 +65,9 @@ public class EntrantMainScreenActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.entrant_main_screen);
+
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         events = findViewById(R.id.Events);
         notificationbellbutton = findViewById(R.id.notification_Bell_Button);
