@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="10dp"
+    android:background="#FFFFFF"
+    android:layout_marginBottom="10dp"
+    android:orientation="horizontal"
+    android:clickable="true"
+    android:id="@+id/entrant_event_history_bar"
+    >
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+
+        android:layout_marginStart="10dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/event_name_input"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Event Name here"
+
+
+
+            android:textSize="20dp"
+            android:textStyle="bold"
+            android:textColor="#111111" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:id="@+id/event_date_location_input"
+
+            android:textColor="#969696"
+            android:text="Oct 24, 2024 · Location"
+            android:textSize="15dp"
+
+            />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/event_current_status"
+        android:background="#BBF7D0"
+        android:paddingStart="20dp"
+        android:paddingTop="10dp"
+        android:paddingEnd="10dp"
+        android:paddingBottom="10dp"
+        android:textStyle="bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="15dp"
+        android:layout_marginTop="5dp"
+        android:text="ACCEPTED"
+        android:textColor="#047857"
+
+        />
+
+    <ImageView
+        android:id="@+id/event_arrow"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:src="@drawable/outline_arrow"
+        android:contentDescription="arrow"
+        android:layout_marginEnd="15dp"
+        android:layout_marginTop="15dp"
+
+        />
+</LinearLayout>

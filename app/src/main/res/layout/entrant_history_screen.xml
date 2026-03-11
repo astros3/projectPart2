@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F6F7FB"
+    >
+    <!--
+       Top Bar
+    -->
+    <LinearLayout
+        android:id="@+id/topbar_history"
+        android:layout_width="0dp"
+        android:layout_height="65dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="#FFFFFF"
+        android:elevation="5dp"
+        >
+
+        <ImageView
+            android:id="@+id/historydisplay"
+            android:layout_marginStart="30dp"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:src="@drawable/history_selected"
+
+
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="15dp"
+            android:text="History"
+            android:layout_weight="1"
+            android:textSize="20dp"
+            android:textStyle="bold"
+            android:textColor="#000000"/>
+
+        <ImageView
+            android:id="@+id/notification_Bell_Button"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginEnd="30dp"
+            android:src="@drawable/bell" />
+    </LinearLayout>
+
+
+
+    <!--
+       List
+    -->
+
+
+    <!--
+       Navigation Bar
+    -->
+    <ListView
+        android:id="@+id/Events_history"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="20dp"
+        android:background="#FFFFFF"
+        android:divider="@android:color/transparent"
+
+        android:dividerHeight="10dp"
+        android:elevation="2dp"
+        app:layout_constraintBottom_toTopOf="@id/navigationBar_history"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/topbar_history"
+        app:layout_constraintVertical_bias="0.0">
+
+    </ListView>
+
+    <LinearLayout
+        android:id="@+id/navigationBar_history"
+        android:layout_width="0dp"
+        android:layout_height="65dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:background="#FFFFFF"
+        android:elevation="5dp"
+        >
+        <LinearLayout
+            android:id="@+id/navigation_home_button"
+            android:orientation="vertical"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:gravity="center"
+            >
+            <ImageView
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:src="@drawable/home_unselected"
+                android:id="@+id/navigationhome"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/hometext"
+                android:layout_marginTop="5dp"
+                android:text="HOME"
+                android:textSize="10dp"
+                android:textColor="#696969"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/navigation_scan_button"
+            android:orientation="vertical"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:gravity="center">
+
+            <ImageView
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:id="@+id/navigationscan"
+                android:src="@drawable/scan_unselected"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/scantext"
+                android:layout_marginTop="5dp"
+                android:text="SCAN"
+                android:textColor="#696969"
+                android:textSize="10dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/navigation_history_button"
+            android:orientation="vertical"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:focusable="true"
+            android:gravity="center">
+
+            <ImageView
+                android:id="@+id/navigationhistory"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:src="@drawable/history_selected"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/historytext"
+                android:layout_marginTop="5dp"
+                android:text="HISTORY"
+                android:textColor="#000000"
+                android:textSize="10dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/navigation_profile_button"
+            android:orientation="vertical"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:gravity="center">
+
+            <ImageView
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:id="@+id/navigationprofile"
+                android:src="@drawable/profile_unselected"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/profiletext"
+                android:layout_marginTop="5dp"
+                android:text="PROFILE"
+                android:textColor="#696969"
+                android:textSize="10dp" />
+        </LinearLayout>
+
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

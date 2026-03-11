@@ -92,4 +92,20 @@ public class Event {
     public void setPrice(double price) { this.price = price; }
     public List<String> getSelectionCriteria() { return selectionCriteria != null ? selectionCriteria : new ArrayList<>(); }
     public void setSelectionCriteria(List<String> selectionCriteria) { this.selectionCriteria = selectionCriteria != null ? selectionCriteria : new ArrayList<>(); }
+
+
+    //IMPORTANT: DO NOT upload this  to firestore database
+    //Only for temporary local ui usage for the current user(EntrantHistoryScreenActivity) (Since only one array is linked to adapter)
+    private String userapplicationstatus = "User not signed up for this event";
+
+    //IMPORTANT: DO NOT upload this  to firestore database
+    //Only for temporary local ui usage for the current user(EntrantHistoryScreenActivity)
+    public String getUserApplicationStatus() {
+        return userapplicationstatus;
+    }
+    //IMPORTANT: DO NOT upload this  to firestore database
+    //Only for temporary local ui usage for the current user(EntrantHistoryScreenActivity)
+    public void setUserApplicationStatus(String applicationStatus) {
+        this.userapplicationstatus = applicationStatus;
+    }
 }
