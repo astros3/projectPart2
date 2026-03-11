@@ -39,7 +39,7 @@
 
     <fragment
         android:id="@+id/Waiting_list"
-        android:name="com.example.eventlottery.Waiting_list"
+        android:name="com.example.eventlottery.WaitingListFragment"
         android:label="Waiting List">
 
         <action
@@ -53,7 +53,7 @@
 
     <fragment
         android:id="@+id/Selected_list"
-        android:name="com.example.eventlottery.Selected_list"
+        android:name="com.example.eventlottery.SelectedList"
         android:label="Selected list">
 
         <action

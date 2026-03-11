@@ -20,11 +20,12 @@
         android:id="@+id/buttonBack"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="280dp"
         android:text="Back"
-        app:layout_constraintTop_toTopOf="@id/toolbar"
         app:layout_constraintBottom_toBottomOf="@id/toolbar"
         app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginStart="12dp" />
+        app:layout_constraintTop_toTopOf="@id/toolbar"
+        app:layout_constraintVertical_bias="1.0" />
 
     <ListView
         android:id="@+id/listSelectedEntrants"

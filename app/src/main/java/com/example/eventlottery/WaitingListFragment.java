@@ -13,16 +13,12 @@ import java.util.ArrayList;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.fragment.NavHostFragment;
 
-import com.example.eventlottery.EntrantListManager;
-
-import java.util.ArrayList;
 import java.util.List;
 
-public class Waiting_list extends Fragment {
+public class WaitingListFragment extends Fragment {
 
-    public Waiting_list() {
+    public WaitingListFragment() {
         super(R.layout.waiting_list);
     }
 
@@ -41,7 +37,7 @@ public class Waiting_list extends Fragment {
         listView.setAdapter(adapter);
 
         view.findViewById(R.id.buttonBack).setOnClickListener(v ->
-                NavHostFragment.findNavController(Waiting_list.this)
+                NavHostFragment.findNavController(WaitingListFragment.this)
                         .navigate(R.id.Waiting_list_to_OrganizerNavigationFragment));
     }
 }

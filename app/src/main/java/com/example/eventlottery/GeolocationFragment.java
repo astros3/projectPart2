@@ -24,7 +24,7 @@ public class GeolocationFragment extends Fragment implements OnMapReadyCallback 
     private String locationAddress;
 
     public GeolocationFragment() {
-        super(R.layout.fragment_geolocation);
+        super(R.layout.geolocation);
     }
 
     @Override

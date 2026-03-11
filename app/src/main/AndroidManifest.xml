@@ -2,12 +2,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!--tells android that the app needs permission to use the camera, which is required for QR scanning -->
-    <uses-permission android:name="android.permission.CAMERA"/>
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.INTERNET"/>
 
-    <!--Allows app to still install on devies without cameras -->
     <uses-feature
         android:name="android.hardware.camera"
         android:required="false" />
@@ -22,14 +21,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.EventLottery">
 
-        <activity
-            android:name=".EntrantProfileActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="API_KEY(not uploaded yet but created, will put it only while demo and testing)" />
 
         <activity
             android:name=".MainActivity"
@@ -39,6 +33,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".EntrantProfileActivity"
+            android:exported="false" />
 
         <activity
             android:name=".EventDetailsActivity"

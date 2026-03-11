@@ -7,6 +7,13 @@ import com.google.firebase.Timestamp;
  * Stored in Firestore at events/{eventId}/waitingList/{deviceId}.
  */
 public class WaitingListEntry {
+    private Entrant entrant;
+    public Entrant getEntrant() {
+
+        return entrant;
+    }
+
+
     public enum Status { WAITING, PENDING, SELECTED, ACCEPTED, DECLINED, CANCELLED }
 
     private String deviceId;

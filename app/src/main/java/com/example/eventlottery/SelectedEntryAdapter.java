@@ -24,7 +24,7 @@ public class SelectedEntryAdapter extends ArrayAdapter<WaitingListEntry> {
     private final OnDeleteClickListener listener;
 
     public SelectedEntryAdapter(FragmentActivity activity,
-                                ArrayList<Waiting_list> entries,
+                                ArrayList<WaitingListEntry> entries,
                                 OnDeleteClickListener listener) {
         super(activity, 0, entries);
         this.activity = activity;
@@ -41,7 +41,7 @@ public class SelectedEntryAdapter extends ArrayAdapter<WaitingListEntry> {
             view = LayoutInflater.from(activity).inflate(R.layout.item_selected_entry, parent, false);
         }
 
-        Waiting_list entry = entries.get(position);
+        WaitingListFragment entry = entries.get(position);
         Entrant entrant = entry.getEntrant();
 
         TextView textEntrantName = view.findViewById(R.id.textEntrantName);
