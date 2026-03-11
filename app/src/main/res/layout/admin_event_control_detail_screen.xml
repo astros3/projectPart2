@@ -10,7 +10,9 @@
     android:layout_marginBottom="10dp"
 
     >
-
+    <!--
+        The event photo
+    -->
     <ImageView
         android:layout_width="100dp"
         android:id="@+id/event_photo"
@@ -25,7 +27,9 @@
 
         android:layout_marginStart="10dp"
         android:orientation="vertical">
-
+        <!--
+            Event name
+        -->
         <TextView
             android:id="@+id/event_name_input"
             android:layout_width="wrap_content"
@@ -37,7 +41,9 @@
             android:textSize="20dp"
             android:textStyle="bold"
             android:textColor="#111111" />
-
+        <!--
+            Event date and time
+        -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -49,7 +55,9 @@
             android:textSize="15dp"
 
             />
-
+        <!--
+            Owner name
+        -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -60,7 +68,9 @@
             android:textSize="15dp"
 
             />
-
+        <!--
+            View Details
+        -->
         <Button
             android:layout_marginTop="10dp"
             android:id="@+id/admin_event_control_view_detail_button"
@@ -77,6 +87,9 @@
             />
     </LinearLayout>
 
+    <!--
+        Delete button
+    -->
     <ImageView
         android:layout_marginTop="35dp"
         android:layout_width="50dp"

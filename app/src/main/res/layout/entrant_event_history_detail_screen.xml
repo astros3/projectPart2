@@ -17,7 +17,9 @@
 
         android:layout_marginStart="10dp"
         android:orientation="vertical">
-
+        <!--
+            Event name
+        -->
         <TextView
             android:id="@+id/event_name_input"
             android:layout_width="wrap_content"
@@ -29,7 +31,9 @@
             android:textSize="20dp"
             android:textStyle="bold"
             android:textColor="#111111" />
-
+        <!--
+            Event date and location
+        -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -43,6 +47,9 @@
             />
     </LinearLayout>
 
+    <!--
+        event status
+    -->
     <TextView
         android:id="@+id/event_current_status"
         android:background="#BBF7D0"
@@ -59,7 +66,9 @@
         android:textColor="#047857"
 
         />
-
+    <!--
+        arrow
+    -->
     <ImageView
         android:id="@+id/event_arrow"
         android:layout_width="20dp"
