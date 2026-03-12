@@ -23,15 +23,11 @@ public class MainActivity extends AppCompatActivity {
     private final ActivityResultLauncher<ScanOptions> qrScanner =
             registerForActivityResult(new ScanContract(), result -> {
                 if (result.getContents() != null) {
-                    String scannedValue = result.getContents().trim();
-
-                    if (scannedValue.contains("/")) {
-                        scannedValue = scannedValue.substring(scannedValue.lastIndexOf("/") + 1);
-                    }
-                    Log.d("QR_SCAN", scannedValue);
+                    String eventId = QRCodeService.parseEventIdFromQrContent(result.getContents());
+                    Log.d("QR_SCAN", eventId);
 
                     Intent intent = new Intent(MainActivity.this, EventDetailsActivity.class);
-                    intent.putExtra(EventDetailsActivity.EXTRA_EVENT_ID, scannedValue);
+                    intent.putExtra(EventDetailsActivity.EXTRA_EVENT_ID, eventId);
                     startActivity(intent);
                 }
             });
