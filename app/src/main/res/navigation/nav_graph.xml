@@ -7,7 +7,13 @@
     <fragment
         android:id="@+id/OrganizerDashboardFragment"
         android:name="com.example.eventlottery.OrganizerDashboardFragment"
-        android:label="@string/organizer_dashboard" />
+        android:label="Organizer Dashboard">
+
+        <action
+            android:id="@+id/action_dashboard_to_navigation"
+            app:destination="@id/OrganizerNavigationFragment" />
+
+    </fragment>
 
     <fragment
         android:id="@+id/OrganizerNavigationFragment"
@@ -25,6 +31,7 @@
         <action
             android:id="@+id/OrganizerNavigationFragment_to_Selected_list"
             app:destination="@id/Selected_list" />
+
     </fragment>
 
     <fragment
@@ -35,11 +42,12 @@
         <action
             android:id="@+id/LotteryDraw_to_OrganizerNavigationFragment"
             app:destination="@id/OrganizerNavigationFragment" />
+
     </fragment>
 
     <fragment
         android:id="@+id/Waiting_list"
-        android:name="com.example.eventlottery.Waiting_list"
+        android:name="com.example.eventlottery.WaitingListFragment"
         android:label="Waiting List">
 
         <action
@@ -49,20 +57,56 @@
         <action
             android:id="@+id/Waiting_list_to_GeolocationFragment"
             app:destination="@id/GeolocationFragment" />
+
     </fragment>
 
     <fragment
         android:id="@+id/Selected_list"
-        android:name="com.example.eventlottery.Selected_list"
-        android:label="Selected list">
+        android:name="com.example.eventlottery.SelectedList"
+        android:label="Selected List">
 
         <action
             android:id="@+id/Selected_list_to_OrganizerNavigationFragment"
             app:destination="@id/OrganizerNavigationFragment" />
+
     </fragment>
 
     <fragment
         android:id="@+id/GeolocationFragment"
         android:name="com.example.eventlottery.GeolocationFragment"
-        android:label="Geolocation" />
+        android:label="Entrant Location">
+
+        <action
+            android:id="@+id/GeolocationFragment_to_Waiting_list"
+            app:destination="@id/Waiting_list" />
+
+    </fragment>
+    <fragment
+        android:id="@+id/EventDetailsFragment"
+        android:name="com.example.eventlottery.EventDetailsFragment"
+        android:label="Event Details">
+
+        <argument
+            android:name="eventId"
+            app:argType="string" />
+
+        <action
+            android:id="@+id/action_eventDetails_to_editEvent"
+            app:destination="@id/EditEventFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/EditEventFragment"
+        android:name="com.example.eventlottery.EditEventFragment"
+        android:label="Edit Event">
+
+        <argument
+            android:name="eventId"
+            app:argType="string" />
+    </fragment>
+
+
+
+
+
 </navigation>

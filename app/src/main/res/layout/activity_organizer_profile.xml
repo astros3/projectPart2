@@ -11,10 +11,10 @@
         android:id="@+id/toolbar_organizer_profile"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="@color/white"
-        app:navigationIcon="@drawable/ic_back_arrow"
+        android:background="@color/black"
+        app:navigationIcon="@drawable/ic_backarrow_white"
         app:title="@string/organizer_profile"
-        app:titleTextColor="#0B162C" />
+        app:titleTextColor="@color/white" />
 
     <ScrollView
         android:layout_width="match_parent"

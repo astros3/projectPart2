@@ -10,9 +10,9 @@
         android:id="@+id/toolbarGeo"
         android:layout_width="0dp"
         android:layout_height="?attr/actionBarSize"
-        android:background="@android:color/white"
+        android:background="@android:color/black"
         app:title="Geolocation"
-        app:titleTextColor="@android:color/black"
+        app:titleTextColor="@android:color/white"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
@@ -21,11 +21,12 @@
         android:id="@+id/buttonBackGeo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="292dp"
         android:text="Back"
-        app:layout_constraintTop_toTopOf="@id/toolbarGeo"
         app:layout_constraintBottom_toBottomOf="@id/toolbarGeo"
         app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginStart="12dp" />
+        app:layout_constraintTop_toTopOf="@id/toolbarGeo"
+        app:layout_constraintVertical_bias="1.0" />
 
     <TextView
         android:id="@+id/textLocationOf"

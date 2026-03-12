@@ -1,5 +1,9 @@
 package com.example.eventlottery;
 
+/**
+ * Organizer event menu: Update Event, QR Code, Lottery Draw, Waiting List, Selected List.
+ * Uses EventEditActivity.getCurrentEventId() for the selected event.
+ */
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;

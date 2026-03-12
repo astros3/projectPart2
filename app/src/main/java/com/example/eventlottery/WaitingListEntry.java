@@ -3,18 +3,24 @@ package com.example.eventlottery;
 import com.google.firebase.Timestamp;
 
 /**
- * Represents an entrant's place on an event's waiting list.
- * Stored in Firestore at events/{eventId}/waitingList/{deviceId}.
+ * Model for one entrant's place on an event waiting list. Stored in Firestore at
+ * {@code events/{eventId}/waitingList/{deviceId}}. Document ID is the entrant's device ID.
  */
 public class WaitingListEntry {
-    public enum Status { WAITING, PENDING, SELECTED, ACCEPTED, DECLINED, CANCELLED }
+
+    /** Lifecycle status of the entrant's application. */
+    public enum Status {
+        WAITING, PENDING, SELECTED, ACCEPTED, DECLINED, CANCELLED
+    }
 
     private String deviceId;
-    private String status; // enum name as string for Firestore
+    private String status;
     private Timestamp joinTimestamp;
 
+    /** No-arg constructor for Firestore deserialization. */
     public WaitingListEntry() {}
 
+    /** Creates entry with given status and joinTimestamp = now. */
     public WaitingListEntry(String deviceId, Status status) {
         this.deviceId = deviceId;
         this.status = status.name();
@@ -23,6 +29,7 @@ public class WaitingListEntry {
 
     public String getDeviceId() { return deviceId; }
     public void setDeviceId(String deviceId) { this.deviceId = deviceId; }
+    /** Status string (e.g. {@link Status#PENDING}.name()). */
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
     public Timestamp getJoinTimestamp() { return joinTimestamp; }

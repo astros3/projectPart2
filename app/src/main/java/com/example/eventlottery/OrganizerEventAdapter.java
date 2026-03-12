@@ -15,18 +15,19 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * RecyclerView adapter for organizer's event cards on the dashboard.
+ * RecyclerView adapter for organizer dashboard event cards. View/Edit open event nav or EventEditActivity.
  */
 public class OrganizerEventAdapter extends RecyclerView.Adapter<OrganizerEventAdapter.EventCardViewHolder> {
 
     private final List<Event> events = new ArrayList<>();
-    private OnEventCardClickListener listener;
+    private OnEventActionListener listener;
 
-    interface OnEventCardClickListener {
-        void onEditViewClick(Event event);
+    interface OnEventActionListener {
+        void onViewClick(Event event);
+        void onEditClick(Event event);
     }
 
-    void setOnEventCardClickListener(OnEventCardClickListener listener) {
+    void setOnEventActionListener(OnEventActionListener listener) {
         this.listener = listener;
     }
 
@@ -60,20 +61,25 @@ public class OrganizerEventAdapter extends RecyclerView.Adapter<OrganizerEventAd
     static class EventCardViewHolder extends RecyclerView.ViewHolder {
         private final TextView titleView;
         private final TextView dateView;
-        private final View editViewButton;
+        private final View viewButton;
+        private final View editButton;
 
         EventCardViewHolder(View itemView) {
             super(itemView);
             titleView = itemView.findViewById(R.id.event_card_title);
             dateView = itemView.findViewById(R.id.event_card_date);
-            editViewButton = itemView.findViewById(R.id.event_card_edit_view);
+            viewButton = itemView.findViewById(R.id.event_card_view);
+            editButton = itemView.findViewById(R.id.event_card_edit);
         }
 
-        void bind(Event event, OnEventCardClickListener listener) {
+        void bind(Event event, OnEventActionListener listener) {
             titleView.setText(event.getTitle() != null && !event.getTitle().isEmpty()
                     ? event.getTitle() : "Untitled Event");
 
-            long millis = event.getEventDateMillis() > 0 ? event.getEventDateMillis() : event.getRegistrationEndMillis();
+            long millis = event.getEventDateMillis() > 0
+                    ? event.getEventDateMillis()
+                    : event.getRegistrationEndMillis();
+
             if (millis > 0) {
                 dateView.setText(formatDateTime(millis));
                 dateView.setVisibility(View.VISIBLE);
@@ -81,15 +87,22 @@ public class OrganizerEventAdapter extends RecyclerView.Adapter<OrganizerEventAd
                 dateView.setVisibility(View.GONE);
             }
 
-            editViewButton.setOnClickListener(v -> {
+            viewButton.setOnClickListener(v -> {
                 if (listener != null) {
-                    listener.onEditViewClick(event);
+                    listener.onViewClick(event);
+                }
+            });
+
+            editButton.setOnClickListener(v -> {
+                if (listener != null) {
+                    listener.onEditClick(event);
                 }
             });
         }
 
         private static String formatDateTime(long millis) {
-            return new SimpleDateFormat("MMM d, yyyy - h:mm a", Locale.getDefault()).format(new Date(millis));
+            return new SimpleDateFormat("MMM d, yyyy - h:mm a", Locale.getDefault())
+                    .format(new Date(millis));
         }
     }
 }

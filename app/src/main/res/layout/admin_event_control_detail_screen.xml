@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+
+    android:padding="10dp"
+
+    android:background="@drawable/button_background"
+    android:elevation="1dp"
+
+    android:layout_marginBottom="10dp"
+
+
+    >
+    <!--
+        The event photo
+    -->
+    <ImageView
+        android:layout_width="100dp"
+        android:id="@+id/event_photo"
+        android:layout_height="100dp"
+
+        android:src="@drawable/home_selected" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+
+        android:layout_marginStart="10dp"
+        android:orientation="vertical">
+        <!--
+            Event name
+        -->
+        <TextView
+            android:id="@+id/event_name_input"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Name here"
+
+
+
+            android:textSize="20dp"
+            android:textStyle="bold"
+            android:textColor="#111111" />
+        <!--
+            Event date and time
+        -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:id="@+id/event_date_input"
+
+            android:textColor="#969696"
+            android:text="Oct 24, 2024 · 10:00 AM"
+            android:textSize="15dp"
+
+            />
+        <!--
+            Owner name
+        -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:id="@+id/event_organizer_owner_name_input"
+
+            android:text="Owner Name"
+            android:textSize="15dp"
+
+            />
+        <!--
+            View Details
+        -->
+        <Button
+            android:layout_marginTop="10dp"
+            android:id="@+id/admin_event_control_view_detail_button"
+            android:text="VIEW DETAILS"
+            android:textSize="20dp"
+            android:clickable="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:textColor="#4A7BFF"
+
+            android:background="@android:color/transparent"
+
+            />
+    </LinearLayout>
+
+    <!--
+        Delete button
+    -->
+    <ImageView
+        android:layout_marginTop="35dp"
+        android:layout_width="50dp"
+        android:id="@+id/admin_event_control_delete_button"
+        android:layout_height="50dp"
+        android:clickable="true"
+        android:src="@drawable/delete" />
+
+</LinearLayout>

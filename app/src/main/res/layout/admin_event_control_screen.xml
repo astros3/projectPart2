@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F6F7FB"
+    >
+    <!--
+       Top Bar
+    -->
+    <LinearLayout
+        android:id="@+id/topbar_history"
+        android:layout_width="0dp"
+        android:layout_height="65dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="#FFFFFF"
+        android:elevation="5dp"
+        >
+        <!--
+           Back button
+        -->
+        <ImageView
+            android:id="@+id/back_button"
+            android:layout_marginStart="30dp"
+            android:clickable="true"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:src="@drawable/arrow_back"
+
+
+            />
+
+        <!--
+           search Bar
+        -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="44dp"
+
+            android:layout_marginStart="80dp"
+
+            android:layout_marginEnd="39dp"
+
+            android:layout_weight="1"
+            android:background="#D3D3D3"
+
+            android:gravity="center_vertical"
+
+
+            android:elevation="2dp"
+
+            android:paddingEnd="14dp"
+            >
+            <!--
+               filter button
+            -->
+            <ImageView
+                android:id="@+id/admin_event_filter_button"
+                android:clickable="true"
+
+                android:layout_width="30dp"
+
+                android:layout_marginStart="5dp"
+                android:layout_height="20dp"
+
+                android:src="@drawable/burger" />
+            <!--
+               user input
+            -->
+            <EditText
+                android:layout_height="wrap_content"
+
+                android:id="@+id/admin_event_search_inputbar"
+                android:background="@android:color/transparent"
+                android:hint="Search by event name"
+
+                android:imeOptions="actionSearch"
+                android:inputType="text"
+
+                android:layout_width="0dp"
+                android:layout_marginEnd="10dp"
+                android:layout_weight="1"
+                android:layout_marginStart="10dp"
+
+                android:textSize="14dp"
+
+                />
+            <!--
+               confirm search button
+            -->
+            <ImageView
+                android:id="@+id/search_button"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:clickable="true"
+
+
+                android:layout_marginStart="5dp"
+
+                android:src="@drawable/search"
+                />
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+
+    <!--
+       List
+    -->
+    <ListView
+
+        android:id="@+id/Events_history"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="20dp"
+        android:background="@drawable/button_background"
+
+        android:divider="@android:color/transparent"
+
+        android:dividerHeight="10dp"
+        android:paddingTop="5dp"
+
+        android:paddingBottom="5dp"
+
+        android:elevation="1dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+
+        app:layout_constraintEnd_toEndOf="parent"
+
+        app:layout_constraintStart_toStartOf="parent"
+
+        app:layout_constraintTop_toBottomOf="@id/topbar_history"
+
+        android:paddingStart="5dp"
+        android:paddingEnd="5dp"
+        >
+
+    </ListView>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

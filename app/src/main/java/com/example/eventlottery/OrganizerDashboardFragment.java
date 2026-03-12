@@ -2,6 +2,7 @@ package com.example.eventlottery;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +11,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -20,8 +22,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Organizer landing screen: list of events created by the current organizer,
- * with Create a New Event and Profile in the bottom bar.
+ * Organizer dashboard: lists events where organizerId == deviceId. Create event, open event nav, or profile.
  */
 public class OrganizerDashboardFragment extends Fragment {
 
@@ -48,7 +49,17 @@ public class OrganizerDashboardFragment extends Fragment {
         adapter = new OrganizerEventAdapter();
         recyclerView.setAdapter(adapter);
 
-        adapter.setOnEventCardClickListener(this::onEditViewClick);
+        adapter.setOnEventActionListener(new OrganizerEventAdapter.OnEventActionListener() {
+            @Override
+            public void onViewClick(Event event) {
+                openEventNavigation(event);
+            }
+
+            @Override
+            public void onEditClick(Event event) {
+                openEditEvent(event);
+            }
+        });
 
         view.findViewById(R.id.btn_create_event).setOnClickListener(v -> onCreateEventClick());
         view.findViewById(R.id.btn_profile).setOnClickListener(v -> onProfileClick());
@@ -82,6 +93,8 @@ public class OrganizerDashboardFragment extends Fragment {
                     showEmptyState(events.isEmpty());
                 })
                 .addOnFailureListener(e -> {
+                    Log.e("FirestoreError", "Failed to load event", e);
+                    e.printStackTrace();
                     Toast.makeText(requireContext(), "Could not load events", Toast.LENGTH_SHORT).show();
                     showEmptyState(true);
                 });
@@ -93,8 +106,31 @@ public class OrganizerDashboardFragment extends Fragment {
         emptyView.setVisibility(empty ? View.VISIBLE : View.GONE);
     }
 
-    private void onEditViewClick(Event event) {
-        if (event.getEventId() == null) return;
+    private void openViewEvent(Event event) {
+        if (event == null || event.getEventId() == null) return;
+
+        Bundle bundle = new Bundle();
+        bundle.putString("eventId", event.getEventId());
+
+        NavHostFragment.findNavController(this)
+                .navigate(R.id.action_dashboard_to_navigation, bundle);
+    }
+
+    private void openEventNavigation(Event event) {
+        if (event == null || event.getEventId() == null) return;
+
+        EventEditActivity.setCurrentEventId(requireContext(), event.getEventId());
+
+        Bundle bundle = new Bundle();
+        bundle.putString("eventId", event.getEventId());
+
+        NavHostFragment.findNavController(this)
+                .navigate(R.id.action_dashboard_to_navigation, bundle);
+    }
+
+    private void openEditEvent(Event event) {
+        if (event == null || event.getEventId() == null) return;
+
         EventEditActivity.setCurrentEventId(requireContext(), event.getEventId());
         startActivity(EventEditActivity.newIntent(requireContext(), event.getEventId()));
     }
