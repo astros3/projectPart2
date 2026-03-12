@@ -86,6 +86,7 @@ public class EntrantMainScreenActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.entrant_main_screen);
 
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -285,5 +286,11 @@ public class EntrantMainScreenActivity extends AppCompatActivity {
         }
         winnumber.setText(String.valueOf(howmanywinforthisuser));
         pendingnumber.setText(String.valueOf(howmanypendingforthisuser));
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        finish();
+        return true;
     }
 }

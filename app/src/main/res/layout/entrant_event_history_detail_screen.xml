@@ -3,11 +3,13 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:padding="10dp"
-    android:background="#FFFFFF"
+    android:background="@drawable/button_background"
+    android:elevation="2dp"
     android:layout_marginBottom="10dp"
     android:orientation="horizontal"
     android:clickable="true"
     android:id="@+id/entrant_event_history_bar"
+
     >
 
     <LinearLayout

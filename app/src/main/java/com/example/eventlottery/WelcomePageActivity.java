@@ -3,8 +3,11 @@ package com.example.eventlottery;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class WelcomePageActivity extends AppCompatActivity {
 
@@ -23,14 +26,66 @@ public class WelcomePageActivity extends AppCompatActivity {
 
         // Entrant/User
         userbutton.setOnClickListener(v -> {
-            Intent intent = new Intent(WelcomePageActivity.this, EntrantMainScreenActivity.class);
-            startActivity(intent);
+
+            String deviceId = DeviceIdManager.getDeviceId(this);
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+            db.collection("users")
+                    .document(deviceId)
+                    .get()
+                    .addOnSuccessListener(documentSnapshot -> {
+
+                        if (documentSnapshot.exists() &&
+                                "entrant".equals(documentSnapshot.getString("role"))) {
+
+                            // Existing entrant device
+                            startActivity(new Intent(this, EntrantMainScreenActivity.class));
+
+                        } else {
+
+                            // New device → open setup screen
+                            startActivity(new Intent(this, EntrantSetupActivity.class));
+                        }
+
+                        finish();
+                    })
+                    .addOnFailureListener(e ->
+                            Toast.makeText(this,
+                                    "Failed to check profile: " + e.getMessage(),
+                                    Toast.LENGTH_LONG).show()
+                    );
         });
 
         // Organizer
         organizerbutton.setOnClickListener(v -> {
-            Intent intent = new Intent(WelcomePageActivity.this, MainActivity.class);
-            startActivity(intent);
+
+            String deviceId = DeviceIdManager.getDeviceId(this);
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+            db.collection("organizers")
+                    .document(deviceId)
+                    .get()
+                    .addOnSuccessListener(documentSnapshot -> {
+
+                        if (documentSnapshot.exists() &&
+                                "organizer".equals(documentSnapshot.getString("role"))) {
+
+                            // Existing organizer device
+                            startActivity(new Intent(this, MainActivity.class));
+
+                        } else {
+
+                            // New organizer device → setup screen
+                            startActivity(new Intent(this, OrganizerSetupActivity.class));
+                        }
+
+                        finish();
+                    })
+                    .addOnFailureListener(e ->
+                            Toast.makeText(this,
+                                    "Failed to check profile: " + e.getMessage(),
+                                    Toast.LENGTH_LONG).show()
+                    );
         });
 
         // Admin
