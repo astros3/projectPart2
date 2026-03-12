@@ -10,9 +10,13 @@ public class Organizer {
     private String lastName;
     private String email;
     private String phoneNumber;
+    private String role;
+    /** Optional display name; used as fallback if first/last name are empty. */
     private String displayName;
 
-    public Organizer() {}
+    public Organizer() {
+        this.role = "organizer";
+    }
 
     /** Full profile constructor. */
     public Organizer(String organizerId, String firstName, String lastName, String email, String phoneNumber) {
@@ -22,6 +26,7 @@ public class Organizer {
         this.email = email != null ? email : "";
         this.phoneNumber = phoneNumber != null ? phoneNumber : "";
         this.displayName = null;
+        this.role = "organizer";
     }
 
     /** Constructor with display name only (e.g. "Organizer"); other fields empty. */
@@ -32,6 +37,7 @@ public class Organizer {
         this.email = "";
         this.phoneNumber = "";
         this.displayName = displayName;
+        this.role = "organizer";
     }
 
     /** Display name: firstName + lastName, else displayName, else "Organizer". */
@@ -56,4 +62,7 @@ public class Organizer {
     /** Optional; used as fallback when first/last name are empty. */
     public String getDisplayName() { return displayName; }
     public void setDisplayName(String displayName) { this.displayName = displayName; }
+
+    public String getRole() { return role; }
+    public void setRole(String role) { this.role = role; }
 }
