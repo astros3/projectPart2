@@ -46,6 +46,11 @@ public class EventEditActivity extends AppCompatActivity {
     private MaterialSwitch switchGeolocation;
     private MaterialButton btnConfirm;
 
+    //next 3 lines store references to the poster UI and the selected image
+    private android.widget.FrameLayout eventImageContainer;
+    private android.widget.ImageView posterImageView;
+    private android.net.Uri selectedPosterUri;
+
     private long registrationStartMillis = 0;
     private long registrationEndMillis = 0;
 
@@ -83,6 +88,9 @@ public class EventEditActivity extends AppCompatActivity {
         spinnerEventType = findViewById(R.id.spinner_event_type);
         switchGeolocation = findViewById(R.id.switch_geolocation);
         btnConfirm = findViewById(R.id.btn_confirm);
+
+        eventImageContainer = findViewById(R.id.event_image_container);
+        posterImageView = findViewById(R.id.event_poster_placeholder);
     }
 
     private void setupToolbar() {
@@ -133,6 +141,25 @@ public class EventEditActivity extends AppCompatActivity {
 
     private void setupConfirmButton() {
         btnConfirm.setOnClickListener(v -> saveEvent());
+        eventImageContainer.setOnClickListener(v -> openImagePicker());
+    }
+
+    //android opens gallery so user can choose an image
+    private void openImagePicker() {
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("image/*");
+        startActivityForResult(intent, 1001);
+    }
+
+    //receives the image user selected and shows it in poster preview
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == 1001 && resultCode == RESULT_OK && data != null) {
+            selectedPosterUri = data.getData();
+            posterImageView.setImageURI(selectedPosterUri);
+        }
     }
 
     private void loadEvent() {
@@ -210,6 +237,13 @@ public class EventEditActivity extends AppCompatActivity {
         inputName.setText(event.getTitle());
         inputDescription.setText(event.getDescription());
         inputLocation.setText(event.getLocation());
+
+        //making sure organizer sees the existing poster view when editing
+        if (event.getPosterUri() != null && !event.getPosterUri().isEmpty()) {
+            selectedPosterUri = android.net.Uri.parse(event.getPosterUri());
+            posterImageView.setImageURI(selectedPosterUri);
+        }
+
         inputLimit.setText(event.getWaitingListLimit() > 0 ? String.valueOf(event.getWaitingListLimit()) : "");
         switchGeolocation.setChecked(event.isGeolocationRequired());
 
@@ -270,6 +304,12 @@ public class EventEditActivity extends AppCompatActivity {
         event.setTitle(title);
         event.setDescription(description);
         event.setLocation(location);
+
+        //attaching the poster to the event object
+        if (selectedPosterUri != null) {
+            event.setPosterUri(selectedPosterUri.toString());
+        }
+
         event.setOrganizerId(deviceId);
         event.setOrganizerName(organizerName != null ? organizerName : "Organizer");
         event.setWaitingListLimit(limit);
