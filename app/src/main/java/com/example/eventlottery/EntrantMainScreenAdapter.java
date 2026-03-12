@@ -73,8 +73,8 @@ public class EntrantMainScreenAdapter extends ArrayAdapter<Event> {
         eventdateinput.setText(date);
 
         //show event photo from uri
-        eventphoto.setImageURI(android.net.Uri.parse(eventposteruri_fromgetter));
-
+       // eventphoto.setImageURI(android.net.Uri.parse(eventposteruri_fromgetter));
+        eventphoto.setImageURI(null);
         //when user click on a specific event's "view detail" it will navigates to its detail screen
         buttonviewdetail.setOnClickListener(v -> {
             Intent intent = new Intent(context, EventDetailsActivity.class);

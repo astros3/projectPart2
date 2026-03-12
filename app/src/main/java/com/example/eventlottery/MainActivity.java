@@ -21,6 +21,7 @@ public class MainActivity extends AppCompatActivity {
                 if (result.getContents() != null) {
                     String scannedValue = result.getContents().trim();
                     Log.d("QR_SCAN", scannedValue);
+
                     Intent intent = new Intent(MainActivity.this, EventDetailsActivity.class);
                     intent.putExtra(EventDetailsActivity.EXTRA_EVENT_ID, scannedValue);
                     startActivity(intent);
@@ -37,16 +38,17 @@ public class MainActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
 
-        ScanOptions options = new ScanOptions();
-        options.setDesiredBarcodeFormats(ScanOptions.QR_CODE);
-        options.setPrompt("Scan event QR code");
-
-        qrScanner.launch(options);
-
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.nav_host_fragment), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+    }
+
+    public void launchQrScanner() {
+        ScanOptions options = new ScanOptions();
+        options.setDesiredBarcodeFormats(ScanOptions.QR_CODE);
+        options.setPrompt("Scan event QR code");
+        qrScanner.launch(options);
     }
 }
