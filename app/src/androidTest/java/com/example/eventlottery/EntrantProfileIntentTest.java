@@ -55,11 +55,7 @@ public class EntrantProfileIntentTest {
         onView(withId(R.id.edit_email))
                 .perform(typeText("donald@gmail.com"), closeSoftKeyboard());
 
-        // 5. Toggle "Remember this device"
-        onView(withId(R.id.check_remember))
-                .perform(click());
-
-        // 6. Click the "Enter" button
+        // 5. Click the "Enter" button
         onView(withId(R.id.btn_enter))
                 .perform(click());
 

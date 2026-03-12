@@ -8,7 +8,7 @@ public class EntrantTest {
     public void testEntrantDataIntegrity() {
         Entrant entrant = new Entrant("Donald", "Trump", "donald@gmail.com", "123");
         assertEquals("Donald Trump", entrant.getFullName());
-        assertEquals("123", entrant.getPhoneNumber());
+        assertEquals("123", entrant.getPhone());
     }
 
 }
