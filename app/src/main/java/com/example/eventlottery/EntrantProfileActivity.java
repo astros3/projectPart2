@@ -10,7 +10,6 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 public class EntrantProfileActivity extends AppCompatActivity {
@@ -44,22 +43,20 @@ public class EntrantProfileActivity extends AppCompatActivity {
         findViewById(R.id.btn_save_changes).setOnClickListener(v -> updateProfile());
         findViewById(R.id.btn_delete_profile).setOnClickListener(v -> confirmDeleteProfile());
 
-        BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation);
-        bottomNav.setOnItemSelectedListener(item -> {
-            int id = item.getItemId();
-            if (id == R.id.nav_home) {
-                startActivity(new Intent(this, EntrantMainScreenActivity.class));
-                finish();
-                return true;
-            }
-            if (id == R.id.nav_profile) {
-                return true;
-            }
-            if (id == R.id.nav_settings) {
-                return true;
-            }
-            return false;
+        // Same bottom bar as EntrantMainScreen: Home, Scan, History, Profile
+        findViewById(R.id.navigation_home_button).setOnClickListener(v -> {
+            startActivity(new Intent(this, EntrantMainScreenActivity.class));
+            finish();
         });
+        findViewById(R.id.navigation_scan_button).setOnClickListener(v -> {
+            startActivity(new Intent(this, QRCodeActivity.class));
+            finish();
+        });
+        findViewById(R.id.navigation_history_button).setOnClickListener(v -> {
+            startActivity(new Intent(this, EntrantHistoryScreenActivity.class));
+            finish();
+        });
+        findViewById(R.id.navigation_profile_button).setOnClickListener(v -> { /* already on profile */ });
     }
 
     private void loadProfile() {

@@ -37,7 +37,7 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/bottom_navigation"
+        android:layout_above="@id/navigationBar"
         android:layout_below="@id/header_bar">
 
         <LinearLayout
@@ -172,12 +172,103 @@
         </LinearLayout>
     </ScrollView>
 
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottom_navigation"
+    <!-- Same bottom bar as EntrantMainScreen: Home, Scan, History, Profile -->
+    <LinearLayout
+        android:id="@+id/navigationBar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="65dp"
         android:layout_alignParentBottom="true"
+        android:orientation="horizontal"
         android:background="#FFFFFF"
-        app:menu="@menu/bottom_nav_menu" />
+        android:elevation="5dp">
+        <LinearLayout
+            android:id="@+id/navigation_home_button"
+            android:orientation="vertical"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:gravity="center">
+            <ImageView
+                android:id="@+id/navigationhome"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:src="@drawable/home_unselected" />
+            <TextView
+                android:id="@+id/hometext"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:text="HOME"
+                android:textColor="#696969"
+                android:textSize="10dp" />
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/navigation_scan_button"
+            android:orientation="vertical"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:gravity="center">
+            <ImageView
+                android:id="@+id/navigationscan"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:src="@drawable/scan_unselected" />
+            <TextView
+                android:id="@+id/scantext"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:text="SCAN"
+                android:textColor="#696969"
+                android:textSize="10dp" />
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/navigation_history_button"
+            android:orientation="vertical"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:gravity="center">
+            <ImageView
+                android:id="@+id/navigationhistory"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:src="@drawable/history_unselected" />
+            <TextView
+                android:id="@+id/historytext"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:text="HISTORY"
+                android:textColor="#696969"
+                android:textSize="10dp" />
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/navigation_profile_button"
+            android:orientation="vertical"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:gravity="center">
+            <ImageView
+                android:id="@+id/navigationprofile"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:src="@drawable/profile_unselected" />
+            <TextView
+                android:id="@+id/profiletext"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:text="PROFILE"
+                android:textColor="#000000"
+                android:textSize="10dp" />
+        </LinearLayout>
+    </LinearLayout>
 
 </RelativeLayout>
