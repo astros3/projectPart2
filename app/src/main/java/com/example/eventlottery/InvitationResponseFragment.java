@@ -10,10 +10,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.example.eventlottery.DeviceIdManager;
-import com.example.eventlottery.R;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class InvitationResponseFragment extends Fragment {
+
+    private FirebaseFirestore db;
+    private String eventId;
+    private String deviceId;
 
     public InvitationResponseFragment() {
         super(R.layout.invitation_response);
@@ -23,41 +26,180 @@ public class InvitationResponseFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // 1. Identify the entrant using your DeviceIdManager
-        String myId = DeviceIdManager.getDeviceId(getContext());
+        db = FirebaseFirestore.getInstance();
+        deviceId = DeviceIdManager.getDeviceId(requireContext());
+        eventId = resolveEventId();
 
         Button btnJoinAgain = view.findViewById(R.id.buttonRequestJoinAgain);
         TextView statusHeader = view.findViewById(R.id.textStatusHeader);
         TextView statusDetail = view.findViewById(R.id.textStatusDetail);
 
-        // 2. Determine UI state based on EntrantListManager lists
-        EntrantListManager manager = EntrantListManager.getInstance();
+        btnJoinAgain.setVisibility(View.GONE);
 
-        if (manager.getRejectedList().contains(myId)) {
-            // User was not picked (Rejected State)
-            statusHeader.setText("STATUS: NOT SELECTED");
-            statusDetail.setText("You were not chosen for this event. Would you like to try again?");
-            btnJoinAgain.setVisibility(View.VISIBLE);
-        } else if (manager.getSelectedList().contains(myId)) {
-            // User was picked (Selected State)
-            statusHeader.setText("STATUS: SELECTED!");
-            statusDetail.setText("Congratulations! You have been invited.");
+        btnJoinAgain.setOnClickListener(v -> requestJoinAgain(btnJoinAgain, statusHeader, statusDetail));
+
+        loadCurrentStatus(statusHeader, statusDetail, btnJoinAgain);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        View view = getView();
+        if (view == null) return;
+
+        Button btnJoinAgain = view.findViewById(R.id.buttonRequestJoinAgain);
+        TextView statusHeader = view.findViewById(R.id.textStatusHeader);
+        TextView statusDetail = view.findViewById(R.id.textStatusDetail);
+
+        loadCurrentStatus(statusHeader, statusDetail, btnJoinAgain);
+    }
+
+    private String resolveEventId() {
+        Bundle args = getArguments();
+        if (args != null) {
+            String argEventId = args.getString("eventId");
+            if (argEventId != null && !argEventId.trim().isEmpty()) {
+                return argEventId;
+            }
+        }
+        return EventEditActivity.getCurrentEventId(requireContext());
+    }
+
+    private void loadCurrentStatus(TextView statusHeader, TextView statusDetail, Button btnJoinAgain) {
+        if (eventId == null || eventId.trim().isEmpty()) {
+            statusHeader.setText("STATUS: UNKNOWN");
+            statusDetail.setText("No event selected.");
             btnJoinAgain.setVisibility(View.GONE);
-            // You could add a 'Decline' button here later!
-        } else {
-            // User is either already in waiting or hasn't signed up
-            statusHeader.setText("STATUS: WAITING");
-            btnJoinAgain.setVisibility(View.GONE);
+            return;
         }
 
-        // 3. Handle the "Second Chance" button click
-        btnJoinAgain.setOnClickListener(v -> {
-            manager.requestToJoinAgain(myId);
-            Toast.makeText(getContext(), "You are back in the lottery!", Toast.LENGTH_SHORT).show();
+        db.collection("events")
+                .document(eventId)
+                .collection("waitingList")
+                .document(deviceId)
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (!documentSnapshot.exists()) {
+                        statusHeader.setText("STATUS: NOT REGISTERED");
+                        statusDetail.setText("You are not currently registered for this event.");
+                        btnJoinAgain.setVisibility(View.GONE);
+                        return;
+                    }
 
-            // Refresh the UI to hide the button
-            btnJoinAgain.setVisibility(View.GONE);
-            statusHeader.setText("STATUS: WAITING");
-        });
+                    WaitingListEntry entry = documentSnapshot.toObject(WaitingListEntry.class);
+                    if (entry == null || entry.getStatus() == null) {
+                        statusHeader.setText("STATUS: UNKNOWN");
+                        statusDetail.setText("Could not determine your application status.");
+                        btnJoinAgain.setVisibility(View.GONE);
+                        return;
+                    }
+
+                    String status = entry.getStatus();
+
+                    switch (status) {
+                        case "SELECTED":
+                            statusHeader.setText("STATUS: SELECTED");
+                            statusDetail.setText("Congratulations! You have been invited to this event.");
+                            btnJoinAgain.setVisibility(View.GONE);
+                            break;
+
+                        case "ACCEPTED":
+                            statusHeader.setText("STATUS: ACCEPTED");
+                            statusDetail.setText("Your registration has been confirmed.");
+                            btnJoinAgain.setVisibility(View.GONE);
+                            break;
+
+                        case "DECLINED":
+                            statusHeader.setText("STATUS: DECLINED");
+                            statusDetail.setText("You declined the invitation. You can join the waiting list again.");
+                            btnJoinAgain.setVisibility(View.VISIBLE);
+                            break;
+
+                        case "CANCELLED":
+                            statusHeader.setText("STATUS: CANCELLED");
+                            statusDetail.setText("Your previous selection is no longer active. You can join the waiting list again.");
+                            btnJoinAgain.setVisibility(View.VISIBLE);
+                            break;
+
+                        case "PENDING":
+                        case "WAITING":
+                            statusHeader.setText("STATUS: WAITING");
+                            statusDetail.setText("You are currently on the waiting list.");
+                            btnJoinAgain.setVisibility(View.GONE);
+                            break;
+
+                        default:
+                            statusHeader.setText("STATUS: UNKNOWN");
+                            statusDetail.setText("Current status: " + status);
+                            btnJoinAgain.setVisibility(View.GONE);
+                            break;
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    statusHeader.setText("STATUS: ERROR");
+                    statusDetail.setText("Failed to load your invitation status.");
+                    btnJoinAgain.setVisibility(View.GONE);
+                });
+    }
+
+    private void requestJoinAgain(Button btnJoinAgain, TextView statusHeader, TextView statusDetail) {
+        if (eventId == null || eventId.trim().isEmpty()) {
+            Toast.makeText(requireContext(), "No event selected", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        db.collection("events")
+                .document(eventId)
+                .collection("waitingList")
+                .document(deviceId)
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (!documentSnapshot.exists()) {
+                        WaitingListEntry newEntry =
+                                new WaitingListEntry(deviceId, WaitingListEntry.Status.PENDING);
+
+                        db.collection("events")
+                                .document(eventId)
+                                .collection("waitingList")
+                                .document(deviceId)
+                                .set(newEntry)
+                                .addOnSuccessListener(unused -> {
+                                    Toast.makeText(requireContext(),
+                                            "You are back in the waiting list!",
+                                            Toast.LENGTH_SHORT).show();
+                                    btnJoinAgain.setVisibility(View.GONE);
+                                    statusHeader.setText("STATUS: WAITING");
+                                    statusDetail.setText("You are currently on the waiting list.");
+                                })
+                                .addOnFailureListener(e ->
+                                        Toast.makeText(requireContext(),
+                                                "Failed to rejoin waiting list",
+                                                Toast.LENGTH_SHORT).show());
+                        return;
+                    }
+
+                    db.collection("events")
+                            .document(eventId)
+                            .collection("waitingList")
+                            .document(deviceId)
+                            .update("status", WaitingListEntry.Status.PENDING.name())
+                            .addOnSuccessListener(unused -> {
+                                Toast.makeText(requireContext(),
+                                        "You are back in the waiting list!",
+                                        Toast.LENGTH_SHORT).show();
+                                btnJoinAgain.setVisibility(View.GONE);
+                                statusHeader.setText("STATUS: WAITING");
+                                statusDetail.setText("You are currently on the waiting list.");
+                            })
+                            .addOnFailureListener(e ->
+                                    Toast.makeText(requireContext(),
+                                            "Failed to rejoin waiting list",
+                                            Toast.LENGTH_SHORT).show());
+                })
+                .addOnFailureListener(e ->
+                        Toast.makeText(requireContext(),
+                                "Failed to load your application",
+                                Toast.LENGTH_SHORT).show());
     }
 }
