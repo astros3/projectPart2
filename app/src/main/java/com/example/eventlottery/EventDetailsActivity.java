@@ -249,30 +249,55 @@ public class EventDetailsActivity extends AppCompatActivity {
                     }
 
                     Event event = eventDoc.toObject(Event.class);
-                    if (event != null && !event.isRegistrationOpen()) {
+                    if (event == null) {
+                        Toast.makeText(this, "Could not load event", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    if (!event.isRegistrationOpen()) {
                         Toast.makeText(this, "Registration is closed for this event", Toast.LENGTH_SHORT).show();
                         return;
                     }
 
-                    WaitingListEntry entry =
-                            new WaitingListEntry(deviceId, WaitingListEntry.Status.PENDING);
-
-                    db.collection("events")
-                            .document(eventId)
-                            .collection("waitingList")
-                            .document(deviceId)
-                            .set(entry)
-                            .addOnSuccessListener(aVoid -> {
-                                onWaitingList = true;
-                                waitingListStatus = WaitingListEntry.Status.PENDING.name();
-                                updateStatusAndButton();
-                                Toast.makeText(this, "You have joined the waiting list", Toast.LENGTH_SHORT).show();
-                            })
-                            .addOnFailureListener(e ->
-                                    Toast.makeText(this, "Failed to join", Toast.LENGTH_SHORT).show());
+                    int limit = event.getWaitingListLimit();
+                    if (limit > 0) {
+                        // Enforce optional waiting list limit: check current count before allowing join
+                        db.collection("events").document(eventId).collection("waitingList").get()
+                                .addOnSuccessListener(waitingSnapshot -> {
+                                    int currentCount = waitingSnapshot.size();
+                                    if (currentCount >= limit) {
+                                        Toast.makeText(this, getString(R.string.waiting_list_full), Toast.LENGTH_SHORT).show();
+                                        return;
+                                    }
+                                    addToWaitingList();
+                                })
+                                .addOnFailureListener(e ->
+                                        Toast.makeText(this, "Failed to check waiting list", Toast.LENGTH_SHORT).show());
+                    } else {
+                        addToWaitingList();
+                    }
                 })
                 .addOnFailureListener(e ->
                         Toast.makeText(this, "Failed to load event", Toast.LENGTH_SHORT).show());
+    }
+
+    /** Adds the current user to the event waiting list. Call after registration open and limit checks. */
+    private void addToWaitingList() {
+        WaitingListEntry entry =
+                new WaitingListEntry(deviceId, WaitingListEntry.Status.PENDING);
+
+        db.collection("events")
+                .document(eventId)
+                .collection("waitingList")
+                .document(deviceId)
+                .set(entry)
+                .addOnSuccessListener(aVoid -> {
+                    onWaitingList = true;
+                    waitingListStatus = WaitingListEntry.Status.PENDING.name();
+                    updateStatusAndButton();
+                    Toast.makeText(this, "You have joined the waiting list", Toast.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(e ->
+                        Toast.makeText(this, "Failed to join", Toast.LENGTH_SHORT).show());
     }
 
     private void leaveWaitingList() {
