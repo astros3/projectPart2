@@ -24,8 +24,7 @@ public class OrganizerNavigationFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        androidx.appcompat.widget.Toolbar toolbar = view.findViewById(R.id.toolbar);
-        toolbar.setNavigationOnClickListener(v ->
+        view.findViewById(R.id.btn_back).setOnClickListener(v ->
                 NavHostFragment.findNavController(OrganizerNavigationFragment.this).popBackStack());
 
         // Update Event Information (US 02.01.01, 02.01.04)
