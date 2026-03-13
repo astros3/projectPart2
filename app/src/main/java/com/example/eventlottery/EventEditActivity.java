@@ -23,9 +23,8 @@ import java.util.Calendar;
 import java.util.Locale;
 
 /**
- * Event creation and edit screen (US 02.01.01, 02.01.04).
- * - Create new event: no EXTRA_EVENT_ID
- * - Edit existing: EXTRA_EVENT_ID provided
+ * Create/edit event screen (US 02.01.01, 02.01.04). Create: no EXTRA_EVENT_ID; Edit: pass
+ * EXTRA_EVENT_ID. Enforces organizer-only; saves geolocation and optional waiting list limit.
  */
 public class EventEditActivity extends AppCompatActivity {
 

@@ -32,12 +32,9 @@ import java.util.Date;
 
 
 /**
- * US 01.01.03
- * this is the main screen for entrant
- * it shows all events and also shows some user stats
- * reference Lab7 format
+ * Entrant home: lists all events from Firestore, shows pending/accepted counts for current
+ * user. QR scan opens EventDetailsActivity. Filter and notification buttons not implemented.
  */
-
 public class EntrantMainScreenActivity extends AppCompatActivity {
 
     //scanner code

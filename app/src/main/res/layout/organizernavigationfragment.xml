@@ -13,7 +13,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:title="My Event 1"
+        app:title="Event"
         app:titleTextColor="@android:color/white" />
 
     <ScrollView
@@ -100,14 +100,6 @@
                 android:layout_height="wrap_content"
                 android:backgroundTint="@color/black"
                 android:text="@string/final_list"
-                android:textColor="#FFFFFF" />
-
-            <Button
-                android:id="@+id/buttonDelete"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:backgroundTint="#E60C0C"
-                android:text="@string/delete_event"
                 android:textColor="#FFFFFF" />
 
         </LinearLayout>

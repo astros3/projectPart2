@@ -1,5 +1,9 @@
 package com.example.eventlottery;
 
+/**
+ * List adapter for WaitingListEntry in WaitingListFragment. Shows deviceId/status; can navigate
+ * to GeolocationFragment for an entrant.
+ */
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;

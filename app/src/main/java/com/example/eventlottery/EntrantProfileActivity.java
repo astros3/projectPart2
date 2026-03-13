@@ -1,5 +1,9 @@
 package com.example.eventlottery;
 
+/**
+ * Edit entrant profile in Firestore users/{deviceId}. Load/save name, email, phone; optional
+ * delete profile. Bottom nav: Home, Scan, History, Profile (Scan currently opens QRCodeActivity).
+ */
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;

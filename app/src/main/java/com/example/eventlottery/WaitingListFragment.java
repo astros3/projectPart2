@@ -1,5 +1,8 @@
 package com.example.eventlottery;
 
+/**
+ * Shows PENDING entries in events/{eventId}/waitingList. Event ID from EventEditActivity.getCurrentEventId().
+ */
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ListView;

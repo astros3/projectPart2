@@ -12,9 +12,8 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 /**
- * Displays the event's promotional QR code (US 02.01.01).
- * Only the organizer who created the event can view or modify the QR/promo code.
- * The QR code encodes the event ID so scanning it opens EventDetailsActivity for entrants.
+ * Shows event QR code and editable promo code (US 02.01.01). Organizer-only; verifies
+ * current user is event organizer. Saves promoCode to Firestore on pause.
  */
 public class QRCodeActivity extends AppCompatActivity {
 

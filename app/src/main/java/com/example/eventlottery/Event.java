@@ -4,9 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Represents an event in the Event Lottery system.
- * Stored in Firestore at events/{eventId}.
- * Waiting list is in subcollection events/{eventId}/waitingList/{deviceId}.
+ * Model for an event in the Event Lottery system. Maps to Firestore
+ * document at {@code events/{eventId}}; waiting list is subcollection
+ * {@code events/{eventId}/waitingList/{deviceId}}.
+ * <p>
+ * Note: {@link #getUserApplicationStatus()} / {@link #setUserApplicationStatus(String)}
+ * are for local UI only (e.g. EntrantHistoryScreenActivity); do not persist to Firestore.
  */
 public class Event {
     private String eventId;
@@ -23,15 +26,20 @@ public class Event {
     private boolean geolocationRequired;
     private String posterUri;
     private String qrCodeUri;
-    /** Human-readable code for manual entry (e.g. "555 555"). */
     private String promoCode;
     private double price;
     private List<String> selectionCriteria;
+    private String userapplicationstatus = "User not signed up for this event";
 
-    public Event(){
+    /** No-arg constructor; selectionCriteria initialized to empty list. */
+    public Event() {
         this.selectionCriteria = new ArrayList<>();
     }
 
+    /**
+     * Full constructor for event data (excluding promoCode, posterUri, selectionCriteria).
+     * selectionCriteria is set to an empty list.
+     */
     public Event(String eventId, String title, String description, String location,
                  String organizerId, String organizerName, int capacity, int waitingListLimit,
                  long registrationStartMillis, long registrationEndMillis, long eventDateMillis,
@@ -52,7 +60,10 @@ public class Event {
         this.selectionCriteria = new ArrayList<>();
     }
 
-    /** True if current time is within registration window. */
+    /**
+     * Whether the current time falls within the registration window.
+     * @return true if now is between registrationStartMillis and registrationEndMillis (inclusive)
+     */
     public boolean isRegistrationOpen() {
         long now = System.currentTimeMillis();
         return now >= registrationStartMillis && now <= registrationEndMillis;
@@ -70,8 +81,10 @@ public class Event {
     public void setOrganizerId(String organizerId) { this.organizerId = organizerId; }
     public String getOrganizerName() { return organizerName; }
     public void setOrganizerName(String organizerName) { this.organizerName = organizerName; }
+    /** Max accepted entrants; 0 = unlimited. Not enforced in current UI. */
     public int getCapacity() { return capacity; }
     public void setCapacity(int capacity) { this.capacity = capacity; }
+    /** Max entrants on waiting list; 0 = unlimited. */
     public int getWaitingListLimit() { return waitingListLimit; }
     public void setWaitingListLimit(int waitingListLimit) { this.waitingListLimit = waitingListLimit; }
     public long getRegistrationStartMillis() { return registrationStartMillis; }
@@ -80,12 +93,14 @@ public class Event {
     public void setRegistrationEndMillis(long registrationEndMillis) { this.registrationEndMillis = registrationEndMillis; }
     public long getEventDateMillis() { return eventDateMillis; }
     public void setEventDateMillis(long eventDateMillis) { this.eventDateMillis = eventDateMillis; }
+    /** Whether entrants must provide geolocation when joining. */
     public boolean isGeolocationRequired() { return geolocationRequired; }
     public void setGeolocationRequired(boolean geolocationRequired) { this.geolocationRequired = geolocationRequired; }
     public String getPosterUri() { return posterUri; }
     public void setPosterUri(String posterUri) { this.posterUri = posterUri; }
     public String getQrCodeUri() { return qrCodeUri; }
     public void setQrCodeUri(String qrCodeUri) { this.qrCodeUri = qrCodeUri; }
+    /** Human-readable code for manual entry (e.g. "555 555"). */
     public String getPromoCode() { return promoCode; }
     public void setPromoCode(String promoCode) { this.promoCode = promoCode; }
     public double getPrice() { return price; }
@@ -93,19 +108,7 @@ public class Event {
     public List<String> getSelectionCriteria() { return selectionCriteria != null ? selectionCriteria : new ArrayList<>(); }
     public void setSelectionCriteria(List<String> selectionCriteria) { this.selectionCriteria = selectionCriteria != null ? selectionCriteria : new ArrayList<>(); }
 
-
-    //IMPORTANT: DO NOT upload this  to firestore database
-    //Only for temporary local ui usage for the current user(EntrantHistoryScreenActivity) (Since only one array is linked to adapter)
-    private String userapplicationstatus = "User not signed up for this event";
-
-    //IMPORTANT: DO NOT upload this  to firestore database
-    //Only for temporary local ui usage for the current user(EntrantHistoryScreenActivity)
-    public String getUserApplicationStatus() {
-        return userapplicationstatus;
-    }
-    //IMPORTANT: DO NOT upload this  to firestore database
-    //Only for temporary local ui usage for the current user(EntrantHistoryScreenActivity)
-    public void setUserApplicationStatus(String applicationStatus) {
-        this.userapplicationstatus = applicationStatus;
-    }
+    /** UI-only: current user's application status for this event. Do not persist to Firestore. */
+    public String getUserApplicationStatus() { return userapplicationstatus; }
+    public void setUserApplicationStatus(String applicationStatus) { this.userapplicationstatus = applicationStatus; }
 }

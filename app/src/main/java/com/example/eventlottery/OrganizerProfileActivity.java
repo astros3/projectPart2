@@ -11,7 +11,7 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 /**
- * Edit organizer profile (firstName, lastName, email, phone) in organizers collection.
+ * Edit organizer profile (firstName, lastName, email, phone) in Firestore organizers/{deviceId}.
  */
 public class OrganizerProfileActivity extends AppCompatActivity {
 

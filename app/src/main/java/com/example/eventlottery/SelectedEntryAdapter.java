@@ -1,5 +1,9 @@
 package com.example.eventlottery;
 
+/**
+ * List adapter for selected (SELECTED/ACCEPTED) WaitingListEntry in SelectedList fragment.
+ * Supports delete callback per entry.
+ */
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;

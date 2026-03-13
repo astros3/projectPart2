@@ -1,5 +1,9 @@
 package com.example.eventlottery;
 
+/**
+ * First-time organizer registration: firstName, lastName, email, phone. Writes Organizer
+ * to organizers/{deviceId}, then starts MainActivity. Note: no "role" field stored.
+ */
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;

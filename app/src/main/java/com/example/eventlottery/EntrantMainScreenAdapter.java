@@ -20,9 +20,8 @@ import java.text.SimpleDateFormat;
 import java.util.Locale;
 
 
-//reference lab 05 adapter
 /**
- *this adapter is for the entrant main screen
+ * Adapter for event list on EntrantMainScreenActivity. Each row opens EventDetailsActivity.
  */
 public class EntrantMainScreenAdapter extends ArrayAdapter<Event> {
 

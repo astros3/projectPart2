@@ -36,9 +36,10 @@
     <string name="registration_end_date">Event Registration End Date</string>
     <string name="date_hint">Select date</string>
     <string name="select_date">Select date</string>
-    <string name="geolocation_requirement">Require Geolocation from users</string>
-    <string name="limit_entrants">Limit number of entrants</string>
-    <string name="limit_entrants_hint">0 = unlimited</string>
+    <string name="geolocation_requirement">Require geolocation when joining</string>
+    <string name="limit_entrants">Max entrants on waiting list (optional)</string>
+    <string name="limit_entrants_hint">Leave empty or 0 for unlimited</string>
+    <string name="waiting_list_full">The waiting list is full. You cannot join at this time.</string>
     <string name="confirm">Confirm</string>
 
     <!-- QR Code Screen (US 02.01.01) -->

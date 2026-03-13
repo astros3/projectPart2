@@ -1,5 +1,9 @@
 package com.example.eventlottery;
 
+/**
+ * Organizer lottery: enter count N, randomly select N PENDING waiting-list entrants and set
+ * their status to SELECTED. Uses EventEditActivity.getCurrentEventId().
+ */
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;

@@ -1,5 +1,9 @@
 package com.example.eventlottery;
 
+/**
+ * Lists entrants with status SELECTED (and optionally ACCEPTED) for current event.
+ * Event ID from EventEditActivity.getCurrentEventId().
+ */
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ListView;

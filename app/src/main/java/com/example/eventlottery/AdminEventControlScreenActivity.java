@@ -24,9 +24,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 /**
- * US 03.01.01
- * US 03.04.01
- * this screen is for admin to see all the events and search for events.
+ * Admin view: list all events from Firestore, search by title (in-memory). No auth. Filter button not implemented.
  */
 public class AdminEventControlScreenActivity extends AppCompatActivity {
     private ArrayList<Event> admineventlist;

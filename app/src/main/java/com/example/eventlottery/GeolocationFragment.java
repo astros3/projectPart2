@@ -1,5 +1,9 @@
 package com.example.eventlottery;
 
+/**
+ * Shows entrant location on a map (from waiting list or users). Used from Waiting List flow.
+ * Reads deviceId/entrant data from Firestore to display marker and address.
+ */
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;

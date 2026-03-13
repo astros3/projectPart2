@@ -1,5 +1,10 @@
 package com.example.eventlottery;
 
+/**
+ * Launcher: role selection (Entrant / Organizer / Admin). Routes to setup or main screen
+ * based on Firestore profile (users vs organizers). Issue: Organizer doc has no "role" field,
+ * so existing organizers are always sent to setup.
+ */
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.LinearLayout;

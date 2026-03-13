@@ -29,10 +29,8 @@ import java.util.Locale;
 
 
 
-//reference lab 05 adapter
 /**
- *this adapter is for the admin event control screen
- *it shows all events and lets admin view or delete them
+ * Adapter for AdminEventControlScreenActivity event list. Row click opens event details; delete not fully wired.
  */
 public class AdminEventControlScreenAdapter extends ArrayAdapter<Event> {
 

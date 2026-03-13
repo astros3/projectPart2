@@ -1,5 +1,9 @@
 package com.example.eventlottery;
 
+/**
+ * Organizer hub: hosts NavHostFragment (dashboard → navigation → lottery/waiting/selected).
+ * Exposes QR scanner that opens EventDetailsActivity with scanned event ID.
+ */
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
