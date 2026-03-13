@@ -142,7 +142,10 @@ public class EventDetailsActivity extends AppCompatActivity {
                     updateStatusAndButton();
                 });
 
-        //waiting list count code
+        refreshWaitingListCount();
+    }
+
+    private void refreshWaitingListCount() {
         db.collection("events").document(eventId)
                 .collection("waitingList")
                 .get()
@@ -293,6 +296,7 @@ public class EventDetailsActivity extends AppCompatActivity {
                     onWaitingList = true;
                     waitingListStatus = WaitingListEntry.Status.PENDING.name();
                     updateStatusAndButton();
+                    refreshWaitingListCount();
                     Toast.makeText(this, "You have joined the waiting list", Toast.LENGTH_SHORT).show();
                 })
                 .addOnFailureListener(e ->
@@ -307,6 +311,7 @@ public class EventDetailsActivity extends AppCompatActivity {
                     onWaitingList = false;
                     waitingListStatus = null;
                     updateStatusAndButton();
+                    refreshWaitingListCount();
                     Toast.makeText(this, "You have left the waiting list", Toast.LENGTH_SHORT).show();
                 })
                 .addOnFailureListener(e ->
