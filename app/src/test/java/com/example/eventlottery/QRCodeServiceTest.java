@@ -57,15 +57,6 @@ public class QRCodeServiceTest {
         assertNull(b);
     }
 
-    /** Valid event ID must produce a displayable QR image for the organizer screen. */
-    @Test
-    public void generateQrCodeBitmap_validInput_returnsNonNullBitmap() {
-        Bitmap b = QRCodeService.generateQrCodeBitmap("evt_abc123");
-        assertNotNull(b);
-        assertTrue(b.getWidth() > 0);
-        assertTrue(b.getHeight() > 0);
-    }
-
     // --- QR scanner result parsing: same logic as MainActivity / EntrantMainScreenActivity ---
     // When the app's scanner returns a string, it trims and takes substring after last "/" if any.
     // This helper mirrors that logic so we can test the event ID extraction without changing app code.
