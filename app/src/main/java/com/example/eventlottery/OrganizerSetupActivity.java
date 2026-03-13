@@ -38,9 +38,10 @@ public class OrganizerSetupActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar_organizer_profile);
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayShowHomeEnabled(false);
             getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         }
-        toolbar.setNavigationIcon(null);
+        findViewById(R.id.back_button).setVisibility(android.view.View.GONE);
 
         firstNameInput = findViewById(R.id.edit_organizer_first_name);
         lastNameInput = findViewById(R.id.edit_organizer_last_name);

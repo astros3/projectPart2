@@ -96,10 +96,10 @@ public class EventEditActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar_event_edit);
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setDisplayShowHomeEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(false);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         }
-        toolbar.setNavigationOnClickListener(v -> finish());
+        findViewById(R.id.back_button).setOnClickListener(v -> finish());
     }
 
     private void setupEventTypeSpinner() {

@@ -21,19 +21,29 @@
         android:background="#FFFFFF"
         android:elevation="5dp"
         >
-        <!--
-           Back button
-        -->
-        <ImageView
+        <!-- Back: white arrow left of text (dark arrow on white bar) -->
+        <LinearLayout
             android:id="@+id/back_button"
-            android:layout_marginStart="30dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
             android:clickable="true"
-            android:layout_width="25dp"
-            android:layout_height="25dp"
-            android:src="@drawable/arrow_back"
-
-
-            />
+            android:focusable="true"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_back_arrow"
+                android:contentDescription="@string/back" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="@string/back"
+                android:textColor="#000000"
+                android:textSize="16sp" />
+        </LinearLayout>
 
         <!--
            search Bar
