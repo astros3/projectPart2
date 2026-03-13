@@ -32,6 +32,10 @@
             android:id="@+id/OrganizerNavigationFragment_to_Selected_list"
             app:destination="@id/Selected_list" />
 
+        <action
+            android:id="@+id/OrganizerNavigationFragment_to_Final_list"
+            app:destination="@id/Final_list" />
+
     </fragment>
 
     <fragment
@@ -67,6 +71,17 @@
 
         <action
             android:id="@+id/Selected_list_to_OrganizerNavigationFragment"
+            app:destination="@id/OrganizerNavigationFragment" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/Final_list"
+        android:name="com.example.eventlottery.FinalList"
+        android:label="Final List">
+
+        <action
+            android:id="@+id/Final_list_to_OrganizerNavigationFragment"
             app:destination="@id/OrganizerNavigationFragment" />
 
     </fragment>

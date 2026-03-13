@@ -24,6 +24,7 @@ import com.google.firebase.firestore.WriteBatch;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class LotteryDraw extends Fragment {
 
@@ -137,12 +138,49 @@ public class LotteryDraw extends Fragment {
     }
 
     private void showSelectedEntrants(List<WaitingListEntry> selectedEntries, TextView textViewResult) {
-        StringBuilder result = new StringBuilder("Selected Entrants:\n\n");
-
-        for (WaitingListEntry entry : selectedEntries) {
-            result.append(entry.getDeviceId()).append("\n");
+        textViewResult.setText("Selected Entrants:\n\nLoading...");
+        if (selectedEntries.isEmpty()) {
+            textViewResult.setText("Selected Entrants:\n\nNone");
+            return;
         }
+        final String[] names = new String[selectedEntries.size()];
+        AtomicInteger pending = new AtomicInteger(selectedEntries.size());
+        for (int i = 0; i < selectedEntries.size(); i++) {
+            final int index = i;
+            String deviceId = selectedEntries.get(i).getDeviceId();
+            if (deviceId == null || deviceId.isEmpty()) {
+                names[index] = "Unknown Entrant";
+                if (pending.decrementAndGet() == 0) {
+                    buildResultAndSet(names, textViewResult);
+                }
+                continue;
+            }
+            db.collection("users").document(deviceId).get()
+                    .addOnSuccessListener(doc -> {
+                        if (doc != null && doc.exists()) {
+                            Entrant entrant = doc.toObject(Entrant.class);
+                            names[index] = entrant != null ? entrant.getFullName() : "Unknown Entrant";
+                        } else {
+                            names[index] = "Unknown Entrant";
+                        }
+                        if (pending.decrementAndGet() == 0) {
+                            buildResultAndSet(names, textViewResult);
+                        }
+                    })
+                    .addOnFailureListener(e -> {
+                        names[index] = "Unknown Entrant";
+                        if (pending.decrementAndGet() == 0) {
+                            buildResultAndSet(names, textViewResult);
+                        }
+                    });
+        }
+    }
 
+    private void buildResultAndSet(String[] names, TextView textViewResult) {
+        StringBuilder result = new StringBuilder("Selected Entrants:\n\n");
+        for (String name : names) {
+            result.append(name != null ? name : "Unknown Entrant").append("\n");
+        }
         textViewResult.setText(result.toString());
     }
 }

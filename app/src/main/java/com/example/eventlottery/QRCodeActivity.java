@@ -77,11 +77,7 @@ public class QRCodeActivity extends AppCompatActivity {
     private void setupToolbar() {
         Toolbar toolbar = findViewById(R.id.toolbar_qr_code);
         setSupportActionBar(toolbar);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setDisplayShowHomeEnabled(true);
-        }
-        toolbar.setNavigationOnClickListener(v -> finish());
+        findViewById(R.id.back_button).setOnClickListener(v -> finish());
     }
 
     private void generateAndDisplayQrCode() {

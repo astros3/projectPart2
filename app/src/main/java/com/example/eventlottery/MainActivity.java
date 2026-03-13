@@ -39,9 +39,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        String deviceId = DeviceIdManager.getDeviceId(this);
-        Log.d("DEVICE_ID", deviceId);
-
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
 

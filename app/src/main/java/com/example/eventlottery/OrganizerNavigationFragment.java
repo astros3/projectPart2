@@ -24,6 +24,11 @@ public class OrganizerNavigationFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        view.findViewById(R.id.btn_back).setOnClickListener(v -> {
+            androidx.navigation.NavController nav = NavHostFragment.findNavController(OrganizerNavigationFragment.this);
+            nav.popBackStack(R.id.OrganizerDashboardFragment, false);
+        });
+
         // Update Event Information (US 02.01.01, 02.01.04)
         view.findViewById(R.id.buttonUpdate).setOnClickListener(v -> {
             String eventId = EventEditActivity.getCurrentEventId(requireContext());
@@ -51,6 +56,10 @@ public class OrganizerNavigationFragment extends Fragment {
         view.findViewById(R.id.buttonSelected).setOnClickListener(v ->
                 NavHostFragment.findNavController(OrganizerNavigationFragment.this)
                         .navigate(R.id.OrganizerNavigationFragment_to_Selected_list)
+        );
+        view.findViewById(R.id.buttonFinal).setOnClickListener(v ->
+                NavHostFragment.findNavController(OrganizerNavigationFragment.this)
+                        .navigate(R.id.OrganizerNavigationFragment_to_Final_list)
         );
     }
 }

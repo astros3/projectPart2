@@ -18,6 +18,9 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class SelectedList extends Fragment {
 
@@ -83,13 +86,57 @@ public class SelectedList extends Fragment {
                         WaitingListEntry entry = doc.toObject(WaitingListEntry.class);
                         if (entry != null &&
                                 WaitingListEntry.Status.SELECTED.name().equals(entry.getStatus())) {
+                            if (entry.getDeviceId() == null || entry.getDeviceId().isEmpty()) {
+                                entry.setDeviceId(doc.getId());
+                            }
                             selectedEntries.add(entry);
                         }
                     }
 
-                    adapter.notifyDataSetChanged();
+                    resolveEntrantNamesAndNotify();
                 })
                 .addOnFailureListener(e ->
                         Toast.makeText(getContext(), "Failed to load selected entrants", Toast.LENGTH_SHORT).show());
+    }
+
+    /** Fetches entrant display names from users/{deviceId} and updates the adapter. Never exposes device ID in UI. */
+    private void resolveEntrantNamesAndNotify() {
+        Map<String, String> deviceIdToName = new HashMap<>();
+        if (selectedEntries.isEmpty()) {
+            adapter.setDeviceIdToName(deviceIdToName);
+            adapter.notifyDataSetChanged();
+            return;
+        }
+        AtomicInteger pending = new AtomicInteger(selectedEntries.size());
+        for (WaitingListEntry entry : selectedEntries) {
+            String deviceId = entry.getDeviceId();
+            if (deviceId == null || deviceId.isEmpty()) {
+                if (pending.decrementAndGet() == 0) {
+                    adapter.setDeviceIdToName(deviceIdToName);
+                    adapter.notifyDataSetChanged();
+                }
+                continue;
+            }
+            db.collection("users").document(deviceId).get()
+                    .addOnSuccessListener(doc -> {
+                        if (doc != null && doc.exists()) {
+                            Entrant entrant = doc.toObject(Entrant.class);
+                            deviceIdToName.put(deviceId, entrant != null ? entrant.getFullName() : "Unknown Entrant");
+                        } else {
+                            deviceIdToName.put(deviceId, "Unknown Entrant");
+                        }
+                        if (pending.decrementAndGet() == 0) {
+                            adapter.setDeviceIdToName(deviceIdToName);
+                            adapter.notifyDataSetChanged();
+                        }
+                    })
+                    .addOnFailureListener(e -> {
+                        deviceIdToName.put(deviceId, "Unknown Entrant");
+                        if (pending.decrementAndGet() == 0) {
+                            adapter.setDeviceIdToName(deviceIdToName);
+                            adapter.notifyDataSetChanged();
+                        }
+                    });
+        }
     }
 }

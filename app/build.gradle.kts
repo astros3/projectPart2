@@ -38,6 +38,7 @@ android {
 }
 
 dependencies {
+    implementation(files("/Users/mannpatel/Library/Android/sdk/platforms/android-36.1/android.jar"));
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)
@@ -49,10 +50,13 @@ dependencies {
 
     implementation("com.google.android.gms:play-services-location:21.0.1")
     implementation("com.google.android.gms:play-services-maps:20.0.0")
+    implementation("com.google.android.libraries.places:places:3.3.0")
 
     implementation(platform("com.google.firebase:firebase-bom:34.10.0"))
     implementation(libs.firebase.firestore)
+    implementation("com.google.firebase:firebase-storage")
 
+    implementation("com.github.bumptech.glide:glide:4.16.0")
     implementation("com.journeyapps:zxing-android-embedded:4.3.0")
     implementation("com.google.zxing:core:3.5.4")
 

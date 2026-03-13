@@ -1,14 +1,18 @@
 package com.example.eventlottery;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -16,9 +20,20 @@ import androidx.appcompat.widget.Toolbar;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.materialswitch.MaterialSwitch;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.widget.Autocomplete;
+import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.android.gms.tasks.Tasks;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.bumptech.glide.Glide;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Calendar;
 import java.util.Locale;
 
@@ -41,9 +56,13 @@ public class EventEditActivity extends AppCompatActivity {
     private String organizerName;
 
     private TextInputEditText inputName, inputDescription, inputLocation, inputRegStart, inputRegEnd, inputLimit;
+    private TextInputLayout inputLayoutLocation;
     private Spinner spinnerEventType;
     private MaterialSwitch switchGeolocation;
     private MaterialButton btnConfirm;
+
+    /** True when location was set via Google Places Autocomplete (required to save). */
+    private boolean locationSelectedFromPlaces;
 
     //next 3 lines store references to the poster UI and the selected image
     private android.widget.FrameLayout eventImageContainer;
@@ -67,6 +86,7 @@ public class EventEditActivity extends AppCompatActivity {
         setupToolbar();
         setupEventTypeSpinner();
         setupDatePickers();
+        setupLocationAutocomplete();
         setupConfirmButton();
 
         if (eventId != null && !eventId.isEmpty()) {
@@ -90,16 +110,74 @@ public class EventEditActivity extends AppCompatActivity {
 
         eventImageContainer = findViewById(R.id.event_image_container);
         posterImageView = findViewById(R.id.event_poster_placeholder);
+        inputLayoutLocation = findViewById(R.id.input_layout_event_location);
+    }
+
+    /**
+     * Initializes Places (if API key is present) and makes the location field open
+     * Google Places Autocomplete. Only locations selected from the search are accepted.
+     */
+    private void setupLocationAutocomplete() {
+        String apiKey = getPlacesApiKey();
+        if (apiKey == null || apiKey.isEmpty()) {
+            inputLayoutLocation.setHelperText(getString(R.string.event_location_helper) + " (Places API key not set.)");
+            inputLocation.setClickable(true);
+            inputLocation.setOnClickListener(v ->
+                    Toast.makeText(this, "Places API key required. Set com.google.android.geo.API_KEY in AndroidManifest.", Toast.LENGTH_LONG).show());
+            return;
+        }
+        if (!Places.isInitialized()) {
+            Places.initialize(getApplicationContext(), apiKey);
+        }
+
+        List<Place.Field> fields = Arrays.asList(Place.Field.ADDRESS, Place.Field.NAME, Place.Field.LAT_LNG);
+        // OVERLAY keeps the search in the same activity so it doesn't close after first keystroke
+        Intent autocompleteIntent = new Autocomplete.IntentBuilder(AutocompleteActivityMode.OVERLAY, fields)
+                .build(this);
+
+        ActivityResultLauncher<Intent> placeAutocompleteLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null) {
+                        return;
+                    }
+                    Place place = Autocomplete.getPlaceFromIntent(result.getData());
+                    String address = place.getAddress();
+                    if (address == null || address.trim().isEmpty()) {
+                        address = place.getName();
+                    }
+                    if (address != null && !address.trim().isEmpty()) {
+                        inputLocation.setText(address.trim());
+                        locationSelectedFromPlaces = true;
+                        if (inputLayoutLocation != null) {
+                            inputLayoutLocation.setError(null);
+                        }
+                    }
+                });
+
+        inputLocation.setClickable(true);
+        inputLocation.setOnClickListener(v -> placeAutocompleteLauncher.launch(autocompleteIntent));
+    }
+
+    private String getPlacesApiKey() {
+        try {
+            android.content.pm.ApplicationInfo ai = getPackageManager().getApplicationInfo(getPackageName(), PackageManager.GET_META_DATA);
+            if (ai != null && ai.metaData != null) {
+                return ai.metaData.getString("com.google.android.geo.API_KEY");
+            }
+        } catch (PackageManager.NameNotFoundException ignored) {
+        }
+        return null;
     }
 
     private void setupToolbar() {
         Toolbar toolbar = findViewById(R.id.toolbar_event_edit);
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setDisplayShowHomeEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(false);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         }
-        toolbar.setNavigationOnClickListener(v -> finish());
+        findViewById(R.id.back_button).setOnClickListener(v -> finish());
     }
 
     private void setupEventTypeSpinner() {
@@ -236,11 +314,18 @@ public class EventEditActivity extends AppCompatActivity {
         inputName.setText(event.getTitle());
         inputDescription.setText(event.getDescription());
         inputLocation.setText(event.getLocation());
+        // Existing event with location is treated as valid (e.g. created before Places requirement)
+        locationSelectedFromPlaces = (event.getLocation() != null && !event.getLocation().trim().isEmpty());
 
-        //making sure organizer sees the existing poster view when editing
+        // Show existing poster (from Storage URL or legacy content URI) when editing
         if (event.getPosterUri() != null && !event.getPosterUri().isEmpty()) {
-            selectedPosterUri = android.net.Uri.parse(event.getPosterUri());
-            posterImageView.setImageURI(selectedPosterUri);
+            String uri = event.getPosterUri();
+            if (uri.startsWith("content://")) {
+                selectedPosterUri = android.net.Uri.parse(uri);
+                posterImageView.setImageURI(selectedPosterUri);
+            } else {
+                Glide.with(this).load(uri).centerCrop().into(posterImageView);
+            }
         }
 
         inputLimit.setText(event.getWaitingListLimit() > 0 ? String.valueOf(event.getWaitingListLimit()) : "");
@@ -281,8 +366,19 @@ public class EventEditActivity extends AppCompatActivity {
             return;
         }
 
-        String description = inputDescription.getText() != null ? inputDescription.getText().toString().trim() : "";
         String location = inputLocation.getText() != null ? inputLocation.getText().toString().trim() : "";
+        if (location.isEmpty() || !locationSelectedFromPlaces) {
+            if (inputLayoutLocation != null) {
+                inputLayoutLocation.setError(getString(R.string.event_location_required));
+            }
+            Toast.makeText(this, R.string.event_location_required, Toast.LENGTH_LONG).show();
+            return;
+        }
+        if (inputLayoutLocation != null) {
+            inputLayoutLocation.setError(null);
+        }
+
+        String description = inputDescription.getText() != null ? inputDescription.getText().toString().trim() : "";
 
         int limit = 0;
         String limitStr = inputLimit.getText() != null ? inputLimit.getText().toString().trim() : "";
@@ -303,12 +399,6 @@ public class EventEditActivity extends AppCompatActivity {
         event.setTitle(title);
         event.setDescription(description);
         event.setLocation(location);
-
-        //attaching the poster to the event object
-        if (selectedPosterUri != null) {
-            event.setPosterUri(selectedPosterUri.toString());
-        }
-
         event.setOrganizerId(deviceId);
         event.setOrganizerName(organizerName != null ? organizerName : "Organizer");
         event.setWaitingListLimit(limit);
@@ -321,7 +411,39 @@ public class EventEditActivity extends AppCompatActivity {
             eventId = db.collection("events").document().getId();
             event.setEventId(eventId);
             event.setPromoCode(QRCodeService.generatePromoCode());
+        }
 
+        if (selectedPosterUri != null) {
+            // Upload poster to Firebase Storage and use download URL in event
+            uploadPosterAndThenSave(event, isCreate);
+        } else {
+            // No new poster: create saves without poster; update keeps existing poster
+            persistEvent(event, isCreate);
+        }
+    }
+
+    /** Uploads selected image to Storage at events/{eventId}/poster, then persists event with download URL. */
+    private void uploadPosterAndThenSave(Event event, boolean isCreate) {
+        StorageReference posterRef = FirebaseStorage.getInstance().getReference()
+                .child("events").child(eventId).child("poster.jpg");
+        posterRef.putFile(selectedPosterUri)
+                .continueWithTask(task -> {
+                    if (!task.isSuccessful()) {
+                        return Tasks.forException(task.getException() != null ? task.getException() : new Exception("Upload failed"));
+                    }
+                    return posterRef.getDownloadUrl();
+                })
+                .addOnSuccessListener(downloadUri -> {
+                    event.setPosterUri(downloadUri.toString());
+                    persistEvent(event, isCreate);
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Failed to upload poster: " + (e.getMessage() != null ? e.getMessage() : "unknown"), Toast.LENGTH_LONG).show();
+                });
+    }
+
+    private void persistEvent(Event event, boolean isCreate) {
+        if (isCreate) {
             db.collection("events").document(eventId).set(event)
                     .addOnSuccessListener(aVoid -> {
                         saveCurrentEventId(eventId);
@@ -352,6 +474,9 @@ public class EventEditActivity extends AppCompatActivity {
                         existing.setRegistrationEndMillis(event.getRegistrationEndMillis());
                         existing.setEventDateMillis(event.getEventDateMillis());
                         existing.setGeolocationRequired(event.isGeolocationRequired());
+                        if (event.getPosterUri() != null) {
+                            existing.setPosterUri(event.getPosterUri());
+                        }
 
                         db.collection("events").document(eventId).set(existing)
                                 .addOnSuccessListener(aVoid -> {

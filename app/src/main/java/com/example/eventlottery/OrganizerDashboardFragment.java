@@ -71,6 +71,11 @@ public class OrganizerDashboardFragment extends Fragment {
         view.findViewById(R.id.btn_create_event).setOnClickListener(v -> onCreateEventClick());
         view.findViewById(R.id.btn_profile).setOnClickListener(v -> onProfileClick());
 
+        view.findViewById(R.id.back_button).setOnClickListener(v -> {
+            startActivity(new Intent(requireContext(), WelcomePageActivity.class));
+            requireActivity().finish();
+        });
+
         loadMyEvents();
     }
 
