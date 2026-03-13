@@ -59,8 +59,12 @@ public class GeolocationFragment extends Fragment implements OnMapReadyCallback 
         view.findViewById(R.id.buttonBackGeo).setOnClickListener(v ->
                 NavHostFragment.findNavController(GeolocationFragment.this).navigateUp());
 
+        // Add map in code so we always have a valid reference (findFragmentById from XML was null)
+        getChildFragmentManager().beginTransaction()
+                .replace(R.id.map_container, new SupportMapFragment(), "map_fragment")
+                .commitNow();
         SupportMapFragment mapFragment =
-                (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+                (SupportMapFragment) getChildFragmentManager().findFragmentByTag("map_fragment");
         if (mapFragment != null) {
             mapFragment.getMapAsync(this);
         }
