@@ -5,13 +5,13 @@ import android.util.Log;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.eventlottery.Organizer;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -24,7 +24,8 @@ import java.util.ArrayList;
 import java.util.Date;
 
 /**
- * Admin view: list all events from Firestore, search by title (in-memory). No auth. Filter button not implemented.
+ * Admin view: list all events from Firestore, search by title (in-memory).
+ * Access restricted to devices that have an entry in Firestore "admins" collection (document ID = deviceId).
  */
 public class AdminEventControlScreenActivity extends AppCompatActivity {
     private ArrayList<Event> admineventlist;
@@ -44,6 +45,26 @@ public class AdminEventControlScreenActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Restrict access: only devices with an entry in Firestore "admins" collection may open this screen
+        String deviceId = DeviceIdManager.getDeviceId(this);
+        FirebaseFirestore dbCheck = FirebaseFirestore.getInstance();
+        dbCheck.collection("admins").document(deviceId).get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (!documentSnapshot.exists()) {
+                        Toast.makeText(this, "Access denied. You must be an admin to access this.", Toast.LENGTH_LONG).show();
+                        finish();
+                        return;
+                    }
+                    initAdminUi();
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Failed to verify admin: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                    finish();
+                });
+    }
+
+    private void initAdminUi() {
         setContentView(R.layout.admin_event_control_screen);
         backbutton = findViewById(R.id.back_button);
 
@@ -147,7 +168,6 @@ public class AdminEventControlScreenActivity extends AppCompatActivity {
             }
             admineventadapter.notifyDataSetChanged();
         });
-
 
     }
 }
