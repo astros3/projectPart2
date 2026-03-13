@@ -5,6 +5,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -41,6 +42,9 @@ public class EventDetailsActivity extends AppCompatActivity {
 
     private TextView titleView, organizerView, dateView, statusView, descriptionView, criteriaView, waitingListCountView;
     private MaterialButton joinLeaveButton;
+    private LinearLayout invitationButtonsContainer;
+    private MaterialButton acceptInvitationButton;
+    private MaterialButton declineInvitationButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,6 +103,11 @@ public class EventDetailsActivity extends AppCompatActivity {
         waitingListCountView = findViewById(R.id.event_waiting_list_count);
         joinLeaveButton = findViewById(R.id.btn_join_leave);
         joinLeaveButton.setOnClickListener(v -> onJoinLeaveClicked());
+        invitationButtonsContainer = findViewById(R.id.invitation_buttons_container);
+        acceptInvitationButton = findViewById(R.id.btn_accept_invitation);
+        declineInvitationButton = findViewById(R.id.btn_decline_invitation);
+        acceptInvitationButton.setOnClickListener(v -> updateInvitationStatus(WaitingListEntry.Status.ACCEPTED));
+        declineInvitationButton.setOnClickListener(v -> updateInvitationStatus(WaitingListEntry.Status.DECLINED));
     }
 
     private void loadEventAndWaitingStatus() {
@@ -186,12 +195,16 @@ public class EventDetailsActivity extends AppCompatActivity {
     private void updateStatusAndButton() {
         if (!onWaitingList) {
             statusView.setText(R.string.status_not_joined);
+            joinLeaveButton.setVisibility(View.VISIBLE);
+            if (invitationButtonsContainer != null) invitationButtonsContainer.setVisibility(View.GONE);
             joinLeaveButton.setText(R.string.request_to_join);
             return;
         }
 
         if (waitingListStatus == null || waitingListStatus.isEmpty()) {
             statusView.setText(R.string.status_pending);
+            joinLeaveButton.setVisibility(View.VISIBLE);
+            if (invitationButtonsContainer != null) invitationButtonsContainer.setVisibility(View.GONE);
             joinLeaveButton.setText(R.string.leave_waiting_list);
             return;
         }
@@ -199,39 +212,99 @@ public class EventDetailsActivity extends AppCompatActivity {
         switch (waitingListStatus) {
             case "PENDING":
                 statusView.setText(R.string.status_pending);
+                joinLeaveButton.setVisibility(View.VISIBLE);
+                invitationButtonsContainer.setVisibility(View.GONE);
                 joinLeaveButton.setText(R.string.leave_waiting_list);
                 break;
 
             case "SELECTED":
                 statusView.setText("Selected");
-                joinLeaveButton.setText(R.string.leave_waiting_list);
+                joinLeaveButton.setVisibility(View.GONE);
+                invitationButtonsContainer.setVisibility(View.VISIBLE);
                 break;
 
             case "ACCEPTED":
                 statusView.setText("Accepted");
+                joinLeaveButton.setVisibility(View.VISIBLE);
+                invitationButtonsContainer.setVisibility(View.GONE);
                 joinLeaveButton.setText(R.string.leave_waiting_list);
                 break;
 
             case "DECLINED":
                 statusView.setText("Declined");
+                joinLeaveButton.setVisibility(View.VISIBLE);
+                invitationButtonsContainer.setVisibility(View.GONE);
                 joinLeaveButton.setText(R.string.request_to_join);
                 break;
 
             case "CANCELLED":
                 statusView.setText("Cancelled");
+                joinLeaveButton.setVisibility(View.VISIBLE);
+                invitationButtonsContainer.setVisibility(View.GONE);
                 joinLeaveButton.setText(R.string.request_to_join);
                 break;
 
             case "WAITING":
                 statusView.setText("Waiting");
+                joinLeaveButton.setVisibility(View.VISIBLE);
+                invitationButtonsContainer.setVisibility(View.GONE);
                 joinLeaveButton.setText(R.string.leave_waiting_list);
                 break;
 
             default:
                 statusView.setText(waitingListStatus);
+                joinLeaveButton.setVisibility(View.VISIBLE);
+                invitationButtonsContainer.setVisibility(View.GONE);
                 joinLeaveButton.setText(R.string.leave_waiting_list);
                 break;
         }
+    }
+
+    /** Updates invitation status to ACCEPTED or DECLINED when current status is SELECTED. */
+    private void updateInvitationStatus(WaitingListEntry.Status newStatus) {
+        if (eventId == null || eventId.trim().isEmpty()) {
+            Toast.makeText(this, "No event selected", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        db.collection("events")
+                .document(eventId)
+                .collection("waitingList")
+                .document(deviceId)
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (!documentSnapshot.exists()) {
+                        Toast.makeText(this, "Invitation record not found", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    WaitingListEntry entry = documentSnapshot.toObject(WaitingListEntry.class);
+                    if (entry == null) {
+                        Toast.makeText(this, "Could not read invitation", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    String currentStatus = entry.getStatus();
+                    if (!WaitingListEntry.Status.SELECTED.name().equals(currentStatus)) {
+                        Toast.makeText(this, "This invitation is no longer active", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    db.collection("events")
+                            .document(eventId)
+                            .collection("waitingList")
+                            .document(deviceId)
+                            .update("status", newStatus.name())
+                            .addOnSuccessListener(unused -> {
+                                String message = (newStatus == WaitingListEntry.Status.ACCEPTED)
+                                        ? "Registration confirmed!"
+                                        : "Invitation declined.";
+                                Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+                                waitingListStatus = newStatus.name();
+                                updateStatusAndButton();
+                                refreshWaitingListCount();
+                            })
+                            .addOnFailureListener(e ->
+                                    Toast.makeText(this, "Failed to update invitation", Toast.LENGTH_SHORT).show());
+                })
+                .addOnFailureListener(e ->
+                        Toast.makeText(this, "Failed to load invitation", Toast.LENGTH_SHORT).show());
     }
 
     private void onJoinLeaveClicked() {

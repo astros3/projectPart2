@@ -88,7 +88,7 @@
                 android:textSize="16sp"
                 android:layout_marginTop="8dp"/>
 
-            <!-- Request to Join / Leave the Waiting List -->
+            <!-- Request to Join / Leave the Waiting List (hidden when SELECTED; then show Accept/Decline) -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_join_leave"
                 android:layout_width="match_parent"
@@ -98,6 +98,33 @@
                 android:text="@string/request_to_join"
                 android:textColor="@android:color/white"
                 app:cornerRadius="8dp" />
+
+            <!-- Accept / Decline invitation (visible only when status is SELECTED) -->
+            <LinearLayout
+                android:id="@+id/invitation_buttons_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:orientation="vertical"
+                android:visibility="gone">
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_accept_invitation"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:backgroundTint="#4CAF50"
+                    android:text="@string/accept_invitation"
+                    android:textColor="@android:color/white"
+                    app:cornerRadius="8dp" />
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_decline_invitation"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:layout_marginTop="8dp"
+                    android:backgroundTint="#E53935"
+                    android:text="@string/decline_invitation"
+                    android:textColor="@android:color/white"
+                    app:cornerRadius="8dp" />
+            </LinearLayout>
 
             <TextView
                 android:layout_width="match_parent"

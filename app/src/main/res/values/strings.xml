@@ -16,6 +16,8 @@
     <string name="event_poster">Event poster</string>
     <string name="request_to_join">Request to Join</string>
     <string name="leave_waiting_list">Leave the Waiting List</string>
+    <string name="accept_invitation">Accept Invitation</string>
+    <string name="decline_invitation">Decline Invitation</string>
     <string name="status_not_joined">STATUS: NOT JOINED</string>
     <string name="status_pending">STATUS: PENDING</string>
     <string name="about_event">ABOUT EVENT</string>
