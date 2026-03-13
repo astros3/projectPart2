@@ -18,31 +18,15 @@
             android:layout_height="match_parent"
             android:gravity="center_vertical"
             android:orientation="horizontal">
-            <LinearLayout
+            <ImageButton
                 android:id="@+id/back_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:clickable="true"
-                android:focusable="true"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingEnd="8dp">
-                <ImageButton
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:background="@null"
-                    android:contentDescription="@string/back"
-                    android:padding="12dp"
-                    android:scaleType="centerInside"
-                    android:src="@drawable/ic_backarrow_white" />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/back"
-                    android:textColor="@android:color/white"
-                    android:textSize="16sp" />
-            </LinearLayout>
+                android:contentDescription="@string/back"
+                android:padding="12dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_backarrow_white" />
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
