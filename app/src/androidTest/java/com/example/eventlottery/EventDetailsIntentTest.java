@@ -23,11 +23,16 @@ import org.junit.runner.RunWith;
  * US 1.06.01 - View event details by scanning QR; US 1.06.02 - Sign up from event details;
  * US 1.05.04 - Know how many total entrants are on the waiting list;
  * US 1.05.02/1.05.03 - Accept/Decline invitation when selected.
- * Note: Launching with a dummy event ID may show "Event not found" and finish; tests verify layout and key UI elements.
+ *
+ * Uses a real event ID from Firestore so the activity loads and stays open for assertions.
+ * Set TEST_EVENT_ID to an existing event document ID in your Firestore "events" collection.
  */
 @RunWith(AndroidJUnit4.class)
 @LargeTest
 public class EventDetailsIntentTest {
+
+    /** Replace with a real event document ID from your Firestore "events" collection. */
+    private static final String TEST_EVENT_ID = "REPLACE_WITH_YOUR_EVENT_ID";
 
     private static Intent eventDetailsIntent(String eventId) {
         Intent i = new Intent(ApplicationProvider.getApplicationContext(), EventDetailsActivity.class);
@@ -39,7 +44,7 @@ public class EventDetailsIntentTest {
 
     @Rule
     public androidx.test.ext.junit.rules.ActivityScenarioRule<EventDetailsActivity> rule =
-            new ActivityScenarioRule<>(eventDetailsIntent("test-event-intent-dummy"));
+            new ActivityScenarioRule<>(eventDetailsIntent(TEST_EVENT_ID));
 
     @Test
     public void testEventDetailsScreenHasTitleAndJoinLeaveAndWaitingCount() {
