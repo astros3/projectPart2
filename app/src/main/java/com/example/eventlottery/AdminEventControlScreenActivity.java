@@ -139,14 +139,17 @@ public class AdminEventControlScreenActivity extends AppCompatActivity {
             finish();
         });
 
-        //when filtering button is clicked it will navigate to filtering screen
-        admineventfilterbutton.setOnClickListener(v -> {
-            //Intent intent = new Intent(EntrantMainScreenActivity.this, //destination.class);
-            //startActivity(intent);
-        });
+        //when filtering button is clicked it will navigate to filtering screen (optional; view may be absent in layout)
+        if (admineventfilterbutton != null) {
+            admineventfilterbutton.setOnClickListener(v -> {
+                //Intent intent = new Intent(EntrantMainScreenActivity.this, //destination.class);
+                //startActivity(intent);
+            });
+        }
 
         //when search button is clicked search event by title
-        searchbutton.setOnClickListener(v -> {
+        if (searchbutton != null) {
+            searchbutton.setOnClickListener(v -> {
             String userinput = admineventsearchinputbar.getText().toString();
             admineventlist.clear();
             String userinputlowercase = userinput.toLowerCase().trim();
@@ -167,7 +170,8 @@ public class AdminEventControlScreenActivity extends AppCompatActivity {
                 }
             }
             admineventadapter.notifyDataSetChanged();
-        });
+            });
+        }
 
     }
 }
