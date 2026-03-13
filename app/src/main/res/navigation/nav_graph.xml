@@ -76,6 +76,11 @@
         android:name="com.example.eventlottery.GeolocationFragment"
         android:label="Entrant Location">
 
+        <argument
+            android:name="deviceId"
+            app:argType="string"
+            app:nullable="true" />
+
         <action
             android:id="@+id/GeolocationFragment_to_Waiting_list"
             app:destination="@id/Waiting_list" />

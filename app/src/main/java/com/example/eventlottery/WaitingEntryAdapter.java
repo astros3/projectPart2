@@ -16,7 +16,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
 import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,14 +25,17 @@ public class WaitingEntryAdapter extends ArrayAdapter<WaitingListEntry> {
 
     private final FragmentActivity activity;
     private final ArrayList<WaitingListEntry> entries;
+    private final NavController navController;
     /** Map from entrant deviceId to display name (from users collection). */
     private Map<String, String> deviceIdToName = new HashMap<>();
 
     public WaitingEntryAdapter(@NonNull FragmentActivity activity,
-                               @NonNull ArrayList<WaitingListEntry> entries) {
+                               @NonNull ArrayList<WaitingListEntry> entries,
+                               @NonNull NavController navController) {
         super(activity, 0, entries);
         this.activity = activity;
         this.entries = entries;
+        this.navController = navController;
     }
 
     /** Sets the display names for entrants (deviceId -> name). Call after loading from users collection. */
@@ -62,11 +64,9 @@ public class WaitingEntryAdapter extends ArrayAdapter<WaitingListEntry> {
         textEntrantName.setText(displayName != null && !displayName.isEmpty() ? displayName : "Unknown Entrant");
 
         buttonLocation.setOnClickListener(v -> {
+            if (deviceId == null || deviceId.isEmpty()) return;
             Bundle bundle = new Bundle();
             bundle.putString("deviceId", deviceId);
-
-            NavController navController =
-                    Navigation.findNavController(activity, R.id.nav_host_fragment);
             navController.navigate(R.id.Waiting_list_to_GeolocationFragment, bundle);
         });
 

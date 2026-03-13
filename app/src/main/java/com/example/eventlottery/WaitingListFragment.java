@@ -11,6 +11,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -40,7 +41,8 @@ public class WaitingListFragment extends Fragment {
         eventId = EventEditActivity.getCurrentEventId(requireContext());
 
         ListView listView = view.findViewById(R.id.listWaitingEntrants);
-        adapter = new WaitingEntryAdapter(requireActivity(), waitingEntries);
+        NavController navController = NavHostFragment.findNavController(WaitingListFragment.this);
+        adapter = new WaitingEntryAdapter(requireActivity(), waitingEntries, navController);
         listView.setAdapter(adapter);
 
         view.findViewById(R.id.buttonBack).setOnClickListener(v ->
