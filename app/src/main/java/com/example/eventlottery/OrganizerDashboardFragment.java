@@ -72,7 +72,10 @@ public class OrganizerDashboardFragment extends Fragment {
         view.findViewById(R.id.btn_profile).setOnClickListener(v -> onProfileClick());
 
         androidx.appcompat.widget.Toolbar toolbar = view.findViewById(R.id.toolbar_dashboard);
-        toolbar.setNavigationOnClickListener(v -> requireActivity().finish());
+        toolbar.setNavigationOnClickListener(v -> {
+            startActivity(new Intent(requireContext(), WelcomePageActivity.class));
+            requireActivity().finish();
+        });
 
         loadMyEvents();
     }
