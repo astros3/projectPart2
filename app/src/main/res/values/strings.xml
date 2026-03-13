@@ -34,7 +34,10 @@
     <string name="event_image">Event Image</string>
     <string name="event_type">Event Type</string>
     <string name="event_location">Event Location</string>
-    <string name="event_location_hint">Enter event location</string>
+    <string name="event_location_hint">Tap to search and select a location</string>
+    <string name="event_location_helper">Select a location from the map search so it can be verified.</string>
+    <string name="event_location_incomplete">Select a valid location from the map search</string>
+    <string name="event_location_required">Location is required. Tap the field to search and select a location.</string>
     <string name="registration_start_date">Event Registration Start Date</string>
     <string name="registration_end_date">Event Registration End Date</string>
     <string name="date_hint">Select date</string>

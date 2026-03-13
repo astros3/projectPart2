@@ -144,7 +144,7 @@
                 android:layout_marginTop="4dp"
                 android:background="@android:drawable/edit_text" />
 
-            <!-- Event Location -->
+            <!-- Event Location (tap to search with Google Places) -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -154,17 +154,23 @@
                 android:textStyle="bold"
                 android:textColor="#6C757D" />
             <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/input_layout_event_location"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                app:boxStrokeColor="@color/black">
+                app:boxStrokeColor="@color/black"
+                app:helperText="@string/event_location_helper"
+                app:helperTextEnabled="true">
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/input_event_location"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/event_location_hint"
-                    android:inputType="textPostalAddress" />
+                    android:inputType="none"
+                    android:focusable="false"
+                    android:clickable="true"
+                    android:cursorVisible="false" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <!-- Registration Start Date -->
