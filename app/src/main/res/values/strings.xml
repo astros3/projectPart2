@@ -31,7 +31,9 @@
     <string name="event_name_hint">Enter event name</string>
     <string name="event_description">Event Description</string>
     <string name="event_description_hint">Enter event description</string>
-    <string name="event_image">Event Image</string>
+    <string name="event_image">Event poster</string>
+    <string name="event_poster_tap_hint">Tap to add or change poster (shown to entrants)</string>
+    <string name="remove_poster">Remove poster</string>
     <string name="event_type">Event Type</string>
     <string name="event_location">Event Location</string>
     <string name="event_location_hint">Tap to search and select a location</string>

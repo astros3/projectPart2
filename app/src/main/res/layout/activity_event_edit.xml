@@ -96,7 +96,7 @@
                     android:inputType="textMultiLine" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Event Image (placeholder for future upload) -->
+            <!-- Event poster: tap to add/update image shown to entrants -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -105,11 +105,19 @@
                 android:textSize="12sp"
                 android:textStyle="bold"
                 android:textColor="#6C757D" />
+            <TextView
+                android:id="@+id/event_poster_hint"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="@string/event_poster_tap_hint"
+                android:textSize="11sp"
+                android:textColor="#9E9E9E" />
             <FrameLayout
                 android:id="@+id/event_image_container"
                 android:layout_width="match_parent"
-                android:layout_height="120dp"
-                android:layout_marginTop="4dp"
+                android:layout_height="160dp"
+                android:layout_marginTop="8dp"
                 android:background="#E0E0E0"
                 android:padding="16dp">
                 <ImageView
@@ -126,6 +134,17 @@
                     android:text="+"
                     android:textSize="32sp"
                     android:textColor="#9E9E9E" />
+                <ImageButton
+                    android:id="@+id/btn_remove_poster"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_gravity="top|end"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/remove_poster"
+                    android:padding="4dp"
+                    android:visibility="gone"
+                    android:src="@drawable/delete"
+                    app:tint="@android:color/white" />
             </FrameLayout>
 
             <!-- Event Type -->

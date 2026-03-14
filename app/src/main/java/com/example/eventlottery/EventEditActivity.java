@@ -64,10 +64,16 @@ public class EventEditActivity extends AppCompatActivity {
     /** True when location was set via Google Places Autocomplete (required to save). */
     private boolean locationSelectedFromPlaces;
 
-    //next 3 lines store references to the poster UI and the selected image
+    /** Poster UI: container (tap to pick), image view, placeholder text, remove button. */
     private android.widget.FrameLayout eventImageContainer;
     private android.widget.ImageView posterImageView;
+    private android.widget.TextView posterPlaceholderText;
+    private android.widget.ImageButton btnRemovePoster;
     private android.net.Uri selectedPosterUri;
+    /** When editing, the poster URL already stored (so we can keep it if user doesn't change). */
+    private String existingPosterUri;
+    /** User tapped "Remove poster"; on save we clear poster in Firestore. */
+    private boolean posterRemovedByUser;
 
     private long registrationStartMillis = 0;
     private long registrationEndMillis = 0;
@@ -87,6 +93,7 @@ public class EventEditActivity extends AppCompatActivity {
         setupEventTypeSpinner();
         setupDatePickers();
         setupLocationAutocomplete();
+        setupPosterPicker();
         setupConfirmButton();
 
         if (eventId != null && !eventId.isEmpty()) {
@@ -110,7 +117,32 @@ public class EventEditActivity extends AppCompatActivity {
 
         eventImageContainer = findViewById(R.id.event_image_container);
         posterImageView = findViewById(R.id.event_poster_placeholder);
+        posterPlaceholderText = findViewById(R.id.event_image_placeholder_text);
+        btnRemovePoster = findViewById(R.id.btn_remove_poster);
         inputLayoutLocation = findViewById(R.id.input_layout_event_location);
+    }
+
+    /** Registers image picker launcher and sets tap/remove behaviour for poster area. */
+    private void setupPosterPicker() {
+        ActivityResultLauncher<String> getContent = registerForActivityResult(
+                new ActivityResultContracts.GetContent(),
+                uri -> {
+                    if (uri != null) {
+                        selectedPosterUri = uri;
+                        posterRemovedByUser = false;
+                        posterImageView.setImageURI(uri);
+                        posterPlaceholderText.setVisibility(android.view.View.GONE);
+                        btnRemovePoster.setVisibility(android.view.View.VISIBLE);
+                    }
+                });
+        eventImageContainer.setOnClickListener(v -> getContent.launch("image/*"));
+        btnRemovePoster.setOnClickListener(v -> {
+            selectedPosterUri = null;
+            posterRemovedByUser = true;
+            posterImageView.setImageDrawable(null);
+            posterPlaceholderText.setVisibility(android.view.View.VISIBLE);
+            btnRemovePoster.setVisibility(android.view.View.GONE);
+        });
     }
 
     /**
@@ -218,25 +250,6 @@ public class EventEditActivity extends AppCompatActivity {
 
     private void setupConfirmButton() {
         btnConfirm.setOnClickListener(v -> saveEvent());
-        eventImageContainer.setOnClickListener(v -> openImagePicker());
-    }
-
-    //android opens gallery so user can choose an image
-    private void openImagePicker() {
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.setType("image/*");
-        startActivityForResult(intent, 1001);
-    }
-
-    //receives the image user selected and shows it in poster preview
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == 1001 && resultCode == RESULT_OK && data != null) {
-            selectedPosterUri = data.getData();
-            posterImageView.setImageURI(selectedPosterUri);
-        }
     }
 
     private void loadEvent() {
@@ -317,15 +330,18 @@ public class EventEditActivity extends AppCompatActivity {
         // Existing event with location is treated as valid (e.g. created before Places requirement)
         locationSelectedFromPlaces = (event.getLocation() != null && !event.getLocation().trim().isEmpty());
 
-        // Show existing poster (from Storage URL or legacy content URI) when editing
-        if (event.getPosterUri() != null && !event.getPosterUri().isEmpty()) {
-            String uri = event.getPosterUri();
-            if (uri.startsWith("content://")) {
-                selectedPosterUri = android.net.Uri.parse(uri);
-                posterImageView.setImageURI(selectedPosterUri);
+        // Show existing poster when editing; track for "keep" on save
+        existingPosterUri = event.getPosterUri();
+        if (existingPosterUri != null && !existingPosterUri.isEmpty()) {
+            if (existingPosterUri.startsWith("content://")) {
+                posterImageView.setImageURI(android.net.Uri.parse(existingPosterUri));
             } else {
-                Glide.with(this).load(uri).centerCrop().into(posterImageView);
+                Glide.with(this).load(existingPosterUri).centerCrop().into(posterImageView);
             }
+            posterPlaceholderText.setVisibility(android.view.View.GONE);
+            btnRemovePoster.setVisibility(android.view.View.VISIBLE);
+        } else {
+            existingPosterUri = null;
         }
 
         inputLimit.setText(event.getWaitingListLimit() > 0 ? String.valueOf(event.getWaitingListLimit()) : "");
@@ -474,9 +490,7 @@ public class EventEditActivity extends AppCompatActivity {
                         existing.setRegistrationEndMillis(event.getRegistrationEndMillis());
                         existing.setEventDateMillis(event.getEventDateMillis());
                         existing.setGeolocationRequired(event.isGeolocationRequired());
-                        if (event.getPosterUri() != null) {
-                            existing.setPosterUri(event.getPosterUri());
-                        }
+                        existing.setPosterUri(event.getPosterUri());
 
                         db.collection("events").document(eventId).set(existing)
                                 .addOnSuccessListener(aVoid -> {
