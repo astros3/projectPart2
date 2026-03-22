@@ -1,5 +1,6 @@
 package com.example.eventlottery;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -22,8 +23,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Organizer landing screen: list of events created by the current organizer,
- * with Create a New Event and Profile in the bottom bar.
+ * Organizer dashboard: lists events where organizerId == deviceId. Create event, open event nav, or profile.
  */
 public class OrganizerDashboardFragment extends Fragment {
 
@@ -60,10 +60,21 @@ public class OrganizerDashboardFragment extends Fragment {
             public void onEditClick(Event event) {
                 openEditEvent(event);
             }
+
+            @Override
+            public void onDeleteClick(Event event) {
+                deleteEvent(event);
+
+            }
         });
 
         view.findViewById(R.id.btn_create_event).setOnClickListener(v -> onCreateEventClick());
         view.findViewById(R.id.btn_profile).setOnClickListener(v -> onProfileClick());
+
+        view.findViewById(R.id.back_button).setOnClickListener(v -> {
+            startActivity(new Intent(requireContext(), WelcomePageActivity.class));
+            requireActivity().finish();
+        });
 
         loadMyEvents();
     }
@@ -143,4 +154,33 @@ public class OrganizerDashboardFragment extends Fragment {
     private void onProfileClick() {
         startActivity(new Intent(requireContext(), OrganizerProfileActivity.class));
     }
-}
+
+    private void deleteEvent(Event event) {
+        if (event == null || event.getEventId() == null) {
+            Toast.makeText(requireContext(), "Event ID is missing", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        Log.d("DeleteEvent", "Trying to delete eventId = " + event.getEventId());
+
+        new AlertDialog.Builder(requireContext())
+                .setTitle("Delete Event")
+                .setMessage("Are you sure you want to delete this event?")
+                .setPositiveButton("Delete", (dialog, which) -> {
+                    db.collection("events")
+                            .document(event.getEventId())
+                            .delete()
+                            .addOnSuccessListener(unused -> {
+                                adapter.removeEventById(event.getEventId());
+                                showEmptyState(adapter.getItemCount() == 0);
+                                Toast.makeText(requireContext(), "Event deleted", Toast.LENGTH_SHORT).show();
+                            })
+                            .addOnFailureListener(e -> {
+                                Log.e("DeleteEvent", "Delete failed", e);
+                                Toast.makeText(requireContext(),
+                                        "Failed to delete event: " + e.getMessage(),
+                                        Toast.LENGTH_LONG).show();
+                            });
+                })   // ← CLOSE setPositiveButton HERE
+                .setNegativeButton("Cancel", null)
+                .show();}}

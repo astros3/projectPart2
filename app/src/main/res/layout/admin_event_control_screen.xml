@@ -21,19 +21,15 @@
         android:background="#FFFFFF"
         android:elevation="5dp"
         >
-        <!--
-           Back button
-        -->
+        <!-- Back: arrow left of bar content (dark arrow on white bar) -->
         <ImageView
             android:id="@+id/back_button"
-            android:layout_marginStart="30dp"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginStart="16dp"
             android:clickable="true"
-            android:layout_width="25dp"
-            android:layout_height="25dp"
-            android:src="@drawable/arrow_back"
-
-
-            />
+            android:contentDescription="@string/back"
+            android:src="@drawable/ic_back_arrow" />
 
         <!--
            search Bar
@@ -59,16 +55,6 @@
             <!--
                filter button
             -->
-            <ImageView
-                android:id="@+id/admin_event_filter_button"
-                android:clickable="true"
-
-                android:layout_width="30dp"
-
-                android:layout_marginStart="5dp"
-                android:layout_height="20dp"
-
-                android:src="@drawable/burger" />
             <!--
                user input
             -->
@@ -114,13 +100,15 @@
        List
     -->
     <ListView
+
         android:id="@+id/Events_history"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="20dp"
         android:layout_marginTop="10dp"
         android:layout_marginEnd="20dp"
-        android:background="#FFFFFF"
+        android:background="@drawable/button_background"
+
         android:divider="@android:color/transparent"
 
         android:dividerHeight="10dp"
@@ -128,7 +116,7 @@
 
         android:paddingBottom="5dp"
 
-        android:elevation="2dp"
+        android:elevation="1dp"
         app:layout_constraintBottom_toBottomOf="parent"
 
         app:layout_constraintEnd_toEndOf="parent"

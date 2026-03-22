@@ -11,7 +11,7 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 /**
- * Edit organizer profile (firstName, lastName, email, phone) in organizers collection.
+ * Edit organizer profile (firstName, lastName, email, phone) in Firestore organizers/{deviceId}.
  */
 public class OrganizerProfileActivity extends AppCompatActivity {
 
@@ -38,10 +38,10 @@ public class OrganizerProfileActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar_organizer_profile);
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setDisplayShowHomeEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(false);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         }
-        toolbar.setNavigationOnClickListener(v -> finish());
+        findViewById(R.id.back_button).setOnClickListener(v -> finish());
 
         findViewById(R.id.btn_save_organizer).setOnClickListener(v -> saveProfile());
 

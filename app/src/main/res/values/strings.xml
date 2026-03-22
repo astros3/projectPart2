@@ -2,8 +2,13 @@
     <string name="delete_event">Delete Event</string>
     <string name="final_list">Final List</string>
     <string name="notifications">Notifications</string>
+    <string name="notification_empty">No notifications yet</string>
+    <string name="notification_load_failed">Could not load notifications</string>
     <string name="cancelled_entrants">Cancelled Entrants</string>
     <string name="selected_entrants">Selected Entrants</string>
+    <string name="notify_chosen_entrants">Notify chosen entrants (lottery)</string>
+    <string name="notify_chosen_entrants_sent">Notifications sent to %1$d chosen entrant(s)</string>
+    <string name="notify_chosen_entrants_none">No chosen entrants to notify</string>
     <string name="waiting_list_decision_making">Waiting List (Decision Making)</string>
     <string name="lottery_draw">Lottery Draw</string>
     <string name="view_geolocation">View Geolocation</string>
@@ -16,6 +21,9 @@
     <string name="event_poster">Event poster</string>
     <string name="request_to_join">Request to Join</string>
     <string name="leave_waiting_list">Leave the Waiting List</string>
+    <string name="leave_selected_list">Leave Selected List</string>
+    <string name="accept_invitation">Accept Invitation</string>
+    <string name="decline_invitation">Decline Invitation</string>
     <string name="status_not_joined">STATUS: NOT JOINED</string>
     <string name="status_pending">STATUS: PENDING</string>
     <string name="about_event">ABOUT EVENT</string>
@@ -31,14 +39,18 @@
     <string name="event_image">Event Image</string>
     <string name="event_type">Event Type</string>
     <string name="event_location">Event Location</string>
-    <string name="event_location_hint">Enter event location</string>
+    <string name="event_location_hint">Tap to search and select a location</string>
+    <string name="event_location_helper">Select a location from the map search so it can be verified.</string>
+    <string name="event_location_incomplete">Select a valid location from the map search</string>
+    <string name="event_location_required">Location is required. Tap the field to search and select a location.</string>
     <string name="registration_start_date">Event Registration Start Date</string>
     <string name="registration_end_date">Event Registration End Date</string>
     <string name="date_hint">Select date</string>
     <string name="select_date">Select date</string>
-    <string name="geolocation_requirement">Require Geolocation from users</string>
-    <string name="limit_entrants">Limit number of entrants</string>
-    <string name="limit_entrants_hint">0 = unlimited</string>
+    <string name="geolocation_requirement">Require geolocation when joining</string>
+    <string name="limit_entrants">Max entrants on waiting list (optional)</string>
+    <string name="limit_entrants_hint">Leave empty or 0 for unlimited</string>
+    <string name="waiting_list_full">The waiting list is full. You cannot join at this time.</string>
     <string name="confirm">Confirm</string>
 
     <!-- QR Code Screen (US 02.01.01) -->
@@ -69,6 +81,9 @@
 
     <string name="qr_scan_hint">Scan this QR code to view event details and join the waiting list</string>
     <string name="back">Back</string>
+    <string name="event_location_label">EVENT_LOCATION_LABEL</string>
+    <string name="event_location_not_set">EVENT_LOCATION_NOT SET</string>
+    <string name="location_unavailable_joining_without">location_unavailable</string>
 
     <!-- Event types for spinner -->
     <string-array name="event_types">

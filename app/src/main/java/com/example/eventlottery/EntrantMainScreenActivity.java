@@ -15,27 +15,47 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.example.eventlottery.DeviceIdManager;
 import com.google.firebase.firestore.DocumentSnapshot;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
+
+import androidx.activity.result.ActivityResultLauncher;
+import com.journeyapps.barcodescanner.ScanContract;
+import com.journeyapps.barcodescanner.ScanOptions;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**
- * US 01.01.03
- * this is the main screen for entrant
- * it shows all events and also shows some user stats
- * reference Lab7 format
+ * Entrant home: lists all events from Firestore, shows pending/accepted counts for current
+ * user. QR scan opens EventDetailsActivity. Bell opens EntrantNotificationsActivity.
  */
-
 public class EntrantMainScreenActivity extends AppCompatActivity {
+
+    //scanner code
+    private final ActivityResultLauncher<ScanOptions> qrScanner =
+            registerForActivityResult(new ScanContract(), result -> {
+                if (result.getContents() != null) {
+
+                    String scannedValue = result.getContents().trim();
+
+                    if (scannedValue.contains("/")) {
+                        scannedValue = scannedValue.substring(scannedValue.lastIndexOf("/") + 1);
+                    }
+
+                    Intent intent = new Intent(EntrantMainScreenActivity.this, EventDetailsActivity.class);
+                    intent.putExtra(EventDetailsActivity.EXTRA_EVENT_ID, scannedValue);
+                    startActivity(intent);
+                }
+            });
 
     private ArrayList<Event> eventlist;
     private ArrayList<String[]> userstatuseventlist;
@@ -48,6 +68,7 @@ public class EntrantMainScreenActivity extends AppCompatActivity {
     private TextView totalnumber;
     private TextView winnumber;
     private TextView pendingnumber;
+    private TextView invitationnumber;
     private LinearLayout navigationscanbutton;
     private LinearLayout navigationhistorybutton;
     private LinearLayout navigationprofilebutton;
@@ -66,10 +87,13 @@ public class EntrantMainScreenActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.entrant_main_screen);
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        findViewById(R.id.btn_back).setOnClickListener(v -> {
+            startActivity(new Intent(this, WelcomePageActivity.class));
+            finish();
+        });
 
         events = findViewById(R.id.Events);
         notificationbellbutton = findViewById(R.id.notification_Bell_Button);
@@ -78,6 +102,7 @@ public class EntrantMainScreenActivity extends AppCompatActivity {
         totalnumber = findViewById(R.id.total_number);
         winnumber = findViewById(R.id.win_number);
         pendingnumber = findViewById(R.id.pending_number);
+        invitationnumber = findViewById(R.id.invitation_number);
 
         navigationscanbutton = findViewById(R.id.navigation_scan_button);
         navigationhistorybutton = findViewById(R.id.navigation_history_button);
@@ -189,6 +214,12 @@ public class EntrantMainScreenActivity extends AppCompatActivity {
                                             if (currenteventindex[0] == totaleventcount) {
                                                 CountAndCountHowManyPendingAndWin();
                                             }
+                                        })
+                                        .addOnFailureListener(e -> {
+                                            currenteventindex[0]++;
+                                            if (currenteventindex[0] == totaleventcount) {
+                                                CountAndCountHowManyPendingAndWin();
+                                            }
                                         });
                             }
                         }
@@ -200,12 +231,8 @@ public class EntrantMainScreenActivity extends AppCompatActivity {
 
 
 
-        //navigates to notification activity
-        //notification activity not yet implemented
-        notificationbellbutton.setOnClickListener(v -> {
-            //Intent intent = new Intent(EntrantMainScreenActivity.this, //destination.class);
-            //startActivity(intent);
-        });
+        notificationbellbutton.setOnClickListener(v ->
+                startActivity(new Intent(EntrantMainScreenActivity.this, EntrantNotificationsActivity.class)));
 
         //navigates to filtering activity
         //!!!!awaiting!!!!
@@ -214,10 +241,12 @@ public class EntrantMainScreenActivity extends AppCompatActivity {
             //startActivity(intent);
         });
 
-        //navigates to scan activity
+        //launch QR scanner
         navigationscanbutton.setOnClickListener(v -> {
-            Intent intent = new Intent(EntrantMainScreenActivity.this, QRCodeActivity.class);
-            startActivity(intent);
+            ScanOptions options = new ScanOptions();
+            options.setDesiredBarcodeFormats(ScanOptions.QR_CODE);
+            options.setPrompt("Scan event QR code");
+            qrScanner.launch(options);
         });
 
         //navigates to history activity
@@ -244,26 +273,68 @@ public class EntrantMainScreenActivity extends AppCompatActivity {
     }
 
     /**
-     * this function counts how many events are pending and how many are accepted for the current user
-     * once get the value, will set it on diplay
+     * Counts pending, accepted, and invitation (SELECTED) statuses for the current user,
+     * builds eventId->status map for the adapter, and updates the summary and list.
      */
     public void CountAndCountHowManyPendingAndWin(){
-        int howmanypendingforthisuser =0;
+        int howmanypendingforthisuser = 0;
         int howmanywinforthisuser = 0;
-        for(String[] eventuserrelated : userstatuseventlist){
+        int howmanyinvitationsforthisuser = 0;
+        Map<String, String> eventIdToStatus = new HashMap<>();
+
+        for (String[] eventuserrelated : userstatuseventlist) {
+            String eventId = eventuserrelated[0];
             String currenteventstatusforuser = eventuserrelated[1];
+            eventIdToStatus.put(eventId, currenteventstatusforuser);
 
-            if ((currenteventstatusforuser != null)&&(currenteventstatusforuser.equalsIgnoreCase("accepted"))){
-                howmanywinforthisuser++;
+            if (currenteventstatusforuser != null) {
+                if (currenteventstatusforuser.equalsIgnoreCase("accepted")) {
+                    howmanywinforthisuser++;
+                } else if (currenteventstatusforuser.equalsIgnoreCase("pending")) {
+                    howmanypendingforthisuser++;
+                } else if (currenteventstatusforuser.equalsIgnoreCase("selected")) {
+                    howmanyinvitationsforthisuser++;
+                }
             }
-
-            if ((currenteventstatusforuser != null)&&(currenteventstatusforuser.equalsIgnoreCase("pending"))){
-                howmanypendingforthisuser++;
-            }
-
         }
+
         winnumber.setText(String.valueOf(howmanywinforthisuser));
         pendingnumber.setText(String.valueOf(howmanypendingforthisuser));
+        invitationnumber.setText(String.valueOf(howmanyinvitationsforthisuser));
+        eventadapter.setEventIdToStatus(eventIdToStatus);
+        eventadapter.notifyDataSetChanged();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        refreshUserStatuses();
+    }
+
+    /** Re-fetches current user's status per event so invitation count and list stay in sync (e.g. after accept/decline). */
+    private void refreshUserStatuses() {
+        if (db == null || currentdeviceid == null || eventlist == null || eventlist.isEmpty()) return;
+        userstatuseventlist.clear();
+        int totaleventcount = eventlist.size();
+        final int[] done = {0};
+        for (Event event : eventlist) {
+            String eventid = event.getEventId();
+            db.collection("events").document(eventid)
+                    .collection("waitingList").document(currentdeviceid)
+                    .get()
+                    .addOnSuccessListener(waitinglistdocument -> {
+                        if (waitinglistdocument.exists()) {
+                            String status = waitinglistdocument.getString("status");
+                            userstatuseventlist.add(new String[]{eventid, status});
+                        }
+                        done[0]++;
+                        if (done[0] == totaleventcount) CountAndCountHowManyPendingAndWin();
+                    })
+                    .addOnFailureListener(e -> {
+                        done[0]++;
+                        if (done[0] == totaleventcount) CountAndCountHowManyPendingAndWin();
+                    });
+        }
     }
 
     @Override

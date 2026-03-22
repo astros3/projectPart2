@@ -1,5 +1,9 @@
 package com.example.eventlottery;
 
+/**
+ * Invitation response UI: accept/decline for SELECTED entrants. Updates waitingList doc status
+ * to ACCEPTED or DECLINED. Requires eventId (e.g. from nav args).
+ */
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;

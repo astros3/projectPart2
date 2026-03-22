@@ -117,6 +117,7 @@
                     android:layout_height="wrap_content" />
             </com.google.android.material.textfield.TextInputLayout>
 
+            <!-- US 01.04.03 — Notification opt-out toggle -->
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -172,7 +173,7 @@
         </LinearLayout>
     </ScrollView>
 
-    <!-- Same bottom bar as EntrantMainScreen: Home, Scan, History, Profile -->
+    <!-- Bottom nav: Home, Scan, History, Profile -->
     <LinearLayout
         android:id="@+id/navigationBar"
         android:layout_width="match_parent"
@@ -181,6 +182,7 @@
         android:orientation="horizontal"
         android:background="#FFFFFF"
         android:elevation="5dp">
+
         <LinearLayout
             android:id="@+id/navigation_home_button"
             android:orientation="vertical"
@@ -203,6 +205,7 @@
                 android:textColor="#696969"
                 android:textSize="10dp" />
         </LinearLayout>
+
         <LinearLayout
             android:id="@+id/navigation_scan_button"
             android:orientation="vertical"
@@ -225,6 +228,7 @@
                 android:textColor="#696969"
                 android:textSize="10dp" />
         </LinearLayout>
+
         <LinearLayout
             android:id="@+id/navigation_history_button"
             android:orientation="vertical"
@@ -247,6 +251,7 @@
                 android:textColor="#696969"
                 android:textSize="10dp" />
         </LinearLayout>
+
         <LinearLayout
             android:id="@+id/navigation_profile_button"
             android:orientation="vertical"
@@ -269,6 +274,7 @@
                 android:textColor="#000000"
                 android:textSize="10dp" />
         </LinearLayout>
+
     </LinearLayout>
 
 </RelativeLayout>

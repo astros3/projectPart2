@@ -1,5 +1,10 @@
 package com.example.eventlottery;
 
+/**
+ * Organizer lottery: enter count N, randomly select N PENDING waiting-list entrants and set
+ * their status to SELECTED. Notifies winners (US 01.04.01) and losers (US 01.04.02) via
+ * NotificationHelper after the draw. Uses EventEditActivity.getCurrentEventId().
+ */
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -19,7 +24,10 @@ import com.google.firebase.firestore.WriteBatch;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class LotteryDraw extends Fragment {
 
@@ -81,7 +89,7 @@ public class LotteryDraw extends Fragment {
                 .collection("waitingList")
                 .get()
                 .addOnSuccessListener(querySnapshot -> {
-                    List<WaitingListEntry> pendingEntries = new ArrayList<>();
+                    final List<WaitingListEntry> pendingEntries = new ArrayList<>();
 
                     for (DocumentSnapshot doc : querySnapshot.getDocuments()) {
                         WaitingListEntry entry = doc.toObject(WaitingListEntry.class);
@@ -105,7 +113,7 @@ public class LotteryDraw extends Fragment {
 
                     Collections.shuffle(pendingEntries);
 
-                    List<WaitingListEntry> selectedEntries =
+                    final List<WaitingListEntry> selectedEntries =
                             new ArrayList<>(pendingEntries.subList(0, count));
 
                     WriteBatch batch = db.batch();
@@ -120,7 +128,36 @@ public class LotteryDraw extends Fragment {
                     }
 
                     batch.commit()
-                            .addOnSuccessListener(unused -> showSelectedEntrants(selectedEntries, textViewResult))
+                            .addOnSuccessListener(unused -> {
+
+                                // Build set of selected device IDs for fast lookup
+                                Set<String> selectedIds = new HashSet<>();
+                                for (WaitingListEntry e : selectedEntries) {
+                                    selectedIds.add(e.getDeviceId());
+                                }
+
+                                // US 01.04.01 — notify winners
+                                for (WaitingListEntry entry : selectedEntries) {
+                                    NotificationHelper.sendLotteryWinNotification(
+                                            db, entry.getDeviceId(), eventId);
+                                }
+
+                                // US 01.04.02 — notify losers (pending but not selected)
+                                for (WaitingListEntry entry : pendingEntries) {
+                                    if (!selectedIds.contains(entry.getDeviceId())) {
+                                        NotificationHelper.sendNotification(
+                                                db,
+                                                entry.getDeviceId(),
+                                                NotificationHelper.TYPE_LOTTERY_LOST,
+                                                "Lottery result",
+                                                "Unfortunately, you were not selected in this draw. You may still get a chance if someone declines their invitation.",
+                                                eventId
+                                        );
+                                    }
+                                }
+
+                                showSelectedEntrants(selectedEntries, textViewResult);
+                            })
                             .addOnFailureListener(e ->
                                     Toast.makeText(getContext(),
                                             "Failed to complete lottery draw",
@@ -133,12 +170,49 @@ public class LotteryDraw extends Fragment {
     }
 
     private void showSelectedEntrants(List<WaitingListEntry> selectedEntries, TextView textViewResult) {
-        StringBuilder result = new StringBuilder("Selected Entrants:\n\n");
-
-        for (WaitingListEntry entry : selectedEntries) {
-            result.append(entry.getDeviceId()).append("\n");
+        textViewResult.setText("Selected Entrants:\n\nLoading...");
+        if (selectedEntries.isEmpty()) {
+            textViewResult.setText("Selected Entrants:\n\nNone");
+            return;
         }
+        final String[] names = new String[selectedEntries.size()];
+        AtomicInteger pending = new AtomicInteger(selectedEntries.size());
+        for (int i = 0; i < selectedEntries.size(); i++) {
+            final int index = i;
+            String deviceId = selectedEntries.get(i).getDeviceId();
+            if (deviceId == null || deviceId.isEmpty()) {
+                names[index] = "Unknown Entrant";
+                if (pending.decrementAndGet() == 0) {
+                    buildResultAndSet(names, textViewResult);
+                }
+                continue;
+            }
+            db.collection("users").document(deviceId).get()
+                    .addOnSuccessListener(doc -> {
+                        if (doc != null && doc.exists()) {
+                            Entrant entrant = doc.toObject(Entrant.class);
+                            names[index] = entrant != null ? entrant.getFullName() : "Unknown Entrant";
+                        } else {
+                            names[index] = "Unknown Entrant";
+                        }
+                        if (pending.decrementAndGet() == 0) {
+                            buildResultAndSet(names, textViewResult);
+                        }
+                    })
+                    .addOnFailureListener(e -> {
+                        names[index] = "Unknown Entrant";
+                        if (pending.decrementAndGet() == 0) {
+                            buildResultAndSet(names, textViewResult);
+                        }
+                    });
+        }
+    }
 
+    private void buildResultAndSet(String[] names, TextView textViewResult) {
+        StringBuilder result = new StringBuilder("Selected Entrants:\n\n");
+        for (String name : names) {
+            result.append(name != null ? name : "Unknown Entrant").append("\n");
+        }
         textViewResult.setText(result.toString());
     }
 }

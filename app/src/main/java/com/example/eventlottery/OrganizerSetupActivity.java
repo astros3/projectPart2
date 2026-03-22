@@ -1,11 +1,16 @@
 package com.example.eventlottery;
 
+/**
+ * First-time organizer registration: firstName, lastName, email, phone. Writes Organizer
+ * to organizers/{deviceId}, then starts MainActivity. Note: no "role" field stored.
+ */
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -29,6 +34,14 @@ public class OrganizerSetupActivity extends AppCompatActivity {
 
         db = FirebaseFirestore.getInstance();
         deviceId = DeviceIdManager.getDeviceId(this);
+
+        Toolbar toolbar = findViewById(R.id.toolbar_organizer_profile);
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayShowHomeEnabled(false);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        }
+        findViewById(R.id.back_button).setVisibility(android.view.View.GONE);
 
         firstNameInput = findViewById(R.id.edit_organizer_first_name);
         lastNameInput = findViewById(R.id.edit_organizer_last_name);

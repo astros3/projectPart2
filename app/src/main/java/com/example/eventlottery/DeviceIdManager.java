@@ -1,10 +1,9 @@
 package com.example.eventlottery;
 
-
-/*
-Android uses something called "SharedPreferences" that lets apps store small data locally.
+/**
+ * Provides a persistent device ID via SharedPreferences. Used as identity for both
+ * entrant (users) and organizer (organizers) flows. Singleton-like: one ID per app install.
  */
-
 import android.content.Context;
 import android.content.SharedPreferences;
 

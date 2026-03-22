@@ -3,7 +3,10 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:padding="10dp"
-    android:background="#FFFFFF"
+    android:background="@drawable/button_background"
+    android:elevation="1dp"
+
+
     android:layout_marginBottom="10dp"
 
     >
@@ -48,14 +51,22 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
             android:id="@+id/event_date_input"
-
             android:textColor="#969696"
             android:text="Oct 24, 2024 · 10:00 AM"
-            android:textSize="15dp"
-
-            />
+            android:textSize="15dp" />
+        <!-- Shown when user is SELECTED: prompt to respond to invitation -->
+        <TextView
+            android:id="@+id/event_invitation_prompt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:visibility="gone"
+            android:text="You're selected – tap to accept or decline"
+            android:textColor="#2E7D32"
+            android:textSize="13sp"
+            android:textStyle="bold" />
         <!--
-            View Details
+            View Details / Respond to Invitation
         -->
         <Button
             android:layout_marginTop="10dp"

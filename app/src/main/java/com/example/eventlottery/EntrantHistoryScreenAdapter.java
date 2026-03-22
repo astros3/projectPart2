@@ -23,11 +23,8 @@ import java.text.SimpleDateFormat;
 import java.util.Locale;
 
 
-//reference lab 05 adapter
 /**
- *this adapter is for the entrant history screen
- *it shows all the events the current user signed up for before
- *user can click on the event and it will navigates to the event detail activity
+ * Adapter for EntrantHistoryScreenActivity: events user has joined, with status. Row click opens EventDetailsActivity.
  */
 public class EntrantHistoryScreenAdapter extends ArrayAdapter<Event> {
 

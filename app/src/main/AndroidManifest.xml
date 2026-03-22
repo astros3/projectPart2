@@ -65,6 +65,16 @@
             android:parentActivityName=".MainActivity" />
 
         <activity
+            android:name=".EntrantHistoryScreenActivity"
+            android:exported="false"
+            android:parentActivityName=".MainActivity" />
+
+        <activity
+            android:name=".EntrantNotificationsActivity"
+            android:exported="false"
+            android:parentActivityName=".EntrantMainScreenActivity" />
+
+        <activity
             android:name=".QRCodeActivity"
             android:exported="false"
             android:parentActivityName=".MainActivity" />
