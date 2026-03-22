@@ -2,7 +2,8 @@ package com.example.eventlottery;
 
 /**
  * Organizer lottery: enter count N, randomly select N PENDING waiting-list entrants and set
- * their status to SELECTED. Uses EventEditActivity.getCurrentEventId().
+ * their status to SELECTED. Notifies winners (US 01.04.01) and losers (US 01.04.02) via
+ * NotificationHelper after the draw. Uses EventEditActivity.getCurrentEventId().
  */
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -23,7 +24,9 @@ import com.google.firebase.firestore.WriteBatch;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class LotteryDraw extends Fragment {
@@ -86,7 +89,7 @@ public class LotteryDraw extends Fragment {
                 .collection("waitingList")
                 .get()
                 .addOnSuccessListener(querySnapshot -> {
-                    List<WaitingListEntry> pendingEntries = new ArrayList<>();
+                    final List<WaitingListEntry> pendingEntries = new ArrayList<>();
 
                     for (DocumentSnapshot doc : querySnapshot.getDocuments()) {
                         WaitingListEntry entry = doc.toObject(WaitingListEntry.class);
@@ -110,7 +113,7 @@ public class LotteryDraw extends Fragment {
 
                     Collections.shuffle(pendingEntries);
 
-                    List<WaitingListEntry> selectedEntries =
+                    final List<WaitingListEntry> selectedEntries =
                             new ArrayList<>(pendingEntries.subList(0, count));
 
                     WriteBatch batch = db.batch();
@@ -125,7 +128,42 @@ public class LotteryDraw extends Fragment {
                     }
 
                     batch.commit()
-                            .addOnSuccessListener(unused -> showSelectedEntrants(selectedEntries, textViewResult))
+                            .addOnSuccessListener(unused -> {
+
+                                // Build set of selected device IDs for fast lookup
+                                Set<String> selectedIds = new HashSet<>();
+                                for (WaitingListEntry e : selectedEntries) {
+                                    selectedIds.add(e.getDeviceId());
+                                }
+
+                                // US 01.04.01 — notify winners
+                                for (WaitingListEntry entry : selectedEntries) {
+                                    NotificationHelper.sendNotification(
+                                            db,
+                                            entry.getDeviceId(),
+                                            NotificationHelper.TYPE_LOTTERY_WON,
+                                            "You've been selected! 🎉",
+                                            "Congratulations! You were chosen from the waiting list. Open the event to accept or decline your spot.",
+                                            eventId
+                                    );
+                                }
+
+                                // US 01.04.02 — notify losers (pending but not selected)
+                                for (WaitingListEntry entry : pendingEntries) {
+                                    if (!selectedIds.contains(entry.getDeviceId())) {
+                                        NotificationHelper.sendNotification(
+                                                db,
+                                                entry.getDeviceId(),
+                                                NotificationHelper.TYPE_LOTTERY_LOST,
+                                                "Lottery result",
+                                                "Unfortunately, you were not selected in this draw. You may still get a chance if someone declines their invitation.",
+                                                eventId
+                                        );
+                                    }
+                                }
+
+                                showSelectedEntrants(selectedEntries, textViewResult);
+                            })
                             .addOnFailureListener(e ->
                                     Toast.makeText(getContext(),
                                             "Failed to complete lottery draw",

@@ -96,7 +96,7 @@
                     android:inputType="textMultiLine" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Event Image (placeholder for future upload) -->
+            <!-- Event Image -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -144,7 +144,7 @@
                 android:layout_marginTop="4dp"
                 android:background="@android:drawable/edit_text" />
 
-            <!-- Event Location (tap to search with Google Places) -->
+            <!-- Event Location -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -295,6 +295,33 @@
                     android:hint="@string/limit_entrants_hint"
                     android:inputType="number"
                     android:imeOptions="actionDone" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Lottery Selection Criteria (US 01.05.05) -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Lottery Selection Criteria"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:textColor="#6C757D" />
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                app:boxStrokeColor="@color/black"
+                app:helperText="Enter each criterion on a new line (e.g. Must be 18+)"
+                app:helperTextEnabled="true">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/input_selection_criteria"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="e.g. Must be 18+, Beginner level only..."
+                    android:inputType="textMultiLine"
+                    android:minLines="3"
+                    android:gravity="top" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <!-- Confirm Button -->
