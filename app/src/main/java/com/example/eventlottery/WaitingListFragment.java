@@ -50,6 +50,8 @@ public class WaitingListFragment extends Fragment {
                 NavHostFragment.findNavController(WaitingListFragment.this)
                         .navigate(R.id.Waiting_list_to_OrganizerNavigationFragment));
 
+        view.findViewById(R.id.buttonNotifyWaiting).setOnClickListener(v -> notifyWaitingEntrants());
+
         loadWaitingEntries();
     }
 
@@ -130,5 +132,49 @@ public class WaitingListFragment extends Fragment {
                         }
                     });
         }
+    }
+
+    //finds all waiting (pending) entrants and sends a notification to each of them
+    private void notifyWaitingEntrants() {
+        if (eventId == null || eventId.isEmpty()) {
+            Toast.makeText(getContext(), "No current event selected", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        db.collection("events")
+                .document(eventId)
+                .collection("waitingList")
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    int sent = 0;
+                    for (DocumentSnapshot doc : querySnapshot.getDocuments()) {
+                        WaitingListEntry entry = doc.toObject(WaitingListEntry.class);
+
+                        // ONLY waiting list entrants
+                        if (entry == null ||
+                                !WaitingListEntry.Status.PENDING.name().equals(entry.getStatus())) {
+                            continue;
+                        }
+
+                        String deviceId = entry.getDeviceId();
+                        if (deviceId == null || deviceId.isEmpty()) {
+                            deviceId = doc.getId();
+                        }
+                        if (deviceId == null || deviceId.isEmpty()) {
+                            continue;
+                        }
+
+                        NotificationHelper.sendLotteryWinNotification(db, deviceId, eventId);
+                        sent++;
+                    }
+
+                    if (sent == 0) {
+                        Toast.makeText(getContext(), "No waiting entrants to notify", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(getContext(), "Notified " + sent + " waiting entrants", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .addOnFailureListener(e ->
+                        Toast.makeText(getContext(), "Failed to load waiting entrants", Toast.LENGTH_SHORT).show());
     }
 }

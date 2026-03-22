@@ -50,7 +50,7 @@ public class SelectedList extends Fragment {
                     .update("status", WaitingListEntry.Status.CANCELLED.name())
                     .addOnSuccessListener(unused -> loadSelectedEntries())
                     .addOnFailureListener(e ->
-                            Toast.makeText(getContext(), "Failed to remove selected entrant", Toast.LENGTH_SHORT).show());
+                            Toast.makeText(getContext(), "Failed to cancel entrant", Toast.LENGTH_SHORT).show());
         });
 
         listSelectedEntrants.setAdapter(adapter);

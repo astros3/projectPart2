@@ -39,6 +39,13 @@
         </LinearLayout>
     </androidx.appcompat.widget.Toolbar>
 
+    <Button
+        android:id="@+id/buttonNotifyWaiting"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Notify Waiting Entrants"
+        android:layout_margin="8dp"/>
+
     <ListView
         android:id="@+id/listWaitingEntrants"
         android:layout_width="0dp"
