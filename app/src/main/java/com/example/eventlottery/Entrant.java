@@ -6,8 +6,9 @@ package com.example.eventlottery;
  * Includes notification preference flag for US 01.04.03.
  */
 public class Entrant {
+
     private String deviceID;
-    private String name;
+    private String fullName;
     private String email;
     private String phone;
     private String role;
@@ -16,55 +17,107 @@ public class Entrant {
     private String locationAddress;
     private boolean notificationsEnabled = true; // US 01.04.03
 
-    public Entrant() {}
+    /** Required empty constructor for Firestore */
+    public Entrant() {
+    }
 
-    /** Constructor for core profile fields. notificationsEnabled defaults to true. */
-    public Entrant(String deviceID, String name, String email, String phone, String role) {
+    /** Constructor for core profile fields */
+    public Entrant(String deviceID, String fullName, String email, String phone, String role) {
         this.deviceID = deviceID;
-        this.name = name;
+        this.fullName = fullName;
         this.email = email;
         this.phone = phone;
         this.role = role;
         this.notificationsEnabled = true;
     }
 
-    /** Display name; "Unknown Entrant" if name is null or blank. */
-    public String getFullName() {
-        String fullName = name != null ? name.trim() : "";
-        return fullName.isEmpty() ? "Unknown Entrant" : fullName;
+    /** Full constructor */
+    public Entrant(String deviceID, String fullName, String email, String phone, String role,
+                   Double latitude, Double longitude, String locationAddress) {
+        this.deviceID = deviceID;
+        this.fullName = fullName;
+        this.email = email;
+        this.phone = phone;
+        this.role = role;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.locationAddress = locationAddress;
+        this.notificationsEnabled = true;
     }
 
-    public String getDeviceID() { return deviceID; }
-    public void setDeviceID(String deviceID) { this.deviceID = deviceID; }
+    public String getDeviceID() {
+        return deviceID;
+    }
 
-    /** Full name (single field; may be "First Last"). */
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+    public void setDeviceID(String deviceID) {
+        this.deviceID = deviceID;
+    }
 
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
+    /** Returns display name safely */
+    public String getFullName() {
+        if (fullName == null || fullName.trim().isEmpty()) {
+            return "Unknown Entrant";
+        }
+        return fullName;
+    }
 
-    public String getPhone() { return phone; }
-    public void setPhone(String phone) { this.phone = phone; }
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
 
-    /** Role string (e.g. "entrant") used by welcome flow. */
-    public String getRole() { return role; }
-    public void setRole(String role) { this.role = role; }
+    public String getEmail() {
+        return email != null ? email : "";
+    }
 
-    public Double getLatitude() { return latitude; }
-    public void setLatitude(Double latitude) { this.latitude = latitude; }
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
-    public Double getLongitude() { return longitude; }
-    public void setLongitude(Double longitude) { this.longitude = longitude; }
+    public String getPhone() {
+        return phone != null ? phone : "";
+    }
 
-    public String getLocationAddress() { return locationAddress; }
-    public void setLocationAddress(String locationAddress) { this.locationAddress = locationAddress; }
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
 
-    /**
-     * Whether the entrant wants to receive notifications from organizers and admins.
-     * Defaults to true. Set to false when entrant opts out (US 01.04.03).
-     */
-    public boolean isNotificationsEnabled() { return notificationsEnabled; }
+    /** Role string, for example "entrant" */
+    public String getRole() {
+        return role != null ? role : "";
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
+    }
+
+    public Double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
+    }
+
+    public String getLocationAddress() {
+        return locationAddress != null ? locationAddress : "";
+    }
+
+    public void setLocationAddress(String locationAddress) {
+        this.locationAddress = locationAddress;
+    }
+
+    public boolean isNotificationsEnabled() {
+        return notificationsEnabled;
+    }
+
     public void setNotificationsEnabled(boolean notificationsEnabled) {
         this.notificationsEnabled = notificationsEnabled;
     }

@@ -126,11 +126,19 @@ public class GeolocationFragment extends Fragment implements OnMapReadyCallback 
                     }
 
                     textLocationOf.setText("LOCATION OF: " + entrantName);
-                    boolean hasCoordinates = (latitude != 0.0 || longitude != 0.0);
+
                     if (locationAddress == null || locationAddress.isEmpty()) {
                         locationAddress = "No location available";
                     }
                     textLocationAddress.setText(locationAddress);
+
+                    boolean hasCoordinates = (latitude != 0.0 || longitude != 0.0);
+
+                    Log.d("DEBUG_LOCATION", "deviceId=" + deviceId
+                            + " lat=" + latitude
+                            + " lng=" + longitude
+                            + " address=" + locationAddress);
+
                     if (hasCoordinates) {
                         Log.d(TAG, "loadEntrantLocation: using DB coords, calling updateMap");
                         updateMap();

@@ -72,8 +72,7 @@ public class EventLocationFragment extends Fragment implements OnMapReadyCallbac
         view.findViewById(R.id.buttonBackGeo).setOnClickListener(v ->
                 NavHostFragment.findNavController(EventLocationFragment.this).navigateUp());
 
-        SupportMapFragment mapFragment =
-                (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+        SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         if (mapFragment != null) {
             mapFragment.getMapAsync(this);
         }
@@ -111,7 +110,6 @@ public class EventLocationFragment extends Fragment implements OnMapReadyCallbac
                         updateMap();
                         return;
                     }
-
                     textLocationAddress.setText(locationAddress);
                     geocodeAddressThenUpdateMap(locationAddress);
                 })
@@ -128,7 +126,6 @@ public class EventLocationFragment extends Fragment implements OnMapReadyCallbac
             updateMap();
             return;
         }
-
         Executors.newSingleThreadExecutor().execute(() -> {
             try {
                 Geocoder geocoder = new Geocoder(requireContext(), Locale.getDefault());
@@ -151,7 +148,6 @@ public class EventLocationFragment extends Fragment implements OnMapReadyCallbac
             } catch (Exception e) {
                 Log.e(TAG, "geocodeAddressThenUpdateMap", e);
             }
-
             if (getActivity() != null) {
                 getActivity().runOnUiThread(this::updateMap);
             }
@@ -161,7 +157,6 @@ public class EventLocationFragment extends Fragment implements OnMapReadyCallbac
     private void updateMap() {
         if (mMap == null) return;
         if (latitude == 0.0 && longitude == 0.0) return;
-
         LatLng location = new LatLng(latitude, longitude);
         mMap.clear();
         mMap.addMarker(new MarkerOptions().position(location).title(eventTitle));

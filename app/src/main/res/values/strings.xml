@@ -2,6 +2,8 @@
     <string name="delete_event">Delete Event</string>
     <string name="final_list">Final List</string>
     <string name="notifications">Notifications</string>
+    <string name="notification_empty">No notifications yet</string>
+    <string name="notification_load_failed">Could not load notifications</string>
     <string name="cancelled_entrants">Cancelled Entrants</string>
     <string name="selected_entrants">Selected Entrants</string>
     <string name="waiting_list_decision_making">Waiting List (Decision Making)</string>
@@ -78,6 +80,7 @@
     <string name="back">Back</string>
     <string name="event_location_label">EVENT_LOCATION_LABEL</string>
     <string name="event_location_not_set">EVENT_LOCATION_NOT SET</string>
+    <string name="location_unavailable_joining_without">location_unavailable</string>
 
     <!-- Event types for spinner -->
     <string-array name="event_types">

@@ -1,7 +1,7 @@
 package com.example.eventlottery;
 
 /**
- * Organizer event menu: Update Event, QR Code, Lottery Draw, Waiting List, Selected List.
+ * Organizer event menu: Update Event, QR Code, View Geolocation, Lottery Draw, waiting/selected/final lists.
  * Uses EventEditActivity.getCurrentEventId() for the selected event.
  */
 import android.content.Intent;
@@ -43,6 +43,19 @@ public class OrganizerNavigationFragment extends Fragment {
                 return;
             }
             startActivity(QRCodeActivity.newIntent(requireContext(), eventId));
+        });
+
+        // View Geolocation — event venue from Update Event Information (Firestore)
+        view.findViewById(R.id.buttonGeo).setOnClickListener(v -> {
+            String eventId = EventEditActivity.getCurrentEventId(requireContext());
+            if (eventId == null || eventId.isEmpty()) {
+                Toast.makeText(requireContext(), "Create an event first", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            Bundle args = new Bundle();
+            args.putString("eventId", eventId);
+            NavHostFragment.findNavController(OrganizerNavigationFragment.this)
+                    .navigate(R.id.OrganizerNavigationFragment_to_EventLocationFragment, args);
         });
 
         view.findViewById(R.id.buttonLottery).setOnClickListener(v ->

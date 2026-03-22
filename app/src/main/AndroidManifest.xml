@@ -23,7 +23,7 @@
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="" />
+            android:value="AIzaSyC4kD1pnb1Z3uYz5UGd9mVwTkkS4lgvteQ" />
 
         <activity
             android:name=".WelcomePageActivity"
@@ -68,6 +68,11 @@
             android:name=".EntrantHistoryScreenActivity"
             android:exported="false"
             android:parentActivityName=".MainActivity" />
+
+        <activity
+            android:name=".EntrantNotificationsActivity"
+            android:exported="false"
+            android:parentActivityName=".EntrantMainScreenActivity" />
 
         <activity
             android:name=".QRCodeActivity"
