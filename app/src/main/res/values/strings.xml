@@ -76,6 +76,8 @@
 
     <string name="qr_scan_hint">Scan this QR code to view event details and join the waiting list</string>
     <string name="back">Back</string>
+    <string name="event_location_label">EVENT_LOCATION_LABEL</string>
+    <string name="event_location_not_set">EVENT_LOCATION_NOT SET</string>
 
     <!-- Event types for spinner -->
     <string-array name="event_types">
