@@ -1,8 +1,9 @@
 package com.example.eventlottery;
 
 /**
- * Edit entrant profile in Firestore users/{deviceId}. Load/save name, email, phone; optional
- * delete profile. Bottom nav: Home, Scan, History, Profile (Scan currently opens QRCodeActivity).
+ * Edit entrant profile in Firestore users/{deviceId}. Load/save name, email, phone,
+ * and notification preference (US 01.04.03). Optional delete profile.
+ * Bottom nav: Home, Scan, History, Profile.
  */
 import android.content.Intent;
 import android.os.Bundle;
@@ -14,6 +15,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.WriteBatch;
 
@@ -21,6 +23,7 @@ public class EntrantProfileActivity extends AppCompatActivity {
 
     private EditText nameInput, emailInput, phoneInput;
     private TextView displayName, displayEmail;
+    private SwitchMaterial notifSwitch;
     private FirebaseFirestore db;
     private String deviceId;
 
@@ -36,19 +39,22 @@ public class EntrantProfileActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
         deviceId = DeviceIdManager.getDeviceId(this);
 
-        nameInput = findViewById(R.id.edit_profile_name);
+        nameInput  = findViewById(R.id.edit_profile_name);
         emailInput = findViewById(R.id.edit_profile_email);
         phoneInput = findViewById(R.id.edit_profile_phone);
 
-        displayName = findViewById(R.id.profile_display_name);
+        displayName  = findViewById(R.id.profile_display_name);
         displayEmail = findViewById(R.id.profile_display_email);
+
+        // US 01.04.03 — notification opt-out toggle
+        notifSwitch = findViewById(R.id.switch_notifications);
 
         loadProfile();
 
         findViewById(R.id.btn_save_changes).setOnClickListener(v -> updateProfile());
         findViewById(R.id.btn_delete_profile).setOnClickListener(v -> confirmDeleteProfile());
 
-        // Same bottom bar as EntrantMainScreen: Home, Scan, History, Profile
+        // Bottom navigation
         findViewById(R.id.navigation_home_button).setOnClickListener(v -> {
             startActivity(new Intent(this, EntrantMainScreenActivity.class));
             finish();
@@ -61,7 +67,7 @@ public class EntrantProfileActivity extends AppCompatActivity {
             startActivity(new Intent(this, EntrantHistoryScreenActivity.class));
             finish();
         });
-        findViewById(R.id.navigation_profile_button).setOnClickListener(v -> { /* already on profile */ });
+        findViewById(R.id.navigation_profile_button).setOnClickListener(v -> { /* already here */ });
     }
 
     private void loadProfile() {
@@ -78,16 +84,17 @@ public class EntrantProfileActivity extends AppCompatActivity {
                             displayName.setText(fullName);
                             displayEmail.setText(existing.getEmail());
 
-                            currentLatitude = existing.getLatitude();
-                            currentLongitude = existing.getLongitude();
+                            currentLatitude        = existing.getLatitude();
+                            currentLongitude       = existing.getLongitude();
                             currentLocationAddress = existing.getLocationAddress();
+
+                            // US 01.04.03 — load saved notification preference
+                            notifSwitch.setChecked(existing.isNotificationsEnabled());
                         }
                     }
                 })
                 .addOnFailureListener(e -> {
-                    Log.e("FirestoreError", "Failed to load profile", e);  // full stack trace
-                    e.printStackTrace(); // prints stack trace in Logcat
-
+                    Log.e("FirestoreError", "Failed to load profile", e);
                     Toast.makeText(this,
                             "Failed to load profile: " + e.getMessage(),
                             Toast.LENGTH_LONG).show();
@@ -99,7 +106,9 @@ public class EntrantProfileActivity extends AppCompatActivity {
             Toast.makeText(this, "Cannot save: device ID not available.", Toast.LENGTH_LONG).show();
             return;
         }
+
         String fullName = nameInput.getText().toString().trim();
+
         Entrant entrant = new Entrant(
                 deviceId,
                 fullName,
@@ -111,6 +120,9 @@ public class EntrantProfileActivity extends AppCompatActivity {
         entrant.setLongitude(currentLongitude);
         entrant.setLocationAddress(currentLocationAddress);
 
+        // US 01.04.03 — persist notification preference alongside profile
+        entrant.setNotificationsEnabled(notifSwitch.isChecked());
+
         db.collection("users").document(deviceId)
                 .set(entrant)
                 .addOnSuccessListener(aVoid -> runOnUiThread(() -> {
@@ -119,7 +131,9 @@ public class EntrantProfileActivity extends AppCompatActivity {
                     Toast.makeText(this, "Profile Updated!", Toast.LENGTH_SHORT).show();
                 }))
                 .addOnFailureListener(e -> runOnUiThread(() ->
-                        Toast.makeText(this, "Update Failed: " + e.getMessage(), Toast.LENGTH_LONG).show()));
+                        Toast.makeText(this,
+                                "Update Failed: " + e.getMessage(),
+                                Toast.LENGTH_LONG).show()));
     }
 
     private void confirmDeleteProfile() {

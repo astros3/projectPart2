@@ -1,12 +1,20 @@
 package com.example.eventlottery;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Bundle;
-import android.widget.ImageView;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -14,21 +22,30 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.Priority;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * Event details and join/leave waiting list (US 01.01.01, 01.01.02, 01.06.02). Enforces
  * registration window and optional waiting list limit before allowing join.
+ * When event requires geolocation, captures entrant location once when joining—
+ * no live tracking.
  */
 public class EventDetailsActivity extends AppCompatActivity {
 
@@ -36,18 +53,32 @@ public class EventDetailsActivity extends AppCompatActivity {
     /** When true, toolbar is white (entrant view); when false, black (organizer view). */
     public static final String EXTRA_VIEW_AS_ENTRANT = "view_as_entrant";
 
+    private static final String TAG = "EventDetails";
+    private static final int REQUEST_LOCATION_FOR_JOIN = 1001;
+
     private FirebaseFirestore db;
+    private FusedLocationProviderClient fusedLocationClient;
     private String eventId;
     private String deviceId;
     private boolean onWaitingList;
     private String waitingListStatus;
+    /** When we request location permission for join, store event to retry after permission result. */
+    private Event pendingJoinEvent;
 
     private TextView titleView, organizerView, dateView, statusView, descriptionView, criteriaView, waitingListCountView;
     private ImageView posterView;
     private MaterialButton joinLeaveButton;
+    private ListView commentsListView;
+    private EditText commentInput;
+    private Button postCommentButton;
     private LinearLayout invitationButtonsContainer;
     private MaterialButton acceptInvitationButton;
     private MaterialButton declineInvitationButton;
+    private boolean organizermode = false;
+    private final ArrayList<String> comments = new ArrayList<>();
+    private final ArrayList<String> commentIds = new ArrayList<>();
+    private ArrayAdapter<String> commentsAdapter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +93,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         }
 
         db = FirebaseFirestore.getInstance();
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         deviceId = DeviceIdManager.getDeviceId(this);
 
         setupToolbar();
@@ -105,22 +137,57 @@ public class EventDetailsActivity extends AppCompatActivity {
         criteriaView = findViewById(R.id.event_selection_criteria);
         waitingListCountView = findViewById(R.id.event_waiting_list_count);
         posterView = findViewById(R.id.event_poster);
+        commentsListView = findViewById(R.id.listComments);
+        commentInput = findViewById(R.id.editComment);
+        postCommentButton = findViewById(R.id.buttonPostComment);
+        postCommentButton.setOnClickListener(v -> postComment());
+
         joinLeaveButton = findViewById(R.id.btn_join_leave);
         joinLeaveButton.setOnClickListener(v -> onJoinLeaveClicked());
+
+        commentsAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, comments);//from last version making it global instead of local variable
+        commentsListView.setAdapter(commentsAdapter);
+
         invitationButtonsContainer = findViewById(R.id.invitation_buttons_container);
         acceptInvitationButton = findViewById(R.id.btn_accept_invitation);
         declineInvitationButton = findViewById(R.id.btn_decline_invitation);
         acceptInvitationButton.setOnClickListener(v -> updateInvitationStatus(WaitingListEntry.Status.ACCEPTED));
         declineInvitationButton.setOnClickListener(v -> updateInvitationStatus(WaitingListEntry.Status.DECLINED));
+        commentsListView.setOnItemClickListener((parent, view, position, id) -> {
+            if (organizermode == true) {
+                String selectedCommentId = commentIds.get(position);
+                //reference: https://developer.android.com/develop/ui/views/components/dialogs
+                new androidx.fragment.app.DialogFragment() {
+                    @Override
+                    public android.app.Dialog onCreateDialog(Bundle savedInstanceState) {
+
+                        androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(getActivity());
+
+                        builder.setMessage("Do you want to delete this comment?(No Reverse)")
+
+                                .setPositiveButton("Yes", new android.content.DialogInterface.OnClickListener() {
+                                    public void onClick(android.content.DialogInterface dialog,int id) {
+                                        organizerdeleteComment(selectedCommentId);
+                                    }
+                                })
+                                .setNegativeButton("No", new android.content.DialogInterface.OnClickListener() {
+                                    public void onClick(android.content.DialogInterface dialog,int id) {
+                                        dialog.dismiss();
+                                    }
+                                });
+
+                        return builder.create();
+                    }
+                }.show(getSupportFragmentManager(), "DELETE_COMMENT_DIALOG");
+            }
+        });
     }
 
     private void loadEventAndWaitingStatus() {
         db.collection("events").document(eventId).get()
                 .addOnSuccessListener(this::onEventLoaded)
                 .addOnFailureListener(e -> {
-                    Log.e("FirestoreError", "Failed to load event", e);  // full stack trace
-                    e.printStackTrace(); // prints stack trace in Logcat
-
+                    Log.e(TAG, "Failed to load event", e);
                     Toast.makeText(this, "Could not load event", Toast.LENGTH_SHORT).show();
                     finish();
                 });
@@ -156,6 +223,15 @@ public class EventDetailsActivity extends AppCompatActivity {
                 });
 
         refreshWaitingListCount();
+        boolean currentlyviewingasentrant = getIntent().getBooleanExtra(EXTRA_VIEW_AS_ENTRANT, true);
+
+        if (currentlyviewingasentrant == true){
+            organizermode = false;
+        }
+        else{
+            organizermode = true;
+        }
+        loadComments();
     }
 
     private void refreshWaitingListCount() {
@@ -180,6 +256,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         }
         descriptionView.setText(event.getDescription() != null && !event.getDescription().isEmpty()
                 ? event.getDescription() : "Description description description......");
+
         List<String> criteria = event.getSelectionCriteria();
         if (criteria != null && !criteria.isEmpty()) {
             StringBuilder sb = new StringBuilder();
@@ -189,6 +266,7 @@ public class EventDetailsActivity extends AppCompatActivity {
             }
             criteriaView.setText(sb.toString());
         }
+
         String posterUri = event.getPosterUri();
         if (posterUri != null && !posterUri.isEmpty()) {
             Glide.with(this).load(posterUri).centerCrop().into(posterView);
@@ -275,6 +353,7 @@ public class EventDetailsActivity extends AppCompatActivity {
             Toast.makeText(this, "No event selected", Toast.LENGTH_SHORT).show();
             return;
         }
+
         db.collection("events")
                 .document(eventId)
                 .collection("waitingList")
@@ -285,16 +364,19 @@ public class EventDetailsActivity extends AppCompatActivity {
                         Toast.makeText(this, "Invitation record not found", Toast.LENGTH_SHORT).show();
                         return;
                     }
+
                     WaitingListEntry entry = documentSnapshot.toObject(WaitingListEntry.class);
                     if (entry == null) {
                         Toast.makeText(this, "Could not read invitation", Toast.LENGTH_SHORT).show();
                         return;
                     }
+
                     String currentStatus = entry.getStatus();
                     if (!WaitingListEntry.Status.SELECTED.name().equals(currentStatus)) {
                         Toast.makeText(this, "This invitation is no longer active", Toast.LENGTH_SHORT).show();
                         return;
                     }
+
                     db.collection("events")
                             .document(eventId)
                             .collection("waitingList")
@@ -337,37 +419,165 @@ public class EventDetailsActivity extends AppCompatActivity {
                         Toast.makeText(this, "Could not load event", Toast.LENGTH_SHORT).show();
                         return;
                     }
+
                     if (!event.isRegistrationOpen()) {
                         Toast.makeText(this, "Registration is closed for this event", Toast.LENGTH_SHORT).show();
                         return;
                     }
 
-                    int limit = event.getWaitingListLimit();
-                    if (limit > 0) {
-                        // Enforce optional waiting list limit: check current count before allowing join
-                        db.collection("events").document(eventId).collection("waitingList").get()
-                                .addOnSuccessListener(waitingSnapshot -> {
-                                    int currentCount = waitingSnapshot.size();
-                                    if (currentCount >= limit) {
-                                        Toast.makeText(this, getString(R.string.waiting_list_full), Toast.LENGTH_SHORT).show();
-                                        return;
-                                    }
-                                    addToWaitingList();
-                                })
-                                .addOnFailureListener(e ->
-                                        Toast.makeText(this, "Failed to check waiting list", Toast.LENGTH_SHORT).show());
+                    if (event.isGeolocationRequired()) {
+                        captureLocationOnceThenAddToWaitingList(event);
                     } else {
-                        addToWaitingList();
+                        checkLimitThenAddToWaitingList(event);
                     }
                 })
-                .addOnFailureListener(e ->
-                        Toast.makeText(this, "Failed to load event", Toast.LENGTH_SHORT).show());
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Failed to load event for join", e);
+                    Toast.makeText(this, "Failed to load event", Toast.LENGTH_SHORT).show();
+                });
+    }
+
+    /** One-time location capture only; never uses requestLocationUpdates or live tracking. */
+    private void captureLocationOnceThenAddToWaitingList(Event event) {
+        pendingJoinEvent = event;
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(
+                    this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    REQUEST_LOCATION_FOR_JOIN
+            );
+            return;
+        }
+
+        fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null)
+                .addOnSuccessListener(this, location -> {
+                    if (location != null) {
+                        Log.d(TAG, "captureLocationOnceThenAddToWaitingList: got current location lat="
+                                + location.getLatitude() + " lng=" + location.getLongitude());
+
+                        updateUserProfileWithLocationOnce(
+                                location.getLatitude(),
+                                location.getLongitude(),
+                                () -> checkLimitThenAddToWaitingList(event)
+                        );
+                    } else {
+                        Log.w(TAG, "captureLocationOnceThenAddToWaitingList: current location was null");
+                        Toast.makeText(
+                                this,
+                                getString(R.string.location_unavailable_joining_without),
+                                Toast.LENGTH_SHORT
+                        ).show();
+                        checkLimitThenAddToWaitingList(event);
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "captureLocationOnceThenAddToWaitingList: failed to get current location", e);
+                    Toast.makeText(
+                            this,
+                            getString(R.string.location_unavailable_joining_without),
+                            Toast.LENGTH_SHORT
+                    ).show();
+                    checkLimitThenAddToWaitingList(event);
+                });
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_LOCATION_FOR_JOIN && pendingJoinEvent != null) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                captureLocationOnceThenAddToWaitingList(pendingJoinEvent);
+            } else {
+                Toast.makeText(this, getString(R.string.location_unavailable_joining_without), Toast.LENGTH_SHORT).show();
+                checkLimitThenAddToWaitingList(pendingJoinEvent);
+            }
+            pendingJoinEvent = null;
+        }
+    }
+
+    private void checkLimitThenAddToWaitingList(Event event) {
+        int limit = event.getWaitingListLimit();
+        if (limit > 0) {
+            db.collection("events").document(eventId).collection("waitingList").get()
+                    .addOnSuccessListener(waitingSnapshot -> {
+                        int currentCount = waitingSnapshot.size();
+                        Log.d(TAG, "checkLimitThenAddToWaitingList: currentCount=" + currentCount + " limit=" + limit);
+
+                        if (currentCount >= limit) {
+                            Toast.makeText(this, getString(R.string.waiting_list_full), Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                        addToWaitingList();
+                    })
+                    .addOnFailureListener(e -> {
+                        Log.e(TAG, "Failed to check waiting list", e);
+                        Toast.makeText(this, "Failed to check waiting list", Toast.LENGTH_SHORT).show();
+                    });
+        } else {
+            addToWaitingList();
+        }
+    }
+
+    /**
+     * Saves a one-time location snapshot to the entrant profile; then runs onDone.
+     * Lat/lng are saved immediately. Reverse geocoding is best-effort only.
+     */
+    private void updateUserProfileWithLocationOnce(double latitude, double longitude, Runnable onDone) {
+        db.collection("users").document(deviceId).get()
+                .addOnSuccessListener(doc -> {
+                    Entrant entrant = doc.exists() && doc.toObject(Entrant.class) != null
+                            ? doc.toObject(Entrant.class)
+                            : new Entrant(deviceId, "", "", "", "entrant");
+
+                    if (entrant == null) {
+                        entrant = new Entrant(deviceId, "", "", "", "entrant");
+                    }
+
+                    entrant.setLatitude(latitude);
+                    entrant.setLongitude(longitude);
+
+                    Entrant finalEntrant = entrant;
+
+                    db.collection("users").document(deviceId).set(finalEntrant)
+                            .addOnSuccessListener(unused -> {
+                                Log.d(TAG, "updateUserProfileWithLocationOnce: saved lat/lng for deviceId=" + deviceId);
+                                onDone.run();
+
+                                new Thread(() -> {
+                                    try {
+                                        Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+                                        List<Address> list = geocoder.getFromLocation(latitude, longitude, 1);
+                                        if (list != null && !list.isEmpty() && list.get(0).getAddressLine(0) != null) {
+                                            String addr = list.get(0).getAddressLine(0);
+
+                                            db.collection("users").document(deviceId)
+                                                    .update("locationAddress", addr)
+                                                    .addOnSuccessListener(x ->
+                                                            Log.d(TAG, "updateUserProfileWithLocationOnce: saved locationAddress"))
+                                                    .addOnFailureListener(e ->
+                                                            Log.e(TAG, "updateUserProfileWithLocationOnce: failed to save locationAddress", e));
+                                        }
+                                    } catch (Exception e) {
+                                        Log.e(TAG, "Geocode for join", e);
+                                    }
+                                }).start();
+                            })
+                            .addOnFailureListener(e -> {
+                                Log.e(TAG, "updateUserProfileWithLocationOnce: failed saving lat/lng", e);
+                                onDone.run();
+                            });
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "updateUserProfileWithLocationOnce: failed reading user profile", e);
+                    onDone.run();
+                });
     }
 
     /** Adds the current user to the event waiting list. Call after registration open and limit checks. */
     private void addToWaitingList() {
-        WaitingListEntry entry =
-                new WaitingListEntry(deviceId, WaitingListEntry.Status.PENDING);
+        WaitingListEntry entry = new WaitingListEntry(deviceId, WaitingListEntry.Status.PENDING);
 
         db.collection("events")
                 .document(eventId)
@@ -375,14 +585,17 @@ public class EventDetailsActivity extends AppCompatActivity {
                 .document(deviceId)
                 .set(entry)
                 .addOnSuccessListener(aVoid -> {
+                    Log.d(TAG, "addToWaitingList: success for deviceId=" + deviceId);
                     onWaitingList = true;
                     waitingListStatus = WaitingListEntry.Status.PENDING.name();
                     updateStatusAndButton();
                     refreshWaitingListCount();
                     Toast.makeText(this, "You have joined the waiting list", Toast.LENGTH_SHORT).show();
                 })
-                .addOnFailureListener(e ->
-                        Toast.makeText(this, "Failed to join", Toast.LENGTH_SHORT).show());
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "addToWaitingList: failed", e);
+                    Toast.makeText(this, "Failed to join", Toast.LENGTH_SHORT).show();
+                });
     }
 
     private void leaveWaitingList() {
@@ -398,5 +611,79 @@ public class EventDetailsActivity extends AppCompatActivity {
                 })
                 .addOnFailureListener(e ->
                         Toast.makeText(this, "Failed to leave", Toast.LENGTH_SHORT).show());
+    }
+
+    //fetches and shows comments
+    private void loadComments() {
+        if (eventId == null || eventId.isEmpty()) return;
+
+        db.collection("events")
+                .document(eventId)
+                .collection("comments")
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    //ArrayList<String> comments = new ArrayList<>();
+
+                    comments.clear();
+                    commentIds.clear();
+
+                    for (DocumentSnapshot doc : querySnapshot.getDocuments()) {
+                        String text = doc.getString("text");
+                        if (text != null) {
+                            comments.add(text);
+                            commentIds.add(doc.getId());
+                        }
+                    }
+                    commentsAdapter.notifyDataSetChanged();
+                    //ArrayAdapter<String> adapter =
+                            //new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, comments);
+
+
+                    //commentsListView.setAdapter(adapter);
+                })
+                .addOnFailureListener(e ->
+                        Toast.makeText(this, "Failed to load comments", Toast.LENGTH_SHORT).show());
+    }
+
+    //gets text from input, saves to events/{eventId}/comments, refreshes comments after posting
+    private void postComment() {
+        String text = commentInput.getText().toString().trim();
+
+        if (text.isEmpty()) {
+            Toast.makeText(this, "Enter a comment", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        Map<String, Object> comment = new HashMap<>();
+        comment.put("text", text);
+        comment.put("deviceId", deviceId);
+        comment.put("timestamp", System.currentTimeMillis());
+
+        db.collection("events")
+                .document(eventId)
+                .collection("comments")
+                .add(comment)
+                .addOnSuccessListener(docRef -> {
+                    Toast.makeText(this, "Comment posted", Toast.LENGTH_SHORT).show();
+                    commentInput.setText("");
+                    loadComments(); // refresh list
+                })
+                .addOnFailureListener(e ->
+                        Toast.makeText(this, "Failed to post comment", Toast.LENGTH_SHORT).show());
+    }
+
+    //organizer delete comment
+    private void organizerdeleteComment(String commentidtobedeleted) {
+        db.collection("events")
+                .document(eventId)
+                .collection("comments")
+                .document(commentidtobedeleted)
+                .delete()
+                .addOnSuccessListener(docRef -> {
+                    Toast.makeText(this, "Comment deleted", Toast.LENGTH_SHORT).show();
+                    loadComments();// refresh list
+                })
+                .addOnFailureListener(e ->
+                        Toast.makeText(this, "Failed to delete comment", Toast.LENGTH_SHORT).show());
     }
 }

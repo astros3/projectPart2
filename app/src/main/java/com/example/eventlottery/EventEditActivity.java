@@ -32,14 +32,16 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.bumptech.glide.Glide;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Calendar;
 import java.util.Locale;
 
 /**
- * Create/edit event screen (US 02.01.01, 02.01.04). Create: no EXTRA_EVENT_ID; Edit: pass
- * EXTRA_EVENT_ID. Enforces organizer-only; saves geolocation and optional waiting list limit.
+ * Create/edit event screen (US 02.01.01, 02.01.04, 01.05.05). Create: no EXTRA_EVENT_ID;
+ * Edit: pass EXTRA_EVENT_ID. Enforces organizer-only; saves geolocation, optional waiting
+ * list limit, and lottery selection criteria (US 01.05.05).
  */
 public class EventEditActivity extends AppCompatActivity {
 
@@ -55,7 +57,8 @@ public class EventEditActivity extends AppCompatActivity {
     private String deviceId;
     private String organizerName;
 
-    private TextInputEditText inputName, inputDescription, inputLocation, inputRegStart, inputRegEnd, inputLimit;
+    private TextInputEditText inputName, inputDescription, inputLocation,
+            inputRegStart, inputRegEnd, inputLimit, inputSelectionCriteria;
     private TextInputLayout inputLayoutLocation;
     private Spinner spinnerEventType;
     private MaterialSwitch switchGeolocation;
@@ -86,7 +89,7 @@ public class EventEditActivity extends AppCompatActivity {
         eventId = getIntent().getStringExtra(EXTRA_EVENT_ID);
         db = FirebaseFirestore.getInstance();
         deviceId = DeviceIdManager.getDeviceId(this);
-        organizerName = null; // Set from organizer account when creating; from event when editing
+        organizerName = null;
 
         bindViews();
         setupToolbar();
@@ -99,27 +102,26 @@ public class EventEditActivity extends AppCompatActivity {
         if (eventId != null && !eventId.isEmpty()) {
             loadEvent();
         } else {
-            // Create mode: only organizer accounts can create events
             ensureOrganizerAccountThenAllowCreate();
         }
     }
 
     private void bindViews() {
-        inputName = findViewById(R.id.input_event_name);
-        inputDescription = findViewById(R.id.input_event_description);
-        inputLocation = findViewById(R.id.input_event_location);
-        inputRegStart = findViewById(R.id.input_registration_start);
-        inputRegEnd = findViewById(R.id.input_registration_end);
-        inputLimit = findViewById(R.id.input_waiting_list_limit);
-        spinnerEventType = findViewById(R.id.spinner_event_type);
-        switchGeolocation = findViewById(R.id.switch_geolocation);
-        btnConfirm = findViewById(R.id.btn_confirm);
-
-        eventImageContainer = findViewById(R.id.event_image_container);
-        posterImageView = findViewById(R.id.event_poster_placeholder);
-        posterPlaceholderText = findViewById(R.id.event_image_placeholder_text);
-        btnRemovePoster = findViewById(R.id.btn_remove_poster);
-        inputLayoutLocation = findViewById(R.id.input_layout_event_location);
+        inputName              = findViewById(R.id.input_event_name);
+        inputDescription       = findViewById(R.id.input_event_description);
+        inputLocation          = findViewById(R.id.input_event_location);
+        inputRegStart          = findViewById(R.id.input_registration_start);
+        inputRegEnd            = findViewById(R.id.input_registration_end);
+        inputLimit             = findViewById(R.id.input_waiting_list_limit);
+        inputSelectionCriteria = findViewById(R.id.input_selection_criteria); // US 01.05.05
+        spinnerEventType       = findViewById(R.id.spinner_event_type);
+        switchGeolocation      = findViewById(R.id.switch_geolocation);
+        btnConfirm             = findViewById(R.id.btn_confirm);
+        eventImageContainer    = findViewById(R.id.event_image_container);
+        posterImageView        = findViewById(R.id.event_poster_placeholder);
+        posterPlaceholderText  = findViewById(R.id.event_image_placeholder_text);
+        btnRemovePoster        = findViewById(R.id.btn_remove_poster);
+        inputLayoutLocation    = findViewById(R.id.input_layout_event_location);
     }
 
     /** Registers image picker launcher and sets tap/remove behaviour for poster area. */
@@ -163,7 +165,6 @@ public class EventEditActivity extends AppCompatActivity {
         }
 
         List<Place.Field> fields = Arrays.asList(Place.Field.ADDRESS, Place.Field.NAME, Place.Field.LAT_LNG);
-        // OVERLAY keeps the search in the same activity so it doesn't close after first keystroke
         Intent autocompleteIntent = new Autocomplete.IntentBuilder(AutocompleteActivityMode.OVERLAY, fields)
                 .build(this);
 
@@ -193,7 +194,8 @@ public class EventEditActivity extends AppCompatActivity {
 
     private String getPlacesApiKey() {
         try {
-            android.content.pm.ApplicationInfo ai = getPackageManager().getApplicationInfo(getPackageName(), PackageManager.GET_META_DATA);
+            android.content.pm.ApplicationInfo ai = getPackageManager().getApplicationInfo(
+                    getPackageName(), PackageManager.GET_META_DATA);
             if (ai != null && ai.metaData != null) {
                 return ai.metaData.getString("com.google.android.geo.API_KEY");
             }
@@ -235,7 +237,8 @@ public class EventEditActivity extends AppCompatActivity {
                 (view, year, month, dayOfMonth) -> {
                     cal.set(year, month, dayOfMonth, 0, 0, 0);
                     cal.set(Calendar.MILLISECOND, 0);
-                    String formatted = String.format(Locale.getDefault(), "%04d-%02d-%02d", year, month + 1, dayOfMonth);
+                    String formatted = String.format(Locale.getDefault(),
+                            "%04d-%02d-%02d", year, month + 1, dayOfMonth);
                     if (isStart) {
                         registrationStartMillis = cal.getTimeInMillis();
                         inputRegStart.setText(formatted);
@@ -250,6 +253,22 @@ public class EventEditActivity extends AppCompatActivity {
 
     private void setupConfirmButton() {
         btnConfirm.setOnClickListener(v -> saveEvent());
+        eventImageContainer.setOnClickListener(v -> openImagePicker());
+    }
+
+    private void openImagePicker() {
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("image/*");
+        startActivityForResult(intent, 1001);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1001 && resultCode == RESULT_OK && data != null) {
+            selectedPosterUri = data.getData();
+            posterImageView.setImageURI(selectedPosterUri);
+        }
     }
 
     private void loadEvent() {
@@ -267,7 +286,6 @@ public class EventEditActivity extends AppCompatActivity {
                         return;
                     }
                     event.setEventId(doc.getId());
-                    // Only the organizer who created the event can edit it
                     if (!deviceId.equals(event.getOrganizerId())) {
                         Toast.makeText(this, R.string.only_organizer_edit, Toast.LENGTH_SHORT).show();
                         finish();
@@ -284,7 +302,6 @@ public class EventEditActivity extends AppCompatActivity {
 
     /**
      * Create mode: ensure current device has an organizer account; if not, offer to register.
-     * Organizers and entrants are separate account types (different collections).
      */
     private void ensureOrganizerAccountThenAllowCreate() {
         db.collection(COLLECTION_ORGANIZERS).document(deviceId).get()
@@ -301,7 +318,6 @@ public class EventEditActivity extends AppCompatActivity {
             organizerName = organizer != null ? organizer.getFullName() : "Organizer";
             return;
         }
-        // No organizer account: only organizer accounts can create events
         new AlertDialog.Builder(this)
                 .setMessage(getString(R.string.only_organizers_create) + " " + getString(R.string.register_as_organizer))
                 .setNegativeButton(android.R.string.cancel, (d, w) -> finish())
@@ -311,7 +327,7 @@ public class EventEditActivity extends AppCompatActivity {
     }
 
     private void registerAsOrganizer() {
-        Organizer organizer = new Organizer(deviceId, "Organizer"); // placeholder until they set profile
+        Organizer organizer = new Organizer(deviceId, "Organizer");
         db.collection(COLLECTION_ORGANIZERS).document(deviceId).set(organizer)
                 .addOnSuccessListener(aVoid -> {
                     organizerName = organizer.getFullName();
@@ -327,8 +343,8 @@ public class EventEditActivity extends AppCompatActivity {
         inputName.setText(event.getTitle());
         inputDescription.setText(event.getDescription());
         inputLocation.setText(event.getLocation());
-        // Existing event with location is treated as valid (e.g. created before Places requirement)
-        locationSelectedFromPlaces = (event.getLocation() != null && !event.getLocation().trim().isEmpty());
+        locationSelectedFromPlaces = (event.getLocation() != null
+                && !event.getLocation().trim().isEmpty());
 
         // Show existing poster when editing; track for "keep" on save
         existingPosterUri = event.getPosterUri();
@@ -344,11 +360,12 @@ public class EventEditActivity extends AppCompatActivity {
             existingPosterUri = null;
         }
 
-        inputLimit.setText(event.getWaitingListLimit() > 0 ? String.valueOf(event.getWaitingListLimit()) : "");
+        inputLimit.setText(event.getWaitingListLimit() > 0
+                ? String.valueOf(event.getWaitingListLimit()) : "");
         switchGeolocation.setChecked(event.isGeolocationRequired());
 
         registrationStartMillis = event.getRegistrationStartMillis();
-        registrationEndMillis = event.getRegistrationEndMillis();
+        registrationEndMillis   = event.getRegistrationEndMillis();
         if (registrationStartMillis > 0) {
             inputRegStart.setText(formatDateForDisplay(registrationStartMillis));
         }
@@ -356,8 +373,11 @@ public class EventEditActivity extends AppCompatActivity {
             inputRegEnd.setText(formatDateForDisplay(registrationEndMillis));
         }
 
-        String type = event.getTitle(); // Event doesn't have type field; use first type for now
-        // Spinner selection by index if we had type stored - skip for simplicity
+        // US 01.05.05 — load existing selection criteria into the field
+        List<String> criteria = event.getSelectionCriteria();
+        if (criteria != null && !criteria.isEmpty()) {
+            inputSelectionCriteria.setText(android.text.TextUtils.join("\n", criteria));
+        }
     }
 
     private String formatDateForDisplay(long millis) {
@@ -368,7 +388,8 @@ public class EventEditActivity extends AppCompatActivity {
     }
 
     private void saveEvent() {
-        String title = inputName.getText() != null ? inputName.getText().toString().trim() : "";
+        String title = inputName.getText() != null
+                ? inputName.getText().toString().trim() : "";
         if (title.isEmpty()) {
             Toast.makeText(this, R.string.fill_required_fields, Toast.LENGTH_SHORT).show();
             return;
@@ -382,7 +403,8 @@ public class EventEditActivity extends AppCompatActivity {
             return;
         }
 
-        String location = inputLocation.getText() != null ? inputLocation.getText().toString().trim() : "";
+        String location = inputLocation.getText() != null
+                ? inputLocation.getText().toString().trim() : "";
         if (location.isEmpty() || !locationSelectedFromPlaces) {
             if (inputLayoutLocation != null) {
                 inputLayoutLocation.setError(getString(R.string.event_location_required));
@@ -394,14 +416,27 @@ public class EventEditActivity extends AppCompatActivity {
             inputLayoutLocation.setError(null);
         }
 
-        String description = inputDescription.getText() != null ? inputDescription.getText().toString().trim() : "";
+        String description = inputDescription.getText() != null
+                ? inputDescription.getText().toString().trim() : "";
 
         int limit = 0;
-        String limitStr = inputLimit.getText() != null ? inputLimit.getText().toString().trim() : "";
+        String limitStr = inputLimit.getText() != null
+                ? inputLimit.getText().toString().trim() : "";
         if (!limitStr.isEmpty()) {
             try {
                 limit = Integer.parseInt(limitStr);
             } catch (NumberFormatException ignored) { }
+        }
+
+        // US 01.05.05 — parse selection criteria (one per line)
+        List<String> criteriaList = new ArrayList<>();
+        String criteriaText = inputSelectionCriteria.getText() != null
+                ? inputSelectionCriteria.getText().toString().trim() : "";
+        if (!criteriaText.isEmpty()) {
+            for (String line : criteriaText.split("\n")) {
+                String trimmed = line.trim();
+                if (!trimmed.isEmpty()) criteriaList.add(trimmed);
+            }
         }
 
         boolean isCreate = eventId == null || eventId.isEmpty();
@@ -420,8 +455,9 @@ public class EventEditActivity extends AppCompatActivity {
         event.setWaitingListLimit(limit);
         event.setRegistrationStartMillis(registrationStartMillis);
         event.setRegistrationEndMillis(registrationEndMillis);
-        event.setEventDateMillis(registrationEndMillis); // Use reg end as placeholder for event date
+        event.setEventDateMillis(registrationEndMillis);
         event.setGeolocationRequired(switchGeolocation.isChecked());
+        event.setSelectionCriteria(criteriaList); // US 01.05.05
 
         if (isCreate) {
             eventId = db.collection("events").document().getId();
@@ -430,22 +466,21 @@ public class EventEditActivity extends AppCompatActivity {
         }
 
         if (selectedPosterUri != null) {
-            // Upload poster to Firebase Storage and use download URL in event
             uploadPosterAndThenSave(event, isCreate);
         } else {
-            // No new poster: create saves without poster; update keeps existing poster
             persistEvent(event, isCreate);
         }
     }
 
-    /** Uploads selected image to Storage at events/{eventId}/poster, then persists event with download URL. */
+    /** Uploads selected image to Storage at events/{eventId}/poster, then persists event. */
     private void uploadPosterAndThenSave(Event event, boolean isCreate) {
         StorageReference posterRef = FirebaseStorage.getInstance().getReference()
                 .child("events").child(eventId).child("poster.jpg");
         posterRef.putFile(selectedPosterUri)
                 .continueWithTask(task -> {
                     if (!task.isSuccessful()) {
-                        return Tasks.forException(task.getException() != null ? task.getException() : new Exception("Upload failed"));
+                        return Tasks.forException(task.getException() != null
+                                ? task.getException() : new Exception("Upload failed"));
                     }
                     return posterRef.getDownloadUrl();
                 })
@@ -453,9 +488,10 @@ public class EventEditActivity extends AppCompatActivity {
                     event.setPosterUri(downloadUri.toString());
                     persistEvent(event, isCreate);
                 })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(this, "Failed to upload poster: " + (e.getMessage() != null ? e.getMessage() : "unknown"), Toast.LENGTH_LONG).show();
-                });
+                .addOnFailureListener(e ->
+                        Toast.makeText(this, "Failed to upload poster: "
+                                        + (e.getMessage() != null ? e.getMessage() : "unknown"),
+                                Toast.LENGTH_LONG).show());
     }
 
     private void persistEvent(Event event, boolean isCreate) {
@@ -490,15 +526,20 @@ public class EventEditActivity extends AppCompatActivity {
                         existing.setRegistrationEndMillis(event.getRegistrationEndMillis());
                         existing.setEventDateMillis(event.getEventDateMillis());
                         existing.setGeolocationRequired(event.isGeolocationRequired());
-                        existing.setPosterUri(event.getPosterUri());
+                        existing.setSelectionCriteria(event.getSelectionCriteria()); // US 01.05.05
+                        if (event.getPosterUri() != null) {
+                            existing.setPosterUri(event.getPosterUri());
+                        }
 
                         db.collection("events").document(eventId).set(existing)
                                 .addOnSuccessListener(aVoid -> {
-                                    Toast.makeText(this, R.string.event_updated_success, Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(this, R.string.event_updated_success,
+                                            Toast.LENGTH_SHORT).show();
                                     finish();
                                 })
                                 .addOnFailureListener(e ->
-                                        Toast.makeText(this, "Failed to update event", Toast.LENGTH_SHORT).show());
+                                        Toast.makeText(this, "Failed to update event",
+                                                Toast.LENGTH_SHORT).show());
                     })
                     .addOnFailureListener(e ->
                             Toast.makeText(this, "Could not load event", Toast.LENGTH_SHORT).show());

@@ -50,7 +50,7 @@ public class SelectedList extends Fragment {
                     .update("status", WaitingListEntry.Status.CANCELLED.name())
                     .addOnSuccessListener(unused -> loadSelectedEntries())
                     .addOnFailureListener(e ->
-                            Toast.makeText(getContext(), "Failed to remove selected entrant", Toast.LENGTH_SHORT).show());
+                            Toast.makeText(getContext(), "Failed to cancel entrant", Toast.LENGTH_SHORT).show());
         });
 
         listSelectedEntrants.setAdapter(adapter);
@@ -58,6 +58,8 @@ public class SelectedList extends Fragment {
         view.findViewById(R.id.buttonBack).setOnClickListener(v ->
                 NavHostFragment.findNavController(SelectedList.this)
                         .navigate(R.id.Selected_list_to_OrganizerNavigationFragment));
+
+        view.findViewById(R.id.buttonNotifySelected).setOnClickListener(v -> notifyChosenEntrants());
 
         loadSelectedEntries();
     }
@@ -138,5 +140,49 @@ public class SelectedList extends Fragment {
                         }
                     });
         }
+    }
+
+    /**
+     * Organizer action: send the same lottery-win / sign-up notification as the draw,
+     * to every entrant currently in SELECTED status for this event.
+     */
+    private void notifyChosenEntrants() {
+        if (eventId == null || eventId.isEmpty()) {
+            Toast.makeText(getContext(), "No current event selected", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        db.collection("events")
+                .document(eventId)
+                .collection("waitingList")
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    int sent = 0;
+                    for (DocumentSnapshot doc : querySnapshot.getDocuments()) {
+                        WaitingListEntry entry = doc.toObject(WaitingListEntry.class);
+                        if (entry == null
+                                || !WaitingListEntry.Status.SELECTED.name().equals(entry.getStatus())) {
+                            continue;
+                        }
+                        String deviceId = entry.getDeviceId();
+                        if (deviceId == null || deviceId.isEmpty()) {
+                            deviceId = doc.getId();
+                        }
+                        if (deviceId == null || deviceId.isEmpty()) {
+                            continue;
+                        }
+                        NotificationHelper.sendLotteryWinNotification(db, deviceId, eventId);
+                        sent++;
+                    }
+                    if (sent == 0) {
+                        Toast.makeText(getContext(), R.string.notify_chosen_entrants_none, Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(getContext(),
+                                getString(R.string.notify_chosen_entrants_sent, sent),
+                                Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .addOnFailureListener(e ->
+                        Toast.makeText(getContext(), "Failed to load selected entrants", Toast.LENGTH_SHORT).show());
     }
 }

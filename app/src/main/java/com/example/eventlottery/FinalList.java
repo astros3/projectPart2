@@ -71,6 +71,7 @@ public class FinalList extends Fragment {
                         .navigate(R.id.Final_list_to_OrganizerNavigationFragment));
 
         view.findViewById(R.id.buttonExportCsv).setOnClickListener(v -> exportFinalListCsv());
+        view.findViewById(R.id.buttonNotifyCancelled).setOnClickListener(v -> notifyCancelledEntrants());
 
         loadAcceptedEntries();
     }
@@ -109,6 +110,50 @@ public class FinalList extends Fragment {
                 })
                 .addOnFailureListener(e ->
                         Toast.makeText(getContext(), "Failed to load final list", Toast.LENGTH_SHORT).show());
+    }
+
+    //finds all the entrants, filters out the cancelled and sends a notification to each of them
+    private void notifyCancelledEntrants() {
+        if (eventId == null || eventId.isEmpty()) {
+            Toast.makeText(getContext(), "No current event selected", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        db.collection("events")
+                .document(eventId)
+                .collection("waitingList")
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    int sent = 0;
+                    for (DocumentSnapshot doc : querySnapshot.getDocuments()) {
+                        WaitingListEntry entry = doc.toObject(WaitingListEntry.class);
+
+                        // ONLY cancelled entrants
+                        if (entry == null ||
+                                !WaitingListEntry.Status.CANCELLED.name().equals(entry.getStatus())) {
+                            continue;
+                        }
+
+                        String deviceId = entry.getDeviceId();
+                        if (deviceId == null || deviceId.isEmpty()) {
+                            deviceId = doc.getId();
+                        }
+                        if (deviceId == null || deviceId.isEmpty()) {
+                            continue;
+                        }
+
+                        NotificationHelper.sendLotteryWinNotification(db, deviceId, eventId);
+                        sent++;
+                    }
+
+                    if (sent == 0) {
+                        Toast.makeText(getContext(), "No cancelled entrants to notify", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(getContext(), "Notified " + sent + " cancelled entrants", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .addOnFailureListener(e ->
+                        Toast.makeText(getContext(), "Failed to load cancelled entrants", Toast.LENGTH_SHORT).show());
     }
 
     /** Fetches entrant display names from users/{deviceId} and updates the adapter. Never exposes device ID in UI. */

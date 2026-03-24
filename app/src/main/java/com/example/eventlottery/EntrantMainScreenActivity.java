@@ -36,7 +36,7 @@ import java.util.Map;
 
 /**
  * Entrant home: lists all events from Firestore, shows pending/accepted counts for current
- * user. QR scan opens EventDetailsActivity. Filter and notification buttons not implemented.
+ * user. QR scan opens EventDetailsActivity. Bell opens EntrantNotificationsActivity.
  */
 public class EntrantMainScreenActivity extends AppCompatActivity {
 
@@ -231,12 +231,8 @@ public class EntrantMainScreenActivity extends AppCompatActivity {
 
 
 
-        //navigates to notification activity
-        //notification activity not yet implemented
-        notificationbellbutton.setOnClickListener(v -> {
-            //Intent intent = new Intent(EntrantMainScreenActivity.this, //destination.class);
-            //startActivity(intent);
-        });
+        notificationbellbutton.setOnClickListener(v ->
+                startActivity(new Intent(EntrantMainScreenActivity.this, EntrantNotificationsActivity.class)));
 
         //navigates to filtering activity
         //!!!!awaiting!!!!

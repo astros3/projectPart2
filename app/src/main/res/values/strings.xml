@@ -7,8 +7,13 @@
     <string name="export_csv_no_entrants">No entrants to export.</string>
     <string name="export_csv_failed">Could not export CSV.</string>
     <string name="notifications">Notifications</string>
+    <string name="notification_empty">No notifications yet</string>
+    <string name="notification_load_failed">Could not load notifications</string>
     <string name="cancelled_entrants">Cancelled Entrants</string>
     <string name="selected_entrants">Selected Entrants</string>
+    <string name="notify_chosen_entrants">Notify chosen entrants (lottery)</string>
+    <string name="notify_chosen_entrants_sent">Notifications sent to %1$d chosen entrant(s)</string>
+    <string name="notify_chosen_entrants_none">No chosen entrants to notify</string>
     <string name="waiting_list_decision_making">Waiting List (Decision Making)</string>
     <string name="lottery_draw">Lottery Draw</string>
     <string name="view_geolocation">View Geolocation</string>
@@ -90,6 +95,9 @@
 
     <string name="qr_scan_hint">Scan this QR code to view event details and join the waiting list</string>
     <string name="back">Back</string>
+    <string name="event_location_label">EVENT_LOCATION_LABEL</string>
+    <string name="event_location_not_set">EVENT_LOCATION_NOT SET</string>
+    <string name="location_unavailable_joining_without">location_unavailable</string>
 
     <!-- Event types for spinner -->
     <string-array name="event_types">

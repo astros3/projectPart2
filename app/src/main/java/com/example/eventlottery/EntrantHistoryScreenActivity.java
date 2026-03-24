@@ -141,12 +141,8 @@ public class EntrantHistoryScreenActivity extends AppCompatActivity {
                     }
                 });
 
-        //navigates to notification activity
-        //notification activity not yet implemented
-        notificationbellbutton.setOnClickListener(v -> {
-            //Intent intent = new Intent(EntrantMainScreenActivity.this, //destination.class);
-            //startActivity(intent);
-        });
+        notificationbellbutton.setOnClickListener(v ->
+                startActivity(new Intent(EntrantHistoryScreenActivity.this, EntrantNotificationsActivity.class)));
 
 
         //navigates to home activity

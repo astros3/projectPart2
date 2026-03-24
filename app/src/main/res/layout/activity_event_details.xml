@@ -166,6 +166,32 @@
                 android:lineSpacingExtra="4dp"
                 android:text="@string/selection_criteria_placeholder" />
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Comments"
+                android:textStyle="bold"
+                android:layout_marginTop="16dp"/>
+
+            <ListView
+                android:id="@+id/listComments"
+                android:layout_width="match_parent"
+                android:layout_height="150dp"/>
+
+            <EditText
+                android:id="@+id/editComment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Write a comment"
+                android:layout_marginTop="8dp"/>
+
+            <Button
+                android:id="@+id/buttonPostComment"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Post Comment"
+                android:layout_marginTop="8dp"/>
+
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

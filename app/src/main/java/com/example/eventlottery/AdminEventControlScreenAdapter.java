@@ -108,7 +108,7 @@ public class AdminEventControlScreenAdapter extends ArrayAdapter<Event> {
         adminviewdetailbutton.setOnClickListener(v -> {
             Intent intent = new Intent(context, EventDetailsActivity.class);
             intent.putExtra(EventDetailsActivity.EXTRA_EVENT_ID, event.getEventId());
-            intent.putExtra(EventDetailsActivity.EXTRA_VIEW_AS_ENTRANT, true);
+            intent.putExtra(EventDetailsActivity.EXTRA_VIEW_AS_ENTRANT, false);
             context.startActivity(intent);
         });
 
