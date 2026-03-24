@@ -135,6 +135,7 @@ public class OrganizerDashboardFragment extends Fragment {
 
         Bundle bundle = new Bundle();
         bundle.putString("eventId", event.getEventId());
+        bundle.putBoolean(EventDetailsActivity.EXTRA_VIEW_AS_ENTRANT, false);
 
         NavHostFragment.findNavController(this)
                 .navigate(R.id.action_dashboard_to_navigation, bundle);

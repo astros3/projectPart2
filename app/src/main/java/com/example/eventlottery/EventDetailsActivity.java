@@ -74,6 +74,11 @@ public class EventDetailsActivity extends AppCompatActivity {
     private LinearLayout invitationButtonsContainer;
     private MaterialButton acceptInvitationButton;
     private MaterialButton declineInvitationButton;
+    private boolean organizermode = false;
+    private final ArrayList<String> comments = new ArrayList<>();
+    private final ArrayList<String> commentIds = new ArrayList<>();
+    private ArrayAdapter<String> commentsAdapter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -136,13 +141,46 @@ public class EventDetailsActivity extends AppCompatActivity {
         commentInput = findViewById(R.id.editComment);
         postCommentButton = findViewById(R.id.buttonPostComment);
         postCommentButton.setOnClickListener(v -> postComment());
+
         joinLeaveButton = findViewById(R.id.btn_join_leave);
         joinLeaveButton.setOnClickListener(v -> onJoinLeaveClicked());
+
+        commentsAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, comments);//from last version making it global instead of local variable
+        commentsListView.setAdapter(commentsAdapter);
+
         invitationButtonsContainer = findViewById(R.id.invitation_buttons_container);
         acceptInvitationButton = findViewById(R.id.btn_accept_invitation);
         declineInvitationButton = findViewById(R.id.btn_decline_invitation);
         acceptInvitationButton.setOnClickListener(v -> updateInvitationStatus(WaitingListEntry.Status.ACCEPTED));
         declineInvitationButton.setOnClickListener(v -> updateInvitationStatus(WaitingListEntry.Status.DECLINED));
+        commentsListView.setOnItemClickListener((parent, view, position, id) -> {
+            if (organizermode == true) {
+                String selectedCommentId = commentIds.get(position);
+                //reference: https://developer.android.com/develop/ui/views/components/dialogs
+                new androidx.fragment.app.DialogFragment() {
+                    @Override
+                    public android.app.Dialog onCreateDialog(Bundle savedInstanceState) {
+
+                        androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(getActivity());
+
+                        builder.setMessage("Do you want to delete this comment?(No Reverse)")
+
+                                .setPositiveButton("Yes", new android.content.DialogInterface.OnClickListener() {
+                                    public void onClick(android.content.DialogInterface dialog,int id) {
+                                        organizerdeleteComment(selectedCommentId);
+                                    }
+                                })
+                                .setNegativeButton("No", new android.content.DialogInterface.OnClickListener() {
+                                    public void onClick(android.content.DialogInterface dialog,int id) {
+                                        dialog.dismiss();
+                                    }
+                                });
+
+                        return builder.create();
+                    }
+                }.show(getSupportFragmentManager(), "DELETE_COMMENT_DIALOG");
+            }
+        });
     }
 
     private void loadEventAndWaitingStatus() {
@@ -185,6 +223,14 @@ public class EventDetailsActivity extends AppCompatActivity {
                 });
 
         refreshWaitingListCount();
+        boolean currentlyviewingasentrant = getIntent().getBooleanExtra(EXTRA_VIEW_AS_ENTRANT, true);
+
+        if (currentlyviewingasentrant == true){
+            organizermode = false;
+        }
+        else{
+            organizermode = true;
+        }
         loadComments();
     }
 
@@ -576,19 +622,24 @@ public class EventDetailsActivity extends AppCompatActivity {
                 .collection("comments")
                 .get()
                 .addOnSuccessListener(querySnapshot -> {
-                    ArrayList<String> comments = new ArrayList<>();
+                    //ArrayList<String> comments = new ArrayList<>();
+
+                    comments.clear();
+                    commentIds.clear();
 
                     for (DocumentSnapshot doc : querySnapshot.getDocuments()) {
                         String text = doc.getString("text");
                         if (text != null) {
                             comments.add(text);
+                            commentIds.add(doc.getId());
                         }
                     }
+                    commentsAdapter.notifyDataSetChanged();
+                    //ArrayAdapter<String> adapter =
+                            //new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, comments);
 
-                    ArrayAdapter<String> adapter =
-                            new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, comments);
 
-                    commentsListView.setAdapter(adapter);
+                    //commentsListView.setAdapter(adapter);
                 })
                 .addOnFailureListener(e ->
                         Toast.makeText(this, "Failed to load comments", Toast.LENGTH_SHORT).show());
@@ -619,5 +670,20 @@ public class EventDetailsActivity extends AppCompatActivity {
                 })
                 .addOnFailureListener(e ->
                         Toast.makeText(this, "Failed to post comment", Toast.LENGTH_SHORT).show());
+    }
+
+    //organizer delete comment
+    private void organizerdeleteComment(String commentidtobedeleted) {
+        db.collection("events")
+                .document(eventId)
+                .collection("comments")
+                .document(commentidtobedeleted)
+                .delete()
+                .addOnSuccessListener(docRef -> {
+                    Toast.makeText(this, "Comment deleted", Toast.LENGTH_SHORT).show();
+                    loadComments();// refresh list
+                })
+                .addOnFailureListener(e ->
+                        Toast.makeText(this, "Failed to delete comment", Toast.LENGTH_SHORT).show());
     }
 }
