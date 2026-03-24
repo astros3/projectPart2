@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F6F7FB"
+    >
+    <!--
+       Top Bar
+    -->
+    <LinearLayout
+        android:id="@+id/topbar"
+        android:layout_width="0dp"
+        android:layout_height="65dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="#FFFFFF"
+        android:elevation="5dp"
+        >
+        <!-- LOG OUT BUTTON-->
+        <ImageView
+            android:id="@+id/confirm_log_out_button"
+            android:layout_width="90dp"
+            android:layout_height="90dp"
+            android:layout_marginStart="16dp"
+            android:clickable="true"
+            android:contentDescription="@string/back"
+            android:src="@drawable/log_out_icon" />
+
+
+
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/admin_review_events_button"
+        android:layout_width="0dp"
+        android:layout_height="60dp"
+
+        android:background="#F5FFFF"
+        android:clickable="true"
+
+        android:elevation="5dp"
+
+
+
+        android:paddingStart="30dp"
+        android:paddingEnd="30dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="30dp"
+        android:gravity="center_vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/topbar"
+        >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:text="REVIEW EVENTS"
+
+            android:textSize="15dp"
+            android:textStyle="bold"
+            android:layout_weight="1"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:text="›"
+            android:textSize="25dp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/admin_review_profile_button"
+        android:layout_width="0dp"
+        android:layout_height="60dp"
+
+        android:background="#F5FFFF"
+        android:clickable="true"
+
+        android:elevation="5dp"
+
+
+
+        android:paddingStart="30dp"
+        android:paddingEnd="30dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="30dp"
+        android:gravity="center_vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/admin_review_events_button"
+        >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:text="REVIEW PROFILES"
+
+            android:textSize="15dp"
+            android:textStyle="bold"
+            android:layout_weight="1"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:text="›"
+            android:textSize="25dp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/admin_review_image_button"
+        android:layout_width="0dp"
+        android:layout_height="60dp"
+
+        android:background="#F5FFFF"
+        android:clickable="true"
+
+        android:elevation="5dp"
+
+
+
+        android:paddingStart="30dp"
+        android:paddingEnd="30dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="30dp"
+        android:gravity="center_vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/admin_review_profile_button"
+        >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:text="REVIEW IMAGES"
+
+            android:textSize="15dp"
+            android:textStyle="bold"
+            android:layout_weight="1"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:text="›"
+            android:textSize="25dp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/admin_review_notification_log_button"
+        android:layout_width="0dp"
+        android:layout_height="60dp"
+
+        android:background="#F5FFFF"
+        android:clickable="true"
+
+        android:elevation="5dp"
+
+
+
+        android:paddingStart="30dp"
+        android:paddingEnd="30dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="30dp"
+        android:gravity="center_vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/admin_review_image_button"
+        >
+
+        <TextView
+            android:layout_width="278dp"
+            android:layout_height="wrap_content"
+
+            android:layout_weight="1"
+
+            android:text="REVIEW NOTIFICATION LOG"
+            android:textSize="15dp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+
+
+            android:text="›"
+            android:textSize="25dp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/admin_profile_button"
+        android:layout_width="0dp"
+        android:layout_height="60dp"
+
+        android:background="#F5FFFF"
+        android:clickable="true"
+
+        android:elevation="5dp"
+
+
+
+        android:paddingStart="30dp"
+        android:paddingEnd="30dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="30dp"
+        android:gravity="center_vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/admin_review_notification_log_button"
+        >
+
+        <TextView
+            android:layout_width="278dp"
+            android:layout_height="wrap_content"
+
+            android:layout_weight="1"
+
+            android:text="ADMIN PROFILE"
+            android:textSize="15dp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+
+
+            android:text="›"
+            android:textSize="25dp" />
+    </LinearLayout>
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

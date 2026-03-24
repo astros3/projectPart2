@@ -70,6 +70,24 @@ public class NotificationHelper {
                             .document(deviceId)
                             .collection("notifications")
                             .add(notification);
+                    NotificationMAINstorageForAdmin(db, title, message, eventId, deviceId);
                 });
     }
+    //reference sendNotification function
+    public static void NotificationMAINstorageForAdmin(FirebaseFirestore db, String title,
+                                                       String message, String eventId, String receiverID){
+
+        Map<String, Object> NotificationMAINstorage= new HashMap<>();
+
+        NotificationMAINstorage.put("title", title);
+        NotificationMAINstorage.put("message", message);
+        NotificationMAINstorage.put("eventId", eventId);
+
+        NotificationMAINstorage.put("receiverID", receiverID);
+        NotificationMAINstorage.put("timestampMillis", System.currentTimeMillis());
+
+        db.collection("notificationStorageAdmin")
+                .add(NotificationMAINstorage);
+    }
+
 }
