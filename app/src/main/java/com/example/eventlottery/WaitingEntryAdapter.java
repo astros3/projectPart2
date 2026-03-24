@@ -1,6 +1,11 @@
 package com.example.eventlottery;
 
+/**
+ * List adapter for WaitingListEntry in WaitingListFragment. Shows entrant display name (from users collection);
+ * never exposes device ID. Can navigate to GeolocationFragment for an entrant.
+ */
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,21 +16,30 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
-import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class WaitingEntryAdapter extends ArrayAdapter<WaitingListEntry> {
 
+    private static final String TAG = "ViewGeolocation";
+
     private final FragmentActivity activity;
     private final ArrayList<WaitingListEntry> entries;
+    private Map<String, String> deviceIdToName = new HashMap<>();
 
     public WaitingEntryAdapter(@NonNull FragmentActivity activity,
                                @NonNull ArrayList<WaitingListEntry> entries) {
         super(activity, 0, entries);
         this.activity = activity;
         this.entries = entries;
+    }
+
+    /** Sets the display names for entrants (deviceId -> name). Call after loading from users collection. */
+    public void setDeviceIdToName(@NonNull Map<String, String> deviceIdToName) {
+        this.deviceIdToName = deviceIdToName;
     }
 
     @NonNull
@@ -43,15 +57,22 @@ public class WaitingEntryAdapter extends ArrayAdapter<WaitingListEntry> {
         ImageView buttonLocation = view.findViewById(R.id.buttonLocation);
 
         String deviceId = entry.getDeviceId();
-        textEntrantName.setText(deviceId);
+        String displayName = deviceIdToName != null && deviceIdToName.containsKey(deviceId)
+                ? deviceIdToName.get(deviceId)
+                : null;
+        textEntrantName.setText(displayName != null && !displayName.isEmpty() ? displayName : "Unknown Entrant");
 
         buttonLocation.setOnClickListener(v -> {
+            Log.d(TAG, "location click: deviceId=" + (deviceId != null ? "present(len=" + deviceId.length() + ")" : "null"));
             Bundle bundle = new Bundle();
             bundle.putString("deviceId", deviceId);
-
-            NavController navController =
-                    Navigation.findNavController(activity, R.id.nav_host_fragment);
-            navController.navigate(R.id.Waiting_list_to_GeolocationFragment, bundle);
+            try {
+                Navigation.findNavController(activity, R.id.nav_host_fragment)
+                        .navigate(R.id.Waiting_list_to_GeolocationFragment, bundle);
+                Log.d(TAG, "location click: navigate() called");
+            } catch (Exception e) {
+                Log.e(TAG, "location click: navigate failed", e);
+            }
         });
 
         return view;

@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * RecyclerView adapter for organizer's event cards on the dashboard.
+ * RecyclerView adapter for organizer dashboard event cards. View/Edit open event nav or EventEditActivity.
  */
 public class OrganizerEventAdapter extends RecyclerView.Adapter<OrganizerEventAdapter.EventCardViewHolder> {
 
@@ -25,6 +25,7 @@ public class OrganizerEventAdapter extends RecyclerView.Adapter<OrganizerEventAd
     interface OnEventActionListener {
         void onViewClick(Event event);
         void onEditClick(Event event);
+        void onDeleteClick(Event event);
     }
 
     void setOnEventActionListener(OnEventActionListener listener) {
@@ -37,6 +38,18 @@ public class OrganizerEventAdapter extends RecyclerView.Adapter<OrganizerEventAd
             events.addAll(newEvents);
         }
         notifyDataSetChanged();
+    }
+    void removeEventById(String eventId) {
+        if (eventId == null) return;
+
+        for (int i = 0; i < events.size(); i++) {
+            Event event = events.get(i);
+            if (event != null && eventId.equals(event.getEventId())) {
+                events.remove(i);
+                notifyItemRemoved(i);
+                return;
+            }
+        }
     }
 
     @NonNull
@@ -64,12 +77,15 @@ public class OrganizerEventAdapter extends RecyclerView.Adapter<OrganizerEventAd
         private final View viewButton;
         private final View editButton;
 
+        private final View deleteButton;
+
         EventCardViewHolder(View itemView) {
             super(itemView);
             titleView = itemView.findViewById(R.id.event_card_title);
             dateView = itemView.findViewById(R.id.event_card_date);
             viewButton = itemView.findViewById(R.id.event_card_view);
             editButton = itemView.findViewById(R.id.event_card_edit);
+            deleteButton = itemView.findViewById(R.id.event_card_delete);
         }
 
         void bind(Event event, OnEventActionListener listener) {
@@ -98,7 +114,14 @@ public class OrganizerEventAdapter extends RecyclerView.Adapter<OrganizerEventAd
                     listener.onEditClick(event);
                 }
             });
+
+            deleteButton.setOnClickListener(v -> {
+                if (listener != null) {
+                    listener.onDeleteClick(event);
+                }
+            });
         }
+
 
         private static String formatDateTime(long millis) {
             return new SimpleDateFormat("MMM d, yyyy - h:mm a", Locale.getDefault())

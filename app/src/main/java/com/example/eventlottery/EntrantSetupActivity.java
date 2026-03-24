@@ -1,5 +1,9 @@
 package com.example.eventlottery;
 
+/**
+ * First-time entrant registration: name, email, phone. Writes Entrant to users/{deviceId}
+ * with role "entrant", then starts EntrantMainScreenActivity.
+ */
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;

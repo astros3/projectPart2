@@ -1,29 +1,48 @@
 package com.example.eventlottery;
 
+/**
+ * Model for an entrant (user) profile. Stored in Firestore at {@code users/{deviceId}}.
+ * Separate from organizer accounts; one device may have both an Entrant and an Organizer profile.
+ * Includes notification preference flag for US 01.04.03.
+ */
 public class Entrant {
+
     private String deviceID;
-    private String name;
+    private String fullName;
     private String email;
     private String phone;
     private String role;
-
     private Double latitude;
     private Double longitude;
     private String locationAddress;
+    private boolean notificationsEnabled = true; // US 01.04.03
 
-    public Entrant() {}
+    /** Required empty constructor for Firestore */
+    public Entrant() {
+    }
 
-    public Entrant(String deviceID, String name, String email, String phone, String role) {
+    /** Constructor for core profile fields */
+    public Entrant(String deviceID, String fullName, String email, String phone, String role) {
         this.deviceID = deviceID;
-        this.name = name;
+        this.fullName = fullName;
         this.email = email;
         this.phone = phone;
         this.role = role;
+        this.notificationsEnabled = true;
     }
 
-    public String getFullName() {
-        String fullName = name != null ? name.trim() : "";
-        return fullName.isEmpty() ? "Unknown Entrant" : fullName;
+    /** Full constructor */
+    public Entrant(String deviceID, String fullName, String email, String phone, String role,
+                   Double latitude, Double longitude, String locationAddress) {
+        this.deviceID = deviceID;
+        this.fullName = fullName;
+        this.email = email;
+        this.phone = phone;
+        this.role = role;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.locationAddress = locationAddress;
+        this.notificationsEnabled = true;
     }
 
     public String getDeviceID() {
@@ -34,16 +53,20 @@ public class Entrant {
         this.deviceID = deviceID;
     }
 
-    public String getName() {
-        return name;
+    /** Returns display name safely */
+    public String getFullName() {
+        if (fullName == null || fullName.trim().isEmpty()) {
+            return "Unknown Entrant";
+        }
+        return fullName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
     }
 
     public String getEmail() {
-        return email;
+        return email != null ? email : "";
     }
 
     public void setEmail(String email) {
@@ -51,15 +74,16 @@ public class Entrant {
     }
 
     public String getPhone() {
-        return phone;
+        return phone != null ? phone : "";
     }
 
     public void setPhone(String phone) {
         this.phone = phone;
     }
 
+    /** Role string, for example "entrant" */
     public String getRole() {
-        return role;
+        return role != null ? role : "";
     }
 
     public void setRole(String role) {
@@ -83,10 +107,18 @@ public class Entrant {
     }
 
     public String getLocationAddress() {
-        return locationAddress;
+        return locationAddress != null ? locationAddress : "";
     }
 
     public void setLocationAddress(String locationAddress) {
         this.locationAddress = locationAddress;
+    }
+
+    public boolean isNotificationsEnabled() {
+        return notificationsEnabled;
+    }
+
+    public void setNotificationsEnabled(boolean notificationsEnabled) {
+        this.notificationsEnabled = notificationsEnabled;
     }
 }

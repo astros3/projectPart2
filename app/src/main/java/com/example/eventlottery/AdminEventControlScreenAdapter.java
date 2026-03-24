@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.util.Log;
 import androidx.annotation.NonNull;
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -29,10 +30,8 @@ import java.util.Locale;
 
 
 
-//reference lab 05 adapter
 /**
- *this adapter is for the admin event control screen
- *it shows all events and lets admin view or delete them
+ * Adapter for AdminEventControlScreenActivity event list. Row click opens event details; delete not fully wired.
  */
 public class AdminEventControlScreenAdapter extends ArrayAdapter<Event> {
 
@@ -94,7 +93,15 @@ public class AdminEventControlScreenAdapter extends ArrayAdapter<Event> {
         //show organizer name event image event title
         String eventownername_fromgetter = event.getOrganizerName();
         eventorganizerownernameinput.setText(eventownername_fromgetter);
-        eventphoto.setImageURI(android.net.Uri.parse(eventposteruri_fromgetter));//event photo from uri
+        if (eventposteruri_fromgetter != null && !eventposteruri_fromgetter.isEmpty()) {
+            Glide.with(context).load(eventposteruri_fromgetter)
+                    .placeholder(R.drawable.ic_launcher_background)
+                    .error(R.drawable.ic_launcher_background)
+                    .centerCrop()
+                    .into(eventphoto);
+        } else {
+            eventphoto.setImageResource(R.drawable.ic_launcher_background);
+        }
         eventnameinput.setText(eventnameinput_fromgetter);
 
         //when admin clicks on a specific history item it will navigates to admin event details panel

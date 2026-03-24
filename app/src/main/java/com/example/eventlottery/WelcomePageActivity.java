@@ -1,7 +1,13 @@
 package com.example.eventlottery;
 
+/**
+ * Launcher: role selection (Entrant / Organizer / Admin). Routes to setup or main screen
+ * based on Firestore profile (users vs organizers). Issue: Organizer doc has no "role" field,
+ * so existing organizers are always sent to setup.
+ */
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -23,12 +29,21 @@ public class WelcomePageActivity extends AppCompatActivity {
         userbutton = findViewById(R.id.userbutton);
         organizerbutton = findViewById(R.id.organizerbutton);
         adminbutton = findViewById(R.id.adminbutton);
+        adminbutton.setVisibility(View.GONE); // show only after we confirm user is in "admins" collection
+
+        // Admin button visible only to users who have an entry in Firestore "admins" collection
+        String deviceId = DeviceIdManager.getDeviceId(this);
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("admins").document(deviceId).get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    adminbutton.setVisibility(documentSnapshot.exists() ? View.VISIBLE : View.GONE);
+                })
+                .addOnFailureListener(e -> adminbutton.setVisibility(View.GONE));
 
         // Entrant/User
         userbutton.setOnClickListener(v -> {
 
-            String deviceId = DeviceIdManager.getDeviceId(this);
-            FirebaseFirestore db = FirebaseFirestore.getInstance();
+
 
             db.collection("users")
                     .document(deviceId)
@@ -59,8 +74,7 @@ public class WelcomePageActivity extends AppCompatActivity {
         // Organizer
         organizerbutton.setOnClickListener(v -> {
 
-            String deviceId = DeviceIdManager.getDeviceId(this);
-            FirebaseFirestore db = FirebaseFirestore.getInstance();
+
 
             db.collection("organizers")
                     .document(deviceId)
@@ -88,10 +102,22 @@ public class WelcomePageActivity extends AppCompatActivity {
                     );
         });
 
-        // Admin
+        // Admin: only allow if this device has an entry in Firestore "admins" collection
         adminbutton.setOnClickListener(v -> {
-            Intent intent = new Intent(WelcomePageActivity.this, AdminEventControlScreenActivity.class);
-            startActivity(intent);
+            String adminDeviceId = DeviceIdManager.getDeviceId(this);
+            FirebaseFirestore adminDb = FirebaseFirestore.getInstance();
+            adminDb.collection("admins").document(adminDeviceId).get()
+                    .addOnSuccessListener(documentSnapshot -> {
+                        if (documentSnapshot.exists()) {
+                            startActivity(new Intent(WelcomePageActivity.this, AdminEventControlScreenActivity.class));
+                            finish();
+                        } else {
+                            Toast.makeText(this, "Access denied. You must be an admin to access this.", Toast.LENGTH_LONG).show();
+                        }
+                    })
+                    .addOnFailureListener(e ->
+                            Toast.makeText(this, "Failed to verify admin: " + e.getMessage(), Toast.LENGTH_LONG).show()
+                    );
         });
     }
 }

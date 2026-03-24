@@ -1,5 +1,9 @@
 package com.example.eventlottery;
 
+/**
+ * Invitation flow entry: loads event and waiting-list status for current device. May navigate
+ * to InvitationResponseFragment. Referenced in nav graph; integration with main flows may be partial.
+ */
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;

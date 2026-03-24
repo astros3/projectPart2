@@ -13,12 +13,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * CRC: QRCodeService
- * Responsibilities: Generate event QR code, link QR code to event.
- * Collaborators: Event
- *
- * Generates a QR code that encodes the event ID. When scanned, the app opens
- * the event details for that event (US 02.01.01).
+ * Generates QR code bitmaps and human-readable promo codes for events. Encoded format
+ * is event ID (or "eventlottery://event/{id}") so scanning opens event details (US 02.01.01).
  */
 public class QRCodeService {
 

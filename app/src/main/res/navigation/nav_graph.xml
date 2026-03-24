@@ -12,7 +12,6 @@
         <action
             android:id="@+id/action_dashboard_to_navigation"
             app:destination="@id/OrganizerNavigationFragment" />
-
     </fragment>
 
     <fragment
@@ -32,6 +31,13 @@
             android:id="@+id/OrganizerNavigationFragment_to_Selected_list"
             app:destination="@id/Selected_list" />
 
+        <action
+            android:id="@+id/OrganizerNavigationFragment_to_Final_list"
+            app:destination="@id/Final_list" />
+
+        <action
+            android:id="@+id/OrganizerNavigationFragment_to_EventLocationFragment"
+            app:destination="@id/EventLocationFragment" />
     </fragment>
 
     <fragment
@@ -42,7 +48,6 @@
         <action
             android:id="@+id/LotteryDraw_to_OrganizerNavigationFragment"
             app:destination="@id/OrganizerNavigationFragment" />
-
     </fragment>
 
     <fragment
@@ -57,7 +62,6 @@
         <action
             android:id="@+id/Waiting_list_to_GeolocationFragment"
             app:destination="@id/GeolocationFragment" />
-
     </fragment>
 
     <fragment
@@ -68,7 +72,16 @@
         <action
             android:id="@+id/Selected_list_to_OrganizerNavigationFragment"
             app:destination="@id/OrganizerNavigationFragment" />
+    </fragment>
 
+    <fragment
+        android:id="@+id/Final_list"
+        android:name="com.example.eventlottery.FinalList"
+        android:label="Final List">
+
+        <action
+            android:id="@+id/Final_list_to_OrganizerNavigationFragment"
+            app:destination="@id/OrganizerNavigationFragment" />
     </fragment>
 
     <fragment
@@ -79,33 +92,17 @@
         <action
             android:id="@+id/GeolocationFragment_to_Waiting_list"
             app:destination="@id/Waiting_list" />
-
     </fragment>
-    <fragment
-        android:id="@+id/EventDetailsFragment"
-        android:name="com.example.eventlottery.EventDetailsFragment"
-        android:label="Event Details">
 
-        <argument
-            android:name="eventId"
-            app:argType="string" />
+    <fragment
+        android:id="@+id/EventLocationFragment"
+        android:name="com.example.eventlottery.EventLocationFragment"
+        android:label="Event Location">
 
         <action
-            android:id="@+id/action_eventDetails_to_editEvent"
-            app:destination="@id/EditEventFragment" />
+            android:id="@+id/EventLocationFragment_to_OrganizerNavigationFragment"
+            app:destination="@id/OrganizerNavigationFragment" />
     </fragment>
-
-    <fragment
-        android:id="@+id/EditEventFragment"
-        android:name="com.example.eventlottery.EditEventFragment"
-        android:label="Edit Event">
-
-        <argument
-            android:name="eventId"
-            app:argType="string" />
-    </fragment>
-
-
 
 
 

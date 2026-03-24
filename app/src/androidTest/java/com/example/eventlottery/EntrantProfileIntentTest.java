@@ -4,11 +4,14 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static androidx.test.espresso.action.ViewActions.replaceText;
-import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import android.content.Intent;
+
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
@@ -18,67 +21,33 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 /**
- * Purpose: UI/Intent test to verify that an entrant can successfully enter
- * their personal information and submit the form.
- * Pattern: Instrumented Testing (Espresso).
- * Outstanding Issues: Currently only verifies UI interaction;
- * needs Intent stubbing to verify transition to the next Activity.
+ * Intent tests for entrant profile (view and update).
+ * US 1.02.02 - As an entrant I want to update information such as name, email and contact information on my profile.
  */
 @RunWith(AndroidJUnit4.class)
 @LargeTest
 public class EntrantProfileIntentTest {
 
     @Rule
-    public ActivityScenarioRule<EntrantProfileActivity> activityRule =
-            new ActivityScenarioRule<>(EntrantProfileActivity.class);
+    public androidx.test.ext.junit.rules.ActivityScenarioRule<EntrantProfileActivity> rule =
+            new ActivityScenarioRule<>(
+                    new Intent(ApplicationProvider.getApplicationContext(), EntrantProfileActivity.class)
+                            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
 
-    /**
-     * Tests the full registration flow for an Entrant.
-     * Verified Requirement: "As an entrant, I want to provide my personal information
-     * such as name, email and optional phone number".
-     */
     @Test
-    public void testEntrantRegistrationFlow() {
-        // 1. Type First Name
-        onView(withId(R.id.edit_first_name))
-                .perform(typeText("Donald"), closeSoftKeyboard());
-
-        // 2. Type Last Name
-        onView(withId(R.id.edit_last_name))
-                .perform(typeText("Duck"), closeSoftKeyboard());
-
-        // 3. Type Phone Number (Optional)
-        onView(withId(R.id.edit_phone))
-                .perform(typeText("1234567890"), closeSoftKeyboard());
-
-        // 4. Type Email
-        onView(withId(R.id.edit_email))
-                .perform(typeText("donald@gmail.com"), closeSoftKeyboard());
-
-        // 5. Toggle "Remember this device"
-        onView(withId(R.id.check_remember))
-                .perform(click());
-
-        // 6. Click the "Enter" button
-        onView(withId(R.id.btn_enter))
-                .perform(click());
-
-        // Verification: Check if the fields are correctly populated before submission
-        onView(withId(R.id.edit_first_name)).check(matches(withText("Donald")));
-        onView(withId(R.id.edit_email)).check(matches(withText("donald@gmail.com")));
+    public void testProfileScreenDisplaysEditFieldsAndSaveButton() {
+        onView(withId(R.id.edit_profile_name)).check(matches(isDisplayed()));
+        onView(withId(R.id.edit_profile_email)).check(matches(isDisplayed()));
+        onView(withId(R.id.edit_profile_phone)).check(matches(isDisplayed()));
+        onView(withId(R.id.btn_save_changes)).check(matches(isDisplayed()));
+        onView(withId(R.id.btn_delete_profile)).check(matches(isDisplayed()));
     }
 
     @Test
-    public void testUpdateProfile() {
-        // 1. Initial Save
-        onView(withId(R.id.edit_first_name)).perform(replaceText("Original Name"), closeSoftKeyboard());
-        onView(withId(R.id.btn_enter)).perform(click());
-
-        // 2. Change the name (Update)
-        onView(withId(R.id.edit_first_name)).perform(replaceText("Updated Name"), closeSoftKeyboard());
-        onView(withId(R.id.btn_enter)).perform(click());
-
-        // 3. Verify the field holds the new value
-        onView(withId(R.id.edit_first_name)).check(matches(withText("Updated Name")));
+    public void testEntrantCanUpdateProfileAndSave() {
+        onView(withId(R.id.edit_profile_name)).perform(replaceText("Updated Name"), closeSoftKeyboard());
+        onView(withId(R.id.edit_profile_email)).perform(replaceText("updated@test.com"), closeSoftKeyboard());
+        onView(withId(R.id.edit_profile_name)).check(matches(withText("Updated Name")));
+        onView(withId(R.id.btn_save_changes)).perform(click());
     }
 }

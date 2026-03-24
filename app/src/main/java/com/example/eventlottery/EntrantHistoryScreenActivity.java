@@ -21,10 +21,10 @@ import com.google.firebase.firestore.QuerySnapshot;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.ArrayList;
+
 /**
- *US 01.02.03
- *this is the history screen for entrant
- *it shows all events that this user signed up for before
+ * Entrant history: events this user has joined (has waitingList doc). Shows per-event status.
+ * Scan nav opens QRCodeActivity (organizer screen); consider opening scanner → EventDetails instead.
  */
 public class EntrantHistoryScreenActivity extends AppCompatActivity {
     private ListView eventshistory;
@@ -141,12 +141,8 @@ public class EntrantHistoryScreenActivity extends AppCompatActivity {
                     }
                 });
 
-        //navigates to notification activity
-        //notification activity not yet implemented
-        notificationbellbutton.setOnClickListener(v -> {
-            //Intent intent = new Intent(EntrantMainScreenActivity.this, //destination.class);
-            //startActivity(intent);
-        });
+        notificationbellbutton.setOnClickListener(v ->
+                startActivity(new Intent(EntrantHistoryScreenActivity.this, EntrantNotificationsActivity.class)));
 
 
         //navigates to home activity

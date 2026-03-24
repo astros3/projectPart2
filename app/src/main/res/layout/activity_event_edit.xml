@@ -11,11 +11,32 @@
         android:id="@+id/toolbar_event_edit"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="@color/black"
-        app:navigationIcon="@drawable/ic_back_arrow"
-        app:title="@string/my_event_information"
-        app:titleTextColor="@android:color/white"
-        app:navigationIconTint="@android:color/white" />
+        android:background="@color/black">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+            <ImageButton
+                android:id="@+id/back_button"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/back"
+                android:padding="12dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_backarrow_white" />
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/my_event_information"
+                android:textColor="@android:color/white"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </androidx.appcompat.widget.Toolbar>
 
     <ScrollView
         android:layout_width="match_parent"
@@ -75,7 +96,7 @@
                     android:inputType="textMultiLine" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Event Image (placeholder for future upload) -->
+            <!-- Event Image -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -133,17 +154,23 @@
                 android:textStyle="bold"
                 android:textColor="#6C757D" />
             <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/input_layout_event_location"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                app:boxStrokeColor="@color/black">
+                app:boxStrokeColor="@color/black"
+                app:helperText="@string/event_location_helper"
+                app:helperTextEnabled="true">
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/input_event_location"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/event_location_hint"
-                    android:inputType="textPostalAddress" />
+                    android:inputType="none"
+                    android:focusable="false"
+                    android:clickable="true"
+                    android:cursorVisible="false" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <!-- Registration Start Date -->
@@ -268,6 +295,33 @@
                     android:hint="@string/limit_entrants_hint"
                     android:inputType="number"
                     android:imeOptions="actionDone" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Lottery Selection Criteria (US 01.05.05) -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Lottery Selection Criteria"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:textColor="#6C757D" />
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                app:boxStrokeColor="@color/black"
+                app:helperText="Enter each criterion on a new line (e.g. Must be 18+)"
+                app:helperTextEnabled="true">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/input_selection_criteria"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="e.g. Must be 18+, Beginner level only..."
+                    android:inputType="textMultiLine"
+                    android:minLines="3"
+                    android:gravity="top" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <!-- Confirm Button -->

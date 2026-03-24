@@ -1,17 +1,18 @@
 package com.example.eventlottery;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.eventlottery.Organizer;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -24,9 +25,8 @@ import java.util.ArrayList;
 import java.util.Date;
 
 /**
- * US 03.01.01
- * US 03.04.01
- * this screen is for admin to see all the events and search for events.
+ * Admin view: list all events from Firestore, search by title (in-memory).
+ * Access restricted to devices that have an entry in Firestore "admins" collection (document ID = deviceId).
  */
 public class AdminEventControlScreenActivity extends AppCompatActivity {
     private ArrayList<Event> admineventlist;
@@ -46,10 +46,29 @@ public class AdminEventControlScreenActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Restrict access: only devices with an entry in Firestore "admins" collection may open this screen
+        String deviceId = DeviceIdManager.getDeviceId(this);
+        FirebaseFirestore dbCheck = FirebaseFirestore.getInstance();
+        dbCheck.collection("admins").document(deviceId).get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (!documentSnapshot.exists()) {
+                        Toast.makeText(this, "Access denied. You must be an admin to access this.", Toast.LENGTH_LONG).show();
+                        finish();
+                        return;
+                    }
+                    initAdminUi();
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Failed to verify admin: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                    finish();
+                });
+    }
+
+    private void initAdminUi() {
         setContentView(R.layout.admin_event_control_screen);
         backbutton = findViewById(R.id.back_button);
 
-        admineventfilterbutton = findViewById(R.id.admin_event_filter_button);
         admineventsearchinputbar = findViewById(R.id.admin_event_search_inputbar);
         searchbutton = findViewById(R.id.search_button);
         eventshistory = findViewById(R.id.Events_history);
@@ -117,17 +136,15 @@ public class AdminEventControlScreenActivity extends AppCompatActivity {
                     }
                 });
         backbutton.setOnClickListener(v -> {
+            startActivity(new Intent(this, WelcomePageActivity.class));
             finish();
         });
 
-        //when filtering button is clicked it will navigate to filtering screen
-        admineventfilterbutton.setOnClickListener(v -> {
-            //Intent intent = new Intent(EntrantMainScreenActivity.this, //destination.class);
-            //startActivity(intent);
-        });
+
 
         //when search button is clicked search event by title
-        searchbutton.setOnClickListener(v -> {
+        if (searchbutton != null) {
+            searchbutton.setOnClickListener(v -> {
             String userinput = admineventsearchinputbar.getText().toString();
             admineventlist.clear();
             String userinputlowercase = userinput.toLowerCase().trim();
@@ -148,8 +165,8 @@ public class AdminEventControlScreenActivity extends AppCompatActivity {
                 }
             }
             admineventadapter.notifyDataSetChanged();
-        });
-
+            });
+        }
 
     }
 }
