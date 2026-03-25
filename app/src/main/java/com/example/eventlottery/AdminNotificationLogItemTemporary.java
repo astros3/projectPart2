@@ -17,6 +17,7 @@ public class AdminNotificationLogItemTemporary {
     private String notificationsendername;
     private String notificationrelatedeventname;
     private String notificationid;
+    private String notificationgroupid;
 
     /**
      * constructor
@@ -28,15 +29,17 @@ public class AdminNotificationLogItemTemporary {
      * @param notificationsendernameinput name of the sender
      * @param notificationrelatedeventnameinput name of the related event
      * @param notificationidinput id of the notification
+     * @param notificationgroupidinput id of the notification group, help identify group sent notification
      */
-    public AdminNotificationLogItemTemporary(long notificationsenttimeinput,String notificationtitleinput,String notificationmessageinput, String notificationrelatedeventidinput, String notificationsendernameinput, String notificationrelatedeventnameinput,String notificationidinput) {
+    public AdminNotificationLogItemTemporary(long notificationsenttimeinput,String notificationtitleinput,String notificationmessageinput, String notificationrelatedeventidinput, String notificationsendernameinput, String notificationrelatedeventnameinput,String notificationidinput,String notificationgroupidinput) {
         this.notificationsenttime = notificationsenttimeinput;
         this.notificationtitle = notificationtitleinput;
         this.notificationmessage = notificationmessageinput;
         this.notificationrelatedeventid = notificationrelatedeventidinput;
         this.notificationid = notificationidinput;
         this.notificationsendername = notificationsendernameinput;
-        this.notificationrelatedeventname = notificationrelatedeventnameinput
+        this.notificationrelatedeventname = notificationrelatedeventnameinput;
+        this.notificationgroupid = notificationgroupidinput;
         ;
     }
 
@@ -91,6 +94,13 @@ public class AdminNotificationLogItemTemporary {
      */
     public String getNotificationID(){
         return this.notificationid;
+    }
+    /**
+     * getter
+     * @return the notification groupid
+     */
+    public String getNotificationGroupId(){
+        return this.notificationgroupid;
     }
 
 }

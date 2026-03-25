@@ -103,6 +103,11 @@ public class AdminNotificationLogControlScreenActivity extends AppCompatActivity
                                 //extracting all information
                                 String currentnotificationid = eachnotification.getId();
 
+                                String currentnotificationgroupid = eachnotification.getString("notificationgroupid");
+                                if ((currentnotificationgroupid == null)|| (currentnotificationgroupid.trim().equals(""))) {
+                                    currentnotificationgroupid = "";
+                                }
+
 
                                 String currentnotificationtitlevalue = eachnotification.getString("title");
                                 if((currentnotificationtitlevalue != null) && (!currentnotificationtitlevalue.trim().equals(""))) {
@@ -135,7 +140,7 @@ public class AdminNotificationLogControlScreenActivity extends AppCompatActivity
                                 }
 
                                 if(currentnotificationrelatedeventidvalue.equals("IMPORTANT:NO ID FOUND")) {
-                                    AdminNotificationLogItemTemporary newitemtoadd = new AdminNotificationLogItemTemporary(currentnotificationsenttime, currentnotificationtitlevalue, currentnotificationmessagevalue, "", "UNKNOWN ORGANZIER", "UNKNOWN EVENT",currentnotificationid);
+                                    AdminNotificationLogItemTemporary newitemtoadd = new AdminNotificationLogItemTemporary(currentnotificationsenttime, currentnotificationtitlevalue, currentnotificationmessagevalue, "", "UNKNOWN ORGANZIER", "UNKNOWN EVENT",currentnotificationid,currentnotificationgroupid);
 
                                     notificationloglist.add(newitemtoadd);
                                     adminnotificationlogcontrolscreenadapter.notifyDataSetChanged();
@@ -146,6 +151,7 @@ public class AdminNotificationLogControlScreenActivity extends AppCompatActivity
                                     final String currentnotificationrelatedeventidvalue1 = currentnotificationrelatedeventidvalue;
                                     final long currentnotificationsenttime1 = currentnotificationsenttime;
                                     final String currentnotificationid1 = currentnotificationid;
+                                    final String currentnotificationgroupid1 = currentnotificationgroupid;
 
                                     db.collection("events")
                                             .get()
@@ -182,7 +188,7 @@ public class AdminNotificationLogControlScreenActivity extends AppCompatActivity
 
                                                             }
                                                         }
-                                                        AdminNotificationLogItemTemporary currentnotifciationitem = new AdminNotificationLogItemTemporary(currentnotificationsenttime1, currentnotificationtitlevalue1, currentnotificationmessagevalue1, currentnotificationrelatedeventidvalue1, currenteventorganizername1, currentnotificationeventname1, currentnotificationid1);
+                                                        AdminNotificationLogItemTemporary currentnotifciationitem = new AdminNotificationLogItemTemporary(currentnotificationsenttime1, currentnotificationtitlevalue1, currentnotificationmessagevalue1, currentnotificationrelatedeventidvalue1, currenteventorganizername1, currentnotificationeventname1, currentnotificationid1,currentnotificationgroupid1);
                                                         notificationloglist.add(currentnotifciationitem);
                                                         adminnotificationlogcontrolscreenadapter.notifyDataSetChanged();
                                                     } else {

@@ -3,7 +3,10 @@ package com.example.eventlottery;
 
 import static androidx.fragment.app.FragmentManager.TAG;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.util.Log;
@@ -19,6 +22,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import android.util.Log;
@@ -26,6 +30,14 @@ import android.util.Log;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.WriteBatch;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Date;
 import java.util.List;
 import java.text.SimpleDateFormat;
@@ -143,43 +155,34 @@ public class AdminNotificationLogControlScreenAdapter extends ArrayAdapter<Admin
         String date = format1.format(timetobedisplayed);
         timeinput.setText(date);
 
-
-
-
-        //delete the profile from firestore when admin clicks delete icon
+        //delete the notification from firestore when admin clicks delete icon
         deletebutton.setOnClickListener(v -> {
-            String notificationidneedstobedeleted = currentnotification.getNotificationID();
-            db.collection("notificationStorageAdmin").document(notificationidneedstobedeleted)
-                    .delete()
-                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                        /**
-                         *@param aVoid
-                         *removes the notification from the list and refreshes the adapter
-                         */
+            //reference: https://stackoverflow.com/questions/2115758/how-do-i-display-an-alert-dialog-on-android
+            new AlertDialog.Builder(context)
+                    .setTitle("Delete notification confirmation")
+                    .setMessage("Are you sure you want to delete this notification?(No reverse)")
+
+
+                    .setPositiveButton("Confirm Delete", new DialogInterface.OnClickListener() {
                         @Override
-                        public void onSuccess(Void aVoid) {
-                            adminnotificationlist.remove(currentnotification);
-                            notifyDataSetChanged();
+                        public void onClick(DialogInterface dialog, int which) {
+
+
+                            deletefunction(currentnotification);
                         }
                     })
-                    /**
-                     * this runs if delete failed
-                     * @param e prints the error in log
-                     * reference from https://firebase.google.com/docs/firestore/manage-data/delete-data#java
-                     */
-                    .addOnFailureListener(new OnFailureListener() {
+                    .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                         @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Log.w("AdminNotificationLogControlScreenAadpter", "Error deleting document", e);
+
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
                         }
-                    });
+                    })
+                    .show();
         });
 
 
-        ///MISSING, AWAITING FOR ORGANZIER NOTIFICATION TO BE COMPLETED
-        ///MISSING: REMOVE ALL THE NOTIFICATIONS UNDER USER DATABASE
 
-        ///MISSING: REMOVE THE NOTIFICATION UNDER ORGANIZER
 
 
 
@@ -187,5 +190,90 @@ public class AdminNotificationLogControlScreenAdapter extends ArrayAdapter<Admin
 
         return view;
     }
+
+
+
+    private void deletefunction(AdminNotificationLogItemTemporary currentnotification){
+        String currentnotificationgroupid = currentnotification.getNotificationGroupId();
+
+        db.collection("notificationStorageAdmin")
+                .whereEqualTo("notificationgroupid", currentnotificationgroupid)
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    /**
+                     * @param value
+                     */
+                    @Override
+                    public void onSuccess(QuerySnapshot value) {
+
+                        for (QueryDocumentSnapshot eachvalue : value) {
+                            eachvalue.getReference().delete();
+                        }
+
+                        deleterelatedusernotificationvaluefromdatabase(currentnotificationgroupid, currentnotification);
+                    }
+                })
+                /**
+                 * this runs if delete failed
+                 * @param e prints the error in log
+                 * reference from https://firebase.google.com/docs/firestore/manage-data/delete-data#java
+                 */
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w("AdminNotificationLogControlScreenAdapter", "Error deleting", e);
+                    }
+                });
+    }
+
+    //reference Get all documents in a collection: https://firebase.google.com/docs/firestore/query-data/get-data#java_4
+    /**
+     * this function deletes the intended notification from user database so user will no longer see that notification
+     * @param currentnotificationgroupidtobedeleted the notification id we can used to search in user
+     * @param currentnotificationclasstoberemoved the notification class to be removed
+     */
+    private void deleterelatedusernotificationvaluefromdatabase(String currentnotificationgroupidtobedeleted, AdminNotificationLogItemTemporary currentnotificationclasstoberemoved){
+
+        db.collectionGroup("notifications")
+                .whereEqualTo("notificationgroupid", currentnotificationgroupidtobedeleted)
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    /**
+                     * this deletes notification from all the user datebase
+                     * @param value1
+                     */
+                    @Override
+                    public void onSuccess(QuerySnapshot value1) {
+
+                        for (QueryDocumentSnapshot eachvalue : value1) {
+                            eachvalue.getReference().delete();
+                        }
+
+
+                        refreshscreen( currentnotificationclasstoberemoved);
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    /**
+                     * this runs if delete failed
+                     * @param e prints the error in log
+                     * reference from https://firebase.google.com/docs/firestore/manage-data/delete-data#java
+                     */
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w("AdminNotificationLogControlScreenAdapter", "Error deleting", e);
+                    }
+                });
+    }
+    /**
+     * this function deletes the intended notification from admin list
+     * @param currentnotificationclasstoberemoved the notification to be removed from admin list
+     */
+    private void refreshscreen(AdminNotificationLogItemTemporary currentnotificationclasstoberemoved){
+        adminnotificationlist.remove(currentnotificationclasstoberemoved);
+        notifyDataSetChanged();
+    }
 }
+
+
 

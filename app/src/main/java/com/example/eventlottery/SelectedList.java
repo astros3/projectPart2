@@ -157,6 +157,9 @@ public class SelectedList extends Fragment {
                 .collection("waitingList")
                 .get()
                 .addOnSuccessListener(querySnapshot -> {
+                    String notificationGroupId = db.collection("notificationStorageAdmin")
+                            .document()
+                            .getId();
                     int sent = 0;
                     for (DocumentSnapshot doc : querySnapshot.getDocuments()) {
                         WaitingListEntry entry = doc.toObject(WaitingListEntry.class);
@@ -171,7 +174,7 @@ public class SelectedList extends Fragment {
                         if (deviceId == null || deviceId.isEmpty()) {
                             continue;
                         }
-                        NotificationHelper.sendLotteryWinNotification(db, deviceId, eventId);
+                        NotificationHelper.sendLotteryWinNotification(db, deviceId, eventId,notificationGroupId);
                         sent++;
                     }
                     if (sent == 0) {

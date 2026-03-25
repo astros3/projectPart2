@@ -28,8 +28,8 @@ public class NotificationHelper {
      * Sends the standard lottery-win notification (chosen entrants should sign up / respond).
      * Same payload as after a lottery draw; organizer may resend from Selected Entrants.
      */
-    public static void sendLotteryWinNotification(FirebaseFirestore db, String deviceId, String eventId) {
-        sendNotification(db, deviceId, TYPE_LOTTERY_WON, LOTTERY_WIN_TITLE, LOTTERY_WIN_MESSAGE, eventId);
+    public static void sendLotteryWinNotification(FirebaseFirestore db, String deviceId, String eventId, String notificationgroupid) {
+        sendNotification(db, deviceId, TYPE_LOTTERY_WON, LOTTERY_WIN_TITLE, LOTTERY_WIN_MESSAGE, eventId, notificationgroupid);
     }
 
     /**
@@ -45,7 +45,7 @@ public class NotificationHelper {
      */
     public static void sendNotification(FirebaseFirestore db, String deviceId,
                                         String type, String title,
-                                        String message, String eventId) {
+                                        String message, String eventId,String notificationgroupid) {
         // Check opt-out preference before sending (US 01.04.03)
         db.collection("users").document(deviceId).get()
                 .addOnSuccessListener(doc -> {
@@ -65,17 +65,20 @@ public class NotificationHelper {
                     notification.put("eventId", eventId);
                     notification.put("timestampMillis", System.currentTimeMillis());
                     notification.put("read", false);
+                    notification.put("receiverId", deviceId);
+                    notification.put("notificationgroupid", notificationgroupid);//if a notification is sent to a group of entrant, they will be having same notification group id
+
 
                     db.collection("users")
                             .document(deviceId)
                             .collection("notifications")
                             .add(notification);
-                    NotificationMAINstorageForAdmin(db, title, message, eventId, deviceId);
+                    NotificationMAINstorageForAdmin(db, title, message, eventId, deviceId, notificationgroupid);
                 });
     }
     //reference sendNotification function
     public static void NotificationMAINstorageForAdmin(FirebaseFirestore db, String title,
-                                                       String message, String eventId, String receiverID){
+                                                       String message, String eventId, String receiverID, String notificationgroupid){
 
         Map<String, Object> NotificationMAINstorage= new HashMap<>();
 
@@ -84,8 +87,9 @@ public class NotificationHelper {
         NotificationMAINstorage.put("eventId", eventId);
 
         NotificationMAINstorage.put("receiverID", receiverID);
-        NotificationMAINstorage.put("timestampMillis", System.currentTimeMillis());
 
+        NotificationMAINstorage.put("timestampMillis", System.currentTimeMillis());
+        NotificationMAINstorage.put("notificationgroupid", notificationgroupid);
         db.collection("notificationStorageAdmin")
                 .add(NotificationMAINstorage);
     }
