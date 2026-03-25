@@ -161,10 +161,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:textSize="14sp"
-                android:textColor="#0B162C"
+                android:backgroundTint="@color/toolbar_content_dark"
                 android:lineSpacingExtra="4dp"
-                android:text="@string/selection_criteria_placeholder" />
+                android:text="@string/selection_criteria_placeholder"
+                android:textColor="#0B162C"
+                android:textSize="14sp" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -189,8 +190,9 @@
                 android:id="@+id/buttonPostComment"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Post Comment"
-                android:layout_marginTop="8dp"/>
+                android:layout_marginTop="8dp"
+                android:backgroundTint="@color/toolbar_content_dark"
+                android:text="Post Comment" />
 
         </LinearLayout>
     </ScrollView>

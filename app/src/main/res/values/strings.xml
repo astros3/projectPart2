@@ -21,6 +21,21 @@
     <string name="update_event_information">Update Event Information</string>
     <string name="app_name">EventLottery</string>
 
+    <!-- Entrant search & filter (US 01.01.04, 01.01.05, 01.01.06) -->
+    <string name="filter_dialog_title">Search &amp; filter events</string>
+    <string name="filter_keyword_hint">Keyword (title, description, location)</string>
+    <string name="filter_event_date_range">Your Availability</string>
+    <string name="filter_date_from">From</string>
+    <string name="filter_date_to">To</string>
+    <string name="filter_date_any">Any</string>
+    <string name="filter_registration_open_only">Registration open now</string>
+    <string name="filter_min_capacity_hint">Minimum event capacity (optional)</string>
+    <string name="filter_hide_full_waiting">Hide events with full waiting list</string>
+    <string name="filter_apply">Apply</string>
+    <string name="filter_clear">Clear</string>
+    <string name="filter_invalid_capacity">Enter a valid number for capacity</string>
+    <string name="filter_invalid_date_range">“From” date must be before or equal to “To” date</string>
+
     <!-- Event Details (US 01.01.01, 01.01.02, 01.06.02) -->
     <string name="event_details">Event Details</string>
     <string name="event_poster">Event poster</string>
