@@ -1,9 +1,8 @@
-<?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="16dp">
+    android:padding="20dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -17,12 +16,13 @@
             android:textSize="18sp"
             android:textStyle="bold" />
 
+        <!-- Keyword -->
         <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:hint="@string/filter_keyword_hint"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+            android:hint="@string/filter_keyword_hint">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/input_keyword"
@@ -32,6 +32,7 @@
                 android:maxLines="2" />
         </com.google.android.material.textfield.TextInputLayout>
 
+        <!-- Date Range -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -48,8 +49,6 @@
                 android:id="@+id/button_date_from"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
                 android:layout_weight="1"
                 android:text="@string/filter_date_from" />
 
@@ -57,33 +56,11 @@
                 android:id="@+id/button_date_to"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="@string/filter_date_to" />
         </LinearLayout>
 
-        <com.google.android.material.switchmaterial.SwitchMaterial
-            android:id="@+id/switch_registration_open"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="@string/filter_registration_open_only" />
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:hint="@string/filter_min_capacity_hint"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/input_min_capacity"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="number"
-                android:maxLines="1" />
-        </com.google.android.material.textfield.TextInputLayout>
-
+        <!-- Switch -->
         <com.google.android.material.switchmaterial.SwitchMaterial
             android:id="@+id/switch_hide_full_waiting"
             android:layout_width="match_parent"
@@ -91,6 +68,22 @@
             android:layout_marginTop="8dp"
             android:text="@string/filter_hide_full_waiting" />
 
+        <!-- Min capacity -->
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:hint="@string/filter_min_capacity_hint">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/input_min_capacity"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Buttons -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -101,15 +94,13 @@
             <Button
                 android:id="@+id/button_clear_filter"
                 style="@style/Widget.MaterialComponents.Button.TextButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
                 android:text="@string/filter_clear" />
 
             <Button
                 android:id="@+id/button_apply_filter"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
                 android:text="@string/filter_apply" />
         </LinearLayout>
+
     </LinearLayout>
 </ScrollView>

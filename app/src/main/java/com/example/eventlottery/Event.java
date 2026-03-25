@@ -29,6 +29,11 @@ public class Event {
     private String promoCode;
     private double price;
     private List<String> selectionCriteria;
+    /** Event category (e.g. Swimming, Music); used for map/filter tags. */
+    private String eventType;
+    /** Venue coordinates from Places when organizer saves; used for entrant map. */
+    private Double latitude;
+    private Double longitude;
     private String userapplicationstatus = "User not signed up for this event";
 
     /** No-arg constructor; selectionCriteria initialized to empty list. */
@@ -107,6 +112,20 @@ public class Event {
     public void setPrice(double price) { this.price = price; }
     public List<String> getSelectionCriteria() { return selectionCriteria != null ? selectionCriteria : new ArrayList<>(); }
     public void setSelectionCriteria(List<String> selectionCriteria) { this.selectionCriteria = selectionCriteria != null ? selectionCriteria : new ArrayList<>(); }
+
+    public String getEventType() { return eventType != null ? eventType : ""; }
+    public void setEventType(String eventType) { this.eventType = eventType; }
+
+    public Double getLatitude() { return latitude; }
+    public void setLatitude(Double latitude) { this.latitude = latitude; }
+
+    public Double getLongitude() { return longitude; }
+    public void setLongitude(Double longitude) { this.longitude = longitude; }
+
+    public boolean hasCoordinates() {
+        return latitude != null && longitude != null
+                && !(Double.isNaN(latitude) || Double.isNaN(longitude));
+    }
 
     /** UI-only: current user's application status for this event. Do not persist to Firestore. */
     public String getUserApplicationStatus() { return userapplicationstatus; }

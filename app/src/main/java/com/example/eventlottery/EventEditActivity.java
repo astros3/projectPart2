@@ -66,6 +66,9 @@ public class EventEditActivity extends AppCompatActivity {
 
     /** True when location was set via Google Places Autocomplete (required to save). */
     private boolean locationSelectedFromPlaces;
+    /** Last place coordinates from Places (persisted on save for entrant map). */
+    private Double selectedPlaceLat;
+    private Double selectedPlaceLng;
 
     private android.widget.FrameLayout eventImageContainer;
     private android.widget.ImageView posterImageView;
@@ -152,6 +155,10 @@ public class EventEditActivity extends AppCompatActivity {
                         if (inputLayoutLocation != null) {
                             inputLayoutLocation.setError(null);
                         }
+                    }
+                    if (place.getLatLng() != null) {
+                        selectedPlaceLat = place.getLatLng().latitude;
+                        selectedPlaceLng = place.getLatLng().longitude;
                     }
                 });
 
@@ -337,10 +344,27 @@ public class EventEditActivity extends AppCompatActivity {
             inputRegEnd.setText(formatDateForDisplay(registrationEndMillis));
         }
 
+        selectedPlaceLat = event.getLatitude();
+        selectedPlaceLng = event.getLongitude();
+        selectEventTypeOnSpinner(event.getEventType());
+
         // US 01.05.05 — load existing selection criteria into the field
         List<String> criteria = event.getSelectionCriteria();
         if (criteria != null && !criteria.isEmpty()) {
             inputSelectionCriteria.setText(android.text.TextUtils.join("\n", criteria));
+        }
+    }
+
+    private void selectEventTypeOnSpinner(String type) {
+        if (type == null || type.isEmpty()) return;
+        ArrayAdapter<?> adapter = (ArrayAdapter<?>) spinnerEventType.getAdapter();
+        if (adapter == null) return;
+        for (int i = 0; i < adapter.getCount(); i++) {
+            Object item = adapter.getItem(i);
+            if (item != null && type.equals(item.toString())) {
+                spinnerEventType.setSelection(i);
+                return;
+            }
         }
     }
 
@@ -422,6 +446,11 @@ public class EventEditActivity extends AppCompatActivity {
         event.setEventDateMillis(registrationEndMillis);
         event.setGeolocationRequired(switchGeolocation.isChecked());
         event.setSelectionCriteria(criteriaList); // US 01.05.05
+        event.setLatitude(selectedPlaceLat);
+        event.setLongitude(selectedPlaceLng);
+        if (spinnerEventType.getSelectedItem() != null) {
+            event.setEventType(spinnerEventType.getSelectedItem().toString());
+        }
 
         if (isCreate) {
             eventId = db.collection("events").document().getId();
@@ -491,6 +520,9 @@ public class EventEditActivity extends AppCompatActivity {
                         existing.setEventDateMillis(event.getEventDateMillis());
                         existing.setGeolocationRequired(event.isGeolocationRequired());
                         existing.setSelectionCriteria(event.getSelectionCriteria()); // US 01.05.05
+                        existing.setLatitude(event.getLatitude());
+                        existing.setLongitude(event.getLongitude());
+                        existing.setEventType(event.getEventType());
                         if (event.getPosterUri() != null) {
                             existing.setPosterUri(event.getPosterUri());
                         }

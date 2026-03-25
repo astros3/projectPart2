@@ -109,4 +109,15 @@
         <item>Workshop</item>
         <item>Other</item>
     </string-array>
+
+    <string name="filter_any_type">Any type</string>
+    <string name="filter_events_title">Filter events</string>
+    <string name="filter_keyword_hint">Keyword (title or description)</string>
+    <string name="filter_distance_hint">Max distance (km, optional)</string>
+    <string name="filter_registration_open">Registration open only</string>
+    <string name="filter_apply">Apply</string>
+    <string name="filter_clear">Clear</string>
+    <string name="distance_filter_needs_location">Turn on location to use the distance filter.</string>
+    <string name="entrant_map_title">Events near you</string>
+    <string name="nav_map">MAP</string>
 </resources>

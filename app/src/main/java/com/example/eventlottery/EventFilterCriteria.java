@@ -3,25 +3,18 @@ package com.example.eventlottery;
 import java.io.Serializable;
 
 /**
- * US 01.01.04–01.01.06: Keyword search plus optional filters for the entrant dashboard.
+ * Entrant-side filter applied to the event list and passed to the map screen.
  */
 public class EventFilterCriteria implements Serializable {
-
     private static final long serialVersionUID = 1L;
 
     private String keyword = "";
-    /** Inclusive start of selected "event from" day (local), or null if unset */
-    private Long eventDateFromMillis;
-    /** Inclusive end of selected "event to" day (local), or null if unset */
-    private Long eventDateToMillis;
+    /** Empty or "Any type" means no event-type filter. */
+    private String eventType = "";
+    /** Null or &lt;= 0 means no distance filter. */
+    private Double maxDistanceKm;
+    /** When true, only events with registration currently open are shown (list only; map always enforces this). */
     private boolean registrationOpenOnly;
-    /** Minimum {@link Event#getCapacity()}; null = no minimum */
-    private Integer minCapacity;
-    private boolean hideFullWaitingList;
-
-    public static EventFilterCriteria empty() {
-        return new EventFilterCriteria();
-    }
 
     public String getKeyword() {
         return keyword != null ? keyword : "";
@@ -31,20 +24,20 @@ public class EventFilterCriteria implements Serializable {
         this.keyword = keyword != null ? keyword.trim() : "";
     }
 
-    public Long getEventDateFromMillis() {
-        return eventDateFromMillis;
+    public String getEventType() {
+        return eventType != null ? eventType : "";
     }
 
-    public void setEventDateFromMillis(Long eventDateFromMillis) {
-        this.eventDateFromMillis = eventDateFromMillis;
+    public void setEventType(String eventType) {
+        this.eventType = eventType != null ? eventType.trim() : "";
     }
 
-    public Long getEventDateToMillis() {
-        return eventDateToMillis;
+    public Double getMaxDistanceKm() {
+        return maxDistanceKm;
     }
 
-    public void setEventDateToMillis(Long eventDateToMillis) {
-        this.eventDateToMillis = eventDateToMillis;
+    public void setMaxDistanceKm(Double maxDistanceKm) {
+        this.maxDistanceKm = maxDistanceKm;
     }
 
     public boolean isRegistrationOpenOnly() {
@@ -55,29 +48,15 @@ public class EventFilterCriteria implements Serializable {
         this.registrationOpenOnly = registrationOpenOnly;
     }
 
-    public Integer getMinCapacity() {
-        return minCapacity;
+    /** Clears all constraints (everything visible subject to screen rules). */
+    public void clear() {
+        keyword = "";
+        eventType = "";
+        maxDistanceKm = null;
+        registrationOpenOnly = false;
     }
 
-    public void setMinCapacity(Integer minCapacity) {
-        this.minCapacity = minCapacity;
-    }
-
-    public boolean isHideFullWaitingList() {
-        return hideFullWaitingList;
-    }
-
-    public void setHideFullWaitingList(boolean hideFullWaitingList) {
-        this.hideFullWaitingList = hideFullWaitingList;
-    }
-
-    /** True if any non-default filter is active (keyword counts). */
-    public boolean hasActiveFilters() {
-        if (!getKeyword().isEmpty()) return true;
-        if (eventDateFromMillis != null || eventDateToMillis != null) return true;
-        if (registrationOpenOnly) return true;
-        if (minCapacity != null && minCapacity > 0) return true;
-        if (hideFullWaitingList) return true;
-        return false;
+    public static EventFilterCriteria empty() {
+        return new EventFilterCriteria();
     }
 }

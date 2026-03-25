@@ -1,119 +1,74 @@
 package com.example.eventlottery;
 
-import androidx.annotation.NonNull;
-
-import com.google.firebase.firestore.FirebaseFirestore;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.concurrent.atomic.AtomicInteger;
-
 /**
- * Client-side filtering for entrant event list (US 01.01.04–01.01.06).
+ * Applies {@link EventFilterCriteria} to events, including optional distance from the user.
  */
 public final class EventFilterUtils {
 
     private EventFilterUtils() {}
 
-    public interface FilterResultCallback {
-        void onResult(@NonNull List<Event> filtered);
+    /** Haversine distance in kilometres between two WGS84 points. */
+    public static double haversineKm(double lat1, double lon1, double lat2, double lon2) {
+        final double r = 6371.0;
+        double dLat = Math.toRadians(lat2 - lat1);
+        double dLon = Math.toRadians(lon2 - lon1);
+        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
+                + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
+                * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return r * c;
     }
 
     /**
-     * Applies keyword + sync filters; optionally excludes events whose waiting list is full
-     * (requires one Firestore read per event when {@link EventFilterCriteria#isHideFullWaitingList()}).
+     * List/home: optional registration window. Distance is applied only when {@code hasUserPosition}
+     * is true and {@code userLat}/{@code userLng} are non-null; otherwise the max-distance constraint
+     * is skipped (caller should toast if the user asked for distance but no fix was available).
      */
-    public static void apply(
-            FirebaseFirestore db,
-            List<Event> allEvents,
-            EventFilterCriteria c,
-            FilterResultCallback callback) {
-        if (allEvents == null || allEvents.isEmpty()) {
-            callback.onResult(new ArrayList<>());
-            return;
-        }
-        List<Event> step1 = new ArrayList<>();
-        for (Event e : allEvents) {
-            if (matchesSync(e, c)) {
-                step1.add(e);
-            }
-        }
-        if (!c.isHideFullWaitingList()) {
-            callback.onResult(step1);
-            return;
-        }
-        if (step1.isEmpty()) {
-            callback.onResult(step1);
-            return;
-        }
-
-        List<Event> out = new ArrayList<>();
-        AtomicInteger pending = new AtomicInteger(step1.size());
-        Runnable finishIfDone = () -> {
-            if (pending.decrementAndGet() == 0) {
-                callback.onResult(out);
-            }
-        };
-
-        for (Event e : step1) {
-            int limit = e.getWaitingListLimit();
-            if (limit <= 0) {
-                synchronized (out) {
-                    out.add(e);
-                }
-                finishIfDone.run();
-                continue;
-            }
-            db.collection("events")
-                    .document(e.getEventId())
-                    .collection("waitingList")
-                    .get()
-                    .addOnSuccessListener(q -> {
-                        if (q != null && q.size() < limit) {
-                            synchronized (out) {
-                                out.add(e);
-                            }
-                        }
-                        finishIfDone.run();
-                    })
-                    .addOnFailureListener(err -> finishIfDone.run());
-        }
-    }
-
-    /** Synchronous match (no waiting-list size check). */
-    public static boolean matchesSync(Event e, EventFilterCriteria c) {
-        if (e == null || c == null) return false;
-        if (!matchesKeyword(e, c.getKeyword())) return false;
-        if (!matchesDateRange(e, c)) return false;
+    public static boolean matchesForList(Event e, EventFilterCriteria c,
+                                        Double userLat, Double userLng, boolean hasUserPosition) {
+        if (c == null || e == null) return true;
         if (c.isRegistrationOpenOnly() && !e.isRegistrationOpen()) return false;
-        if (!matchesMinCapacity(e, c.getMinCapacity())) return false;
+        return matchesKeywordTypeDistance(e, c, userLat, userLng, hasUserPosition);
+    }
+
+    /**
+     * Map: only events with coordinates; registration window is constrained only when
+     * {@link EventFilterCriteria#isRegistrationOpenOnly()} is true (same rule as the list).
+     */
+    public static boolean matchesForMap(Event e, EventFilterCriteria c,
+                                       Double userLat, Double userLng, boolean hasUserPosition) {
+        if (e == null) return false;
+        if (!e.hasCoordinates()) return false;
+        if (c != null && c.isRegistrationOpenOnly() && !e.isRegistrationOpen()) {
+            return false;
+        }
+        if (c == null) return true;
+        return matchesKeywordTypeDistance(e, c, userLat, userLng, hasUserPosition);
+    }
+
+    private static boolean matchesKeywordTypeDistance(Event e, EventFilterCriteria c,
+                                                       Double userLat, Double userLng,
+                                                       boolean hasUserPosition) {
+        String kw = c.getKeyword();
+        if (!kw.isEmpty()) {
+            String t = e.getTitle() != null ? e.getTitle().toLowerCase() : "";
+            String d = e.getDescription() != null ? e.getDescription().toLowerCase() : "";
+            String k = kw.toLowerCase();
+            if (!t.contains(k) && !d.contains(k)) return false;
+        }
+
+        String tf = c.getEventType();
+        if (!tf.isEmpty() && !tf.equalsIgnoreCase(e.getEventType())) return false;
+
+        Double maxKm = c.getMaxDistanceKm();
+        if (maxKm != null && maxKm > 0) {
+            if (!hasUserPosition || userLat == null || userLng == null) {
+                return true;
+            }
+            if (!e.hasCoordinates()) return false;
+            double dist = haversineKm(userLat, userLng, e.getLatitude(), e.getLongitude());
+            if (dist > maxKm) return false;
+        }
         return true;
-    }
-
-    private static boolean matchesKeyword(Event e, String keyword) {
-        if (keyword == null || keyword.isEmpty()) return true;
-        String k = keyword.toLowerCase(Locale.ROOT);
-        String title = e.getTitle() != null ? e.getTitle().toLowerCase(Locale.ROOT) : "";
-        String desc = e.getDescription() != null ? e.getDescription().toLowerCase(Locale.ROOT) : "";
-        String loc = e.getLocation() != null ? e.getLocation().toLowerCase(Locale.ROOT) : "";
-        return title.contains(k) || desc.contains(k) || loc.contains(k);
-    }
-
-    private static boolean matchesDateRange(Event e, EventFilterCriteria c) {
-        Long from = c.getEventDateFromMillis();
-        Long to = c.getEventDateToMillis();
-        if (from == null && to == null) return true;
-        long t = e.getEventDateMillis();
-        if (from != null && t < from) return false;
-        if (to != null && t > to) return false;
-        return true;
-    }
-
-    private static boolean matchesMinCapacity(Event e, Integer min) {
-        if (min == null || min <= 0) return true;
-        int cap = e.getCapacity();
-        if (cap == 0) return true;
-        return cap >= min;
     }
 }

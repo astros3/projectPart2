@@ -15,7 +15,7 @@ public class EntrantTest {
     public void fullConstructor_setsAllFields() {
         Entrant e = new Entrant(ENTRANT_DEVICE_ID, ENTRANT_NAME, ENTRANT_EMAIL, ENTRANT_PHONE, "entrant");
         assertEquals(ENTRANT_DEVICE_ID, e.getDeviceID());
-        assertEquals(ENTRANT_NAME, e.getName());
+        assertEquals(ENTRANT_NAME, e.getFullName());
         assertEquals(ENTRANT_EMAIL, e.getEmail());
         assertEquals(ENTRANT_PHONE, e.getPhone());
         assertEquals("entrant", e.getRole());
@@ -33,7 +33,7 @@ public class EntrantTest {
     @Test
     public void getFullName_whenNameNull_returnsUnknownEntrant() {
         Entrant e = new Entrant();
-        e.setName(null);
+        e.setFullName(null);
         assertEquals("Unknown Entrant", e.getFullName());
     }
 
@@ -56,7 +56,7 @@ public class EntrantTest {
     public void noArgConstructor_allowsSetters() {
         Entrant e = new Entrant();
         e.setDeviceID(ENTRANT_DEVICE_ID);
-        e.setName(ENTRANT_NAME);
+        e.setFullName(ENTRANT_NAME);
         e.setEmail(ENTRANT_EMAIL);
         e.setPhone(ENTRANT_PHONE);
         e.setRole("entrant");
@@ -65,7 +65,7 @@ public class EntrantTest {
         e.setLocationAddress("Edmonton, AB");
 
         assertEquals(ENTRANT_DEVICE_ID, e.getDeviceID());
-        assertEquals(ENTRANT_NAME, e.getName());
+        assertEquals(ENTRANT_NAME, e.getFullName());
         assertEquals(ENTRANT_EMAIL, e.getEmail());
         assertEquals(ENTRANT_PHONE, e.getPhone());
         assertEquals("entrant", e.getRole());

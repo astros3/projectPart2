@@ -4,25 +4,24 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F6F7FB"
-    >
-    <!--
-       Top Bar (Toolbar for ActionBar support)
-    -->
+    android:background="#F6F7FB">
+
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="0dp"
         android:layout_height="65dp"
+        android:background="#FFFFFF"
+        android:elevation="5dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:background="#FFFFFF"
-        android:elevation="5dp">
+        app:layout_constraintTop_toTopOf="parent">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
             <ImageButton
                 android:id="@+id/btn_back"
                 android:layout_width="40dp"
@@ -30,14 +29,16 @@
                 android:layout_marginStart="8dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="@string/back"
-                android:src="@drawable/ic_back_arrow"
-                android:scaleType="centerInside" />
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_back_arrow" />
+
             <ImageView
                 android:id="@+id/homedisplay"
-                android:layout_marginStart="16dp"
                 android:layout_width="25dp"
                 android:layout_height="25dp"
+                android:layout_marginStart="16dp"
                 android:src="@drawable/home_selected" />
+
             <TextView
                 android:id="@+id/hometextdisplay"
                 android:layout_width="wrap_content"
@@ -48,6 +49,7 @@
                 android:textColor="#000000"
                 android:textSize="20dp"
                 android:textStyle="bold" />
+
             <ImageView
                 android:id="@+id/notification_Bell_Button"
                 android:layout_width="20dp"
@@ -57,53 +59,43 @@
         </LinearLayout>
     </androidx.appcompat.widget.Toolbar>
 
-
-    <!--
-        Active events text and filter button
-    -->
-
     <LinearLayout
         android:id="@+id/helperrow"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:clickable="true"
-        android:focusable="true"
-        android:background="?attr/selectableItemBackground"
         android:layout_marginStart="35dp"
         android:layout_marginTop="20dp"
-        android:layout_marginBottom="10dp"
         android:layout_marginEnd="35dp"
+        android:layout_marginBottom="10dp"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         app:layout_constraintBottom_toTopOf="@id/Events"
-        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-        <!--
-            Active events text
-        -->
+        app:layout_constraintTop_toBottomOf="@id/toolbar">
+
         <TextView
             android:id="@+id/active_events_text"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-
             android:text="ACTIVE EVENTS"
             android:textColor="#9AA3B2"
             android:textSize="10dp"
             android:textStyle="bold" />
-        <!--
-            filter button
-        -->
+
         <ImageView
             android:id="@+id/filterimage"
-            android:src="@drawable/burger"
             android:layout_width="26dp"
             android:layout_height="26dp"
-            android:scaleType="fitCenter"
             android:clickable="false"
+            android:contentDescription="@string/filter_dialog_title"
             android:focusable="false"
-            android:contentDescription="@string/filter_dialog_title" />
+            android:scaleType="fitCenter"
+            android:src="@drawable/burger" />
 
         <TextView
             android:id="@+id/filter_text"
@@ -115,90 +107,69 @@
             android:textColor="#4A7BFF"
             android:textSize="14sp"
             android:textStyle="bold" />
-
     </LinearLayout>
 
-    <!--
-       List
-    -->
     <ListView
+        android:id="@+id/Events"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:id="@+id/Events"
-        android:layout_marginTop="10dp"
         android:layout_marginStart="20dp"
+        android:layout_marginTop="10dp"
         android:layout_marginEnd="20dp"
         android:divider="@android:color/transparent"
         android:dividerHeight="10dp"
-
-        app:layout_constraintTop_toBottomOf="@id/helperrow"
         app:layout_constraintBottom_toTopOf="@id/sumaaryofthree"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-
-    </ListView>
-
-
-    <!--
-       Summary
-    -->
+        app:layout_constraintTop_toBottomOf="@id/helperrow" />
 
     <LinearLayout
-
-
-        app:layout_constraintTop_toBottomOf="@id/Events"
-        app:layout_constraintBottom_toTopOf="@id/navigationBar"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-
         android:id="@+id/sumaaryofthree"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginTop="10dp"
         android:layout_marginStart="30dp"
+        android:layout_marginTop="10dp"
         android:layout_marginEnd="30dp"
-        android:layout_marginBottom="10dp">
+        android:layout_marginBottom="10dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toTopOf="@id/navigationBar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/Events">
 
         <LinearLayout
-            android:orientation="vertical"
             android:layout_width="0dp"
             android:layout_height="80dp"
-            android:layout_weight="1"
             android:layout_marginEnd="10dp"
+            android:layout_weight="1"
+            android:background="#EDEFF2"
             android:gravity="center"
-            android:background="#EDEFF2">
+            android:orientation="vertical">
 
-            <!--
-                Total number of events
-            -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="TOTAL"
                 android:textSize="10dp" />
+
             <TextView
                 android:id="@+id/total_number"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="20dp"
-                android:textStyle="bold"
                 android:text="03"
-                />
+                android:textSize="20dp"
+                android:textStyle="bold" />
         </LinearLayout>
 
         <LinearLayout
-            android:orientation="vertical"
             android:layout_width="0dp"
             android:layout_height="80dp"
-            android:layout_weight="1"
             android:layout_marginEnd="10dp"
-
+            android:layout_weight="1"
+            android:background="#EDEFF2"
             android:gravity="center"
-            android:background="#EDEFF2">
-            <!--
-                Total number of accepted application for user
-            -->
+            android:orientation="vertical">
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -209,189 +180,197 @@
                 android:id="@+id/win_number"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="20dp"
-                android:textStyle="bold"
                 android:text="01"
-                />
+                android:textSize="20dp"
+                android:textStyle="bold" />
         </LinearLayout>
-        <!--
-                Total number of pending application for user
-        -->
+
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="80dp"
-            android:layout_weight="1"
             android:layout_marginEnd="10dp"
-            android:orientation="vertical"
+            android:layout_weight="1"
+            android:background="#EDEFF2"
             android:gravity="center"
-            android:background="#EDEFF2">
+            android:orientation="vertical">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="PENDING"
-                android:textSize="10dp"/>
+                android:textSize="10dp" />
+
             <TextView
                 android:id="@+id/pending_number"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="20dp"
-                android:textStyle="bold"
                 android:text="02"
-                />
+                android:textSize="20dp"
+                android:textStyle="bold" />
         </LinearLayout>
 
-        <!-- Invitations: events where user is SELECTED and must accept/decline -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="80dp"
             android:layout_weight="1"
-            android:orientation="vertical"
+            android:background="#E8F5E9"
             android:gravity="center"
-            android:background="#E8F5E9">
+            android:orientation="vertical">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="INVITATIONS"
-                android:textSize="10dp"/>
+                android:textSize="10dp" />
+
             <TextView
                 android:id="@+id/invitation_number"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="20dp"
-                android:textStyle="bold"
                 android:text="0"
-                />
+                android:textSize="20dp"
+                android:textStyle="bold" />
         </LinearLayout>
-
     </LinearLayout>
 
-
-    <!--
-       Navigation Bar
-    -->
     <LinearLayout
         android:id="@+id/navigationBar"
         android:layout_width="0dp"
         android:layout_height="65dp"
+        android:background="#FFFFFF"
+        android:elevation="5dp"
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        android:background="#FFFFFF"
-        android:elevation="5dp"
-        >
-        <!--
-            home button
-        -->
+        app:layout_constraintStart_toStartOf="parent">
+
         <LinearLayout
             android:id="@+id/navigation_home_button"
-            android:orientation="vertical"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:clickable="true"
             android:gravity="center"
-            >
+            android:orientation="vertical">
+
             <ImageView
+                android:id="@+id/navigationhome"
                 android:layout_width="25dp"
                 android:layout_height="25dp"
-                android:src="@drawable/home_selected"
-                android:id="@+id/navigationhome"
-                />
+                android:src="@drawable/home_selected" />
+
             <TextView
+                android:id="@+id/hometext"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/hometext"
                 android:layout_marginTop="5dp"
                 android:text="HOME"
-                android:textSize="10dp"
-                android:textColor="#000000"/>
+                android:textColor="#000000"
+                android:textSize="10dp" />
         </LinearLayout>
-        <!--
-            navigation button
-        -->
+
         <LinearLayout
             android:id="@+id/navigation_scan_button"
-            android:orientation="vertical"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:clickable="true"
-            android:gravity="center">
+            android:gravity="center"
+            android:orientation="vertical">
 
             <ImageView
+                android:id="@+id/navigationscan"
                 android:layout_width="25dp"
                 android:layout_height="25dp"
-                android:id="@+id/navigationscan"
-                android:src="@drawable/scan_unselected"
-                />
+                android:src="@drawable/scan_unselected" />
+
             <TextView
+                android:id="@+id/scantext"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/scantext"
                 android:layout_marginTop="5dp"
                 android:text="SCAN"
                 android:textColor="#696969"
                 android:textSize="10dp" />
         </LinearLayout>
-        <!--
-            history button
-        -->
+
+        <LinearLayout
+            android:id="@+id/navigation_map_button"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/navigationmap"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:src="@drawable/ic_map_unselected" />
+
+            <TextView
+                android:id="@+id/maptext"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:text="@string/nav_map"
+                android:textColor="#696969"
+                android:textSize="10dp" />
+        </LinearLayout>
+
         <LinearLayout
             android:id="@+id/navigation_history_button"
-            android:orientation="vertical"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:focusable="true"
-            android:gravity="center">
+            android:gravity="center"
+            android:orientation="vertical">
 
             <ImageView
                 android:id="@+id/navigationhistory"
                 android:layout_width="25dp"
                 android:layout_height="25dp"
-                android:src="@drawable/history_unselected"
-                />
+                android:src="@drawable/history_unselected" />
 
             <TextView
+                android:id="@+id/historytext"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/historytext"
                 android:layout_marginTop="5dp"
                 android:text="HISTORY"
                 android:textColor="#696969"
                 android:textSize="10dp" />
         </LinearLayout>
-        <!--
-            profile button
-        -->
+
         <LinearLayout
             android:id="@+id/navigation_profile_button"
-            android:orientation="vertical"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:clickable="true"
-            android:gravity="center">
+            android:gravity="center"
+            android:orientation="vertical">
 
             <ImageView
+                android:id="@+id/navigationprofile"
                 android:layout_width="25dp"
                 android:layout_height="25dp"
-                android:id="@+id/navigationprofile"
-                android:src="@drawable/profile_unselected"
-                />
+                android:src="@drawable/profile_unselected" />
 
             <TextView
+                android:id="@+id/profiletext"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/profiletext"
                 android:layout_marginTop="5dp"
                 android:text="PROFILE"
                 android:textColor="#696969"
                 android:textSize="10dp" />
         </LinearLayout>
-
+        android:clickable="true"
+        android:focusable="true"
+        android:background="?attr/selectableItemBackground"
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -23,7 +23,7 @@
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="" />
+            android:value="AIzaSyBJoA-W0UZZc6u77EZKAOTHxeHM69LtG0s" />
 
         <activity
             android:name=".WelcomePageActivity"
@@ -45,6 +45,11 @@
             android:name=".EntrantMainScreenActivity"
             android:exported="false"
             android:parentActivityName=".WelcomePageActivity"/>
+
+        <activity
+            android:name=".EntrantMapActivity"
+            android:exported="false"
+            android:parentActivityName=".EntrantMainScreenActivity" />
 
         <activity
             android:name=".AdminEventControlScreenActivity"
