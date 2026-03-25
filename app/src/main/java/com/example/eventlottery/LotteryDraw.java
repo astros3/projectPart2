@@ -129,7 +129,9 @@ public class LotteryDraw extends Fragment {
 
                     batch.commit()
                             .addOnSuccessListener(unused -> {
-
+                                String notificationGroupId = db.collection("notificationStorageAdmin")
+                                        .document()
+                                        .getId();
                                 // Build set of selected device IDs for fast lookup
                                 Set<String> selectedIds = new HashSet<>();
                                 for (WaitingListEntry e : selectedEntries) {
@@ -139,7 +141,7 @@ public class LotteryDraw extends Fragment {
                                 // US 01.04.01 — notify winners
                                 for (WaitingListEntry entry : selectedEntries) {
                                     NotificationHelper.sendLotteryWinNotification(
-                                            db, entry.getDeviceId(), eventId);
+                                            db, entry.getDeviceId(), eventId,notificationGroupId);
                                 }
 
                                 // US 01.04.02 — notify losers (pending but not selected)
@@ -151,7 +153,7 @@ public class LotteryDraw extends Fragment {
                                                 NotificationHelper.TYPE_LOTTERY_LOST,
                                                 "Lottery result",
                                                 "Unfortunately, you were not selected in this draw. You may still get a chance if someone declines their invitation.",
-                                                eventId
+                                                eventId,notificationGroupId
                                         );
                                     }
                                 }
