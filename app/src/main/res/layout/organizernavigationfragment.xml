@@ -60,6 +60,16 @@
                 android:backgroundTint="@color/black"
                 android:textColor="#FFFFFF"/>
 
+            <!-- Private events only (US 02.01.03) -->
+            <Button
+                android:id="@+id/buttonInviteEntrants"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Invite Entrants"
+                android:backgroundTint="@color/black"
+                android:textColor="#FFFFFF"
+                android:visibility="gone"/>
+
             <Button
                 android:id="@+id/buttonQR"
                 android:layout_width="match_parent"
