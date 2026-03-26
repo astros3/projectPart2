@@ -47,6 +47,11 @@
             android:parentActivityName=".WelcomePageActivity"/>
 
         <activity
+            android:name=".EntrantMapActivity"
+            android:exported="false"
+            android:parentActivityName=".EntrantMainScreenActivity" />
+
+        <activity
             android:name=".AdminEventControlScreenActivity"
             android:exported="false" />
 
