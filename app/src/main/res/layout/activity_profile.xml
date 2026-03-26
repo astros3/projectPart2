@@ -165,7 +165,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
                 android:layout_marginTop="8dp"
-                android:text="DELETE PROFILE"
+                android:text="@string/delete_my_profile"
                 android:textColor="#0B162C"
                 app:cornerRadius="8dp"
                 app:strokeColor="#6C757D" />

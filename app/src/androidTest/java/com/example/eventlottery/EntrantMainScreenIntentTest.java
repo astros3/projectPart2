@@ -42,6 +42,7 @@ public class EntrantMainScreenIntentTest {
     @Test
     public void testNavigationBarIsDisplayed() {
         onView(withId(R.id.navigation_scan_button)).check(matches(isDisplayed()));
+        onView(withId(R.id.navigation_map_button)).check(matches(isDisplayed()));
         onView(withId(R.id.navigation_history_button)).check(matches(isDisplayed()));
         onView(withId(R.id.navigation_profile_button)).check(matches(isDisplayed()));
     }

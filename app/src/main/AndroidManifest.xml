@@ -48,6 +48,11 @@
             android:parentActivityName=".WelcomePageActivity"/>
 
         <activity
+            android:name=".EntrantMapActivity"
+            android:exported="false"
+            android:parentActivityName=".EntrantMainScreenActivity" />
+
+        <activity
             android:name=".AdminEventControlScreenActivity"
             android:exported="false" />
 
@@ -85,9 +90,20 @@
             android:exported="false"
             android:parentActivityName=".MainActivity" />
 
+        <activity
+            android:name=".OrganizerInviteEntrantActivity"
+            android:exported="false"
+            android:parentActivityName=".EventDetailsActivity" />
 
-
-
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
     </application>
 
 </manifest>

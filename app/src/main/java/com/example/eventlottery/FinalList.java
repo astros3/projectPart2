@@ -3,7 +3,10 @@ package com.example.eventlottery;
 /**
  * Lists entrants with status ACCEPTED (those who accepted the invitation) for current event.
  * Same structure as SelectedList but filtered by ACCEPTED. Event ID from EventEditActivity.getCurrentEventId().
+ * Organizers can export the final list as CSV.
  */
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ListView;
@@ -11,14 +14,22 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -59,7 +70,8 @@ public class FinalList extends Fragment {
                 NavHostFragment.findNavController(FinalList.this)
                         .navigate(R.id.Final_list_to_OrganizerNavigationFragment));
 
-        view.findViewById(R.id.buttonNotifyCancelled).setOnClickListener(v -> notifyCancelledEntrants());
+        view.findViewById(R.id.buttonExportCsv).setOnClickListener(v -> exportFinalListCsv());
+       // view.findViewById(R.id.buttonNotifyCancelled).setOnClickListener(v -> notifyCancelledEntrants());
 
         loadAcceptedEntries();
     }
@@ -182,6 +194,100 @@ public class FinalList extends Fragment {
                             adapter.notifyDataSetChanged();
                         }
                     });
+        }
+    }
+
+    /** Exports the final list (ACCEPTED entrants) to a CSV file and opens the share sheet. */
+    private void exportFinalListCsv() {
+        if (acceptedEntries.isEmpty()) {
+            Toast.makeText(requireContext(), R.string.export_csv_no_entrants, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        List<CsvRow> rows = new ArrayList<>();
+        AtomicInteger pending = new AtomicInteger(acceptedEntries.size());
+        for (WaitingListEntry entry : acceptedEntries) {
+            String deviceId = entry.getDeviceId();
+            if (deviceId == null || deviceId.isEmpty()) {
+                rows.add(new CsvRow("Unknown", "", "", entry.getStatus(), entry.getJoinTimestamp()));
+                if (pending.decrementAndGet() == 0) writeAndShareCsv(rows);
+                continue;
+            }
+            db.collection("users").document(deviceId).get()
+                    .addOnSuccessListener(doc -> {
+                        String name = "Unknown Entrant";
+                        String email = "";
+                        String phone = "";
+                        if (doc != null && doc.exists()) {
+                            Entrant e = doc.toObject(Entrant.class);
+                            if (e != null) {
+                                name = e.getFullName();
+                                email = e.getEmail() != null ? e.getEmail() : "";
+                                phone = e.getPhone() != null ? e.getPhone() : "";
+                            }
+                        }
+                        rows.add(new CsvRow(name, email, phone, entry.getStatus(), entry.getJoinTimestamp()));
+                        if (pending.decrementAndGet() == 0) writeAndShareCsv(rows);
+                    })
+                    .addOnFailureListener(e -> {
+                        rows.add(new CsvRow("Unknown Entrant", "", "", entry.getStatus(), entry.getJoinTimestamp()));
+                        if (pending.decrementAndGet() == 0) writeAndShareCsv(rows);
+                    });
+        }
+    }
+
+    private void writeAndShareCsv(List<CsvRow> rows) {
+        try {
+            StringBuilder csv = new StringBuilder();
+            csv.append(escapeCsv("Name")).append(",")
+                    .append(escapeCsv("Email")).append(",")
+                    .append(escapeCsv("Phone")).append(",")
+                    .append(escapeCsv("Status")).append(",")
+                    .append(escapeCsv("Join Date")).append("\n");
+            for (CsvRow row : rows) {
+                csv.append(escapeCsv(row.name)).append(",")
+                        .append(escapeCsv(row.email)).append(",")
+                        .append(escapeCsv(row.phone)).append(",")
+                        .append(escapeCsv(row.status != null ? row.status : "")).append(",")
+                        .append(escapeCsv(row.joinDate)).append("\n");
+            }
+            File dir = requireContext().getCacheDir();
+            String fileName = "final_list_entrants_" + System.currentTimeMillis() + ".csv";
+            File file = new File(dir, fileName);
+            try (OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8)) {
+                writer.write(csv.toString());
+            }
+            Uri uri = FileProvider.getUriForFile(requireContext(),
+                    requireContext().getPackageName() + ".fileprovider", file);
+            Intent share = new Intent(Intent.ACTION_SEND);
+            share.setType("text/csv");
+            share.putExtra(Intent.EXTRA_STREAM, uri);
+            share.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            startActivity(Intent.createChooser(share, getString(R.string.export_final_list_csv)));
+            Toast.makeText(requireContext(), R.string.export_csv_success, Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            Toast.makeText(requireContext(), R.string.export_csv_failed, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private static String escapeCsv(String value) {
+        if (value == null) return "\"\"";
+        if (value.contains(",") || value.contains("\n") || value.contains("\"")) {
+            return "\"" + value.replace("\"", "\"\"") + "\"";
+        }
+        return value;
+    }
+
+    private static final class CsvRow {
+        final String name, email, phone, status, joinDate;
+
+        CsvRow(String name, String email, String phone, String status, com.google.firebase.Timestamp joinTimestamp) {
+            this.name = name;
+            this.email = email;
+            this.phone = phone;
+            this.status = status;
+            this.joinDate = joinTimestamp != null
+                    ? new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).format(joinTimestamp.toDate())
+                    : "";
         }
     }
 }

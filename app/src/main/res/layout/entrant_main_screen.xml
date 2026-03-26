@@ -104,9 +104,13 @@
         -->
         <ImageView
             android:id="@+id/filterimage"
-            android:src="@drawable/burger"
-            android:layout_width="10dp"
-            android:layout_height="10dp"/>
+            android:layout_width="14dp"
+            android:layout_height="14dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:contentDescription="@string/filter_events_title"
+            android:src="@drawable/burger" />
 
         <TextView
             android:id="@+id/filter_text"
@@ -334,6 +338,34 @@
                 android:id="@+id/scantext"
                 android:layout_marginTop="5dp"
                 android:text="SCAN"
+                android:textColor="#696969"
+                android:textSize="10dp" />
+        </LinearLayout>
+        <!--
+            map — nearby joinable events
+        -->
+        <LinearLayout
+            android:id="@+id/navigation_map_button"
+            android:orientation="vertical"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center">
+
+            <ImageView
+                android:id="@+id/navigationmap"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:src="@drawable/ic_map_unselected" />
+
+            <TextView
+                android:id="@+id/maptext"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:text="@string/nav_map"
                 android:textColor="#696969"
                 android:textSize="10dp" />
         </LinearLayout>

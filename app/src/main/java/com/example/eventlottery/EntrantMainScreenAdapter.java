@@ -82,8 +82,11 @@ public class EntrantMainScreenAdapter extends ArrayAdapter<Event> {
             eventphoto.setImageDrawable(null);
         }
 
-        boolean isSelected = "SELECTED".equalsIgnoreCase(eventIdToStatus.get(event.getEventId()));
-        if (isSelected) {
+        String status = eventIdToStatus.get(event.getEventId());
+        // Show invitation CTA for lottery winners (SELECTED) and private event invites (INVITED)
+        boolean needsResponse = "SELECTED".equalsIgnoreCase(status)
+                || "INVITED".equalsIgnoreCase(status);
+        if (needsResponse) {
             eventInvitationPrompt.setVisibility(View.VISIBLE);
             buttonviewdetail.setText("RESPOND TO INVITATION");
         } else {

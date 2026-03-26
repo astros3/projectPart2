@@ -126,6 +126,21 @@
                     app:cornerRadius="8dp" />
             </LinearLayout>
 
+            <!-- Invite Entrants — organizer only, private events only (US 02.01.03) -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_invite_entrants"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginTop="12dp"
+                android:backgroundTint="#0B162C"
+                android:text="Invite Entrants"
+                android:textColor="@android:color/white"
+                android:visibility="gone"
+                app:cornerRadius="8dp"
+                app:icon="@android:drawable/ic_dialog_email"
+                app:iconTint="@android:color/white"
+                app:iconGravity="textStart" />
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

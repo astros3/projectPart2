@@ -17,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.WriteBatch;
 
 public class EntrantProfileActivity extends AppCompatActivity {
 
@@ -137,30 +138,58 @@ public class EntrantProfileActivity extends AppCompatActivity {
 
     private void confirmDeleteProfile() {
         new AlertDialog.Builder(this)
-                .setTitle("Delete Profile")
-                .setMessage("Are you sure you want to delete your profile? This cannot be undone.")
+                .setTitle(R.string.delete_profile_title)
+                .setMessage(R.string.delete_profile_message)
                 .setPositiveButton(android.R.string.yes, (dialog, which) -> deleteProfile())
                 .setNegativeButton(android.R.string.cancel, null)
                 .show();
     }
 
+    /**
+     * Deletes the entrant profile from Firestore and removes this user from all event waiting
+     * lists, then returns to the welcome screen.
+     */
     private void deleteProfile() {
         if (deviceId == null || deviceId.isEmpty()) {
             Toast.makeText(this, "Cannot delete: device ID not available.", Toast.LENGTH_LONG).show();
             return;
         }
+        // Remove this user from all event waiting lists, then delete profile
+        db.collectionGroup("waitingList")
+                .whereEqualTo("deviceId", deviceId)
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    WriteBatch batch = db.batch();
+                    querySnapshot.getDocuments().forEach(doc -> batch.delete(doc.getReference()));
+                    if (querySnapshot.isEmpty()) {
+                        deleteUserDocument();
+                    } else {
+                        batch.commit()
+                                .addOnSuccessListener(aVoid -> deleteUserDocument())
+                                .addOnFailureListener(e -> {
+                                    Log.w("EntrantProfile", "Failed to remove from waiting lists", e);
+                                    deleteUserDocument();
+                                });
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.w("EntrantProfile", "Could not query waiting lists (index may be required)", e);
+                    // Still delete profile so the user can leave the app
+                    deleteUserDocument();
+                });
+    }
+
+    private void deleteUserDocument() {
         db.collection("users").document(deviceId)
                 .delete()
                 .addOnSuccessListener(aVoid -> runOnUiThread(() -> {
-                    Toast.makeText(this, "Profile deleted.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, R.string.profile_deleted, Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(this, WelcomePageActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(intent);
                     finish();
                 }))
                 .addOnFailureListener(e -> runOnUiThread(() ->
-                        Toast.makeText(this,
-                                "Delete failed: " + e.getMessage(),
-                                Toast.LENGTH_LONG).show()));
+                        Toast.makeText(this, R.string.delete_profile_failed, Toast.LENGTH_LONG).show()));
     }
 }

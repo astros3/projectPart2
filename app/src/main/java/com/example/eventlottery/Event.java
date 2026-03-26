@@ -24,11 +24,17 @@ public class Event {
     private long registrationEndMillis;
     private long eventDateMillis;
     private boolean geolocationRequired;
+    private boolean isPrivate; // US 02.01.02
     private String posterUri;
     private String qrCodeUri;
     private String promoCode;
     private double price;
     private List<String> selectionCriteria;
+    /** Event category (e.g. Swimming, Music); used for map/filter tags. */
+    private String eventType;
+    /** Venue coordinates from Places when organizer saves; used for entrant map. */
+    private Double latitude;
+    private Double longitude;
     private String userapplicationstatus = "User not signed up for this event";
 
     /** No-arg constructor; selectionCriteria initialized to empty list. */
@@ -81,7 +87,7 @@ public class Event {
     public void setOrganizerId(String organizerId) { this.organizerId = organizerId; }
     public String getOrganizerName() { return organizerName; }
     public void setOrganizerName(String organizerName) { this.organizerName = organizerName; }
-    /** Max accepted entrants; 0 = unlimited. Not enforced in current UI. */
+    /** Max accepted entrants; 0 = unlimited. */
     public int getCapacity() { return capacity; }
     public void setCapacity(int capacity) { this.capacity = capacity; }
     /** Max entrants on waiting list; 0 = unlimited. */
@@ -96,6 +102,13 @@ public class Event {
     /** Whether entrants must provide geolocation when joining. */
     public boolean isGeolocationRequired() { return geolocationRequired; }
     public void setGeolocationRequired(boolean geolocationRequired) { this.geolocationRequired = geolocationRequired; }
+    /**
+     * Whether this is a private event (US 02.01.02).
+     * Private events are not visible on public listing and do not generate a QR code.
+     * Organizer invites entrants manually (US 02.01.03).
+     */
+    public boolean isPrivate() { return isPrivate; }
+    public void setPrivate(boolean isPrivate) { this.isPrivate = isPrivate; }
     public String getPosterUri() { return posterUri; }
     public void setPosterUri(String posterUri) { this.posterUri = posterUri; }
     public String getQrCodeUri() { return qrCodeUri; }
@@ -107,7 +120,16 @@ public class Event {
     public void setPrice(double price) { this.price = price; }
     public List<String> getSelectionCriteria() { return selectionCriteria != null ? selectionCriteria : new ArrayList<>(); }
     public void setSelectionCriteria(List<String> selectionCriteria) { this.selectionCriteria = selectionCriteria != null ? selectionCriteria : new ArrayList<>(); }
-
+    public String getEventType() { return eventType != null ? eventType : ""; }
+    public void setEventType(String eventType) { this.eventType = eventType; }
+    public Double getLatitude() { return latitude; }
+    public void setLatitude(Double latitude) { this.latitude = latitude; }
+    public Double getLongitude() { return longitude; }
+    public void setLongitude(Double longitude) { this.longitude = longitude; }
+    public boolean hasCoordinates() {
+        return latitude != null && longitude != null
+                && !(Double.isNaN(latitude) || Double.isNaN(longitude));
+    }
     /** UI-only: current user's application status for this event. Do not persist to Firestore. */
     public String getUserApplicationStatus() { return userapplicationstatus; }
     public void setUserApplicationStatus(String applicationStatus) { this.userapplicationstatus = applicationStatus; }

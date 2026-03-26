@@ -1,6 +1,11 @@
 <resources>
     <string name="delete_event">Delete Event</string>
     <string name="final_list">Final List</string>
+    <string name="export_csv">Export CSV</string>
+    <string name="export_final_list_csv">Export final list (CSV)</string>
+    <string name="export_csv_success">CSV exported. Share or save the file.</string>
+    <string name="export_csv_no_entrants">No entrants to export.</string>
+    <string name="export_csv_failed">Could not export CSV.</string>
     <string name="notifications">Notifications</string>
     <string name="notification_empty">No notifications yet</string>
     <string name="notification_load_failed">Could not load notifications</string>
@@ -36,7 +41,9 @@
     <string name="event_name_hint">Enter event name</string>
     <string name="event_description">Event Description</string>
     <string name="event_description_hint">Enter event description</string>
-    <string name="event_image">Event Image</string>
+    <string name="event_image">Event poster</string>
+    <string name="event_poster_tap_hint">Tap to add or change poster (shown to entrants)</string>
+    <string name="remove_poster">Remove poster</string>
     <string name="event_type">Event Type</string>
     <string name="event_location">Event Location</string>
     <string name="event_location_hint">Tap to search and select a location</string>
@@ -79,6 +86,13 @@
     <string name="save_changes">Save Changes</string>
     <string name="organizer_profile_saved">Profile saved</string>
 
+    <!-- Entrant profile: delete account -->
+    <string name="delete_my_profile">Delete my profile</string>
+    <string name="delete_profile_title">Delete profile</string>
+    <string name="delete_profile_message">Are you sure you want to delete your profile? You will be removed from all event waiting lists and will need to register again to use the app. This cannot be undone.</string>
+    <string name="profile_deleted">Your profile has been deleted.</string>
+    <string name="delete_profile_failed">Could not delete profile. Please try again.</string>
+
     <string name="qr_scan_hint">Scan this QR code to view event details and join the waiting list</string>
     <string name="back">Back</string>
     <string name="event_location_label">EVENT_LOCATION_LABEL</string>
@@ -94,4 +108,15 @@
         <item>Workshop</item>
         <item>Other</item>
     </string-array>
+
+    <string name="filter_any_type">Any type</string>
+    <string name="filter_events_title">Filter events</string>
+    <string name="filter_keyword_hint">Keyword (title or description)</string>
+    <string name="filter_distance_hint">Max distance (km, optional)</string>
+    <string name="filter_registration_open">Registration open only</string>
+    <string name="filter_apply">Apply</string>
+    <string name="filter_clear">Clear</string>
+    <string name="distance_filter_needs_location">Turn on location to use the distance filter.</string>
+    <string name="entrant_map_title">Events near you</string>
+    <string name="nav_map">MAP</string>
 </resources>

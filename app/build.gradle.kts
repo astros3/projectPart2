@@ -15,8 +15,8 @@ android {
         applicationId = "com.example.eventlottery"
         minSdk = 24
         targetSdk = 36
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 2
+        versionName = "1.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -48,7 +48,8 @@ dependencies {
     implementation(libs.navigation.ui.ktx)
 
     implementation("com.google.android.gms:play-services-location:21.0.1")
-    implementation("com.google.android.gms:play-services-maps:20.0.0")
+    implementation("com.google.android.gms:play-services-maps:18.2.0")
+    implementation("com.google.maps.android:android-maps-utils:3.8.2")
     implementation("com.google.android.libraries.places:places:3.3.0")
 
     implementation(platform("com.google.firebase:firebase-bom:34.10.0"))
