@@ -39,9 +39,9 @@ import java.util.Calendar;
 import java.util.Locale;
 
 /**
- * Create/edit event screen (US 02.01.01, 02.01.04, 01.05.05). Create: no EXTRA_EVENT_ID;
- * Edit: pass EXTRA_EVENT_ID. Enforces organizer-only; saves geolocation, optional waiting
- * list limit, and lottery selection criteria (US 01.05.05).
+ * Create/edit event screen (US 02.01.01, 02.01.02, 02.01.04, 01.05.05). Create: no
+ * EXTRA_EVENT_ID; Edit: pass EXTRA_EVENT_ID. Enforces organizer-only; saves geolocation,
+ * optional waiting list limit, lottery selection criteria, and private event flag.
  */
 public class EventEditActivity extends AppCompatActivity {
 
@@ -49,11 +49,10 @@ public class EventEditActivity extends AppCompatActivity {
 
     private static final String PREFS_NAME = "EventLotteryPrefs";
     private static final String KEY_CURRENT_EVENT_ID = "organizer_current_event_id";
-    /** Firestore collection for organizer accounts (separate from entrant users). */
     private static final String COLLECTION_ORGANIZERS = "organizers";
 
     private FirebaseFirestore db;
-    private String eventId; // null = create mode
+    private String eventId;
     private String deviceId;
     private String organizerName;
 
@@ -62,23 +61,19 @@ public class EventEditActivity extends AppCompatActivity {
     private TextInputLayout inputLayoutLocation;
     private Spinner spinnerEventType;
     private MaterialSwitch switchGeolocation;
+    private MaterialSwitch switchPrivateEvent; // US 02.01.02
     private MaterialButton btnConfirm;
 
-    /** True when location was set via Google Places Autocomplete (required to save). */
     private boolean locationSelectedFromPlaces;
-    /** Last place coordinates from Places (persisted on save for entrant map). */
     private Double selectedPlaceLat;
     private Double selectedPlaceLng;
 
-    /** Poster UI: container (tap to pick), image view, placeholder text, remove button. */
     private android.widget.FrameLayout eventImageContainer;
     private android.widget.ImageView posterImageView;
     private android.widget.TextView posterPlaceholderText;
     private android.widget.ImageButton btnRemovePoster;
     private android.net.Uri selectedPosterUri;
-    /** When editing, the poster URL already stored (so we can keep it if user doesn't change). */
     private String existingPosterUri;
-    /** User tapped "Remove poster"; on save we clear poster in Firestore. */
     private boolean posterRemovedByUser;
 
     private long registrationStartMillis = 0;
@@ -116,9 +111,10 @@ public class EventEditActivity extends AppCompatActivity {
         inputRegStart          = findViewById(R.id.input_registration_start);
         inputRegEnd            = findViewById(R.id.input_registration_end);
         inputLimit             = findViewById(R.id.input_waiting_list_limit);
-        inputSelectionCriteria = findViewById(R.id.input_selection_criteria); // US 01.05.05
+        inputSelectionCriteria = findViewById(R.id.input_selection_criteria);
         spinnerEventType       = findViewById(R.id.spinner_event_type);
         switchGeolocation      = findViewById(R.id.switch_geolocation);
+        switchPrivateEvent     = findViewById(R.id.switch_private_event); // US 02.01.02
         btnConfirm             = findViewById(R.id.btn_confirm);
         eventImageContainer    = findViewById(R.id.event_image_container);
         posterImageView        = findViewById(R.id.event_poster_placeholder);
@@ -127,7 +123,6 @@ public class EventEditActivity extends AppCompatActivity {
         inputLayoutLocation    = findViewById(R.id.input_layout_event_location);
     }
 
-    /** Registers image picker launcher and sets tap/remove behaviour for poster area. */
     private void setupPosterPicker() {
         ActivityResultLauncher<String> getContent = registerForActivityResult(
                 new ActivityResultContracts.GetContent(),
@@ -150,17 +145,13 @@ public class EventEditActivity extends AppCompatActivity {
         });
     }
 
-    /**
-     * Initializes Places (if API key is present) and makes the location field open
-     * Google Places Autocomplete. Only locations selected from the search are accepted.
-     */
     private void setupLocationAutocomplete() {
         String apiKey = getPlacesApiKey();
         if (apiKey == null || apiKey.isEmpty()) {
             inputLayoutLocation.setHelperText(getString(R.string.event_location_helper) + " (Places API key not set.)");
             inputLocation.setClickable(true);
             inputLocation.setOnClickListener(v ->
-                    Toast.makeText(this, "Places API key required. Set com.google.android.geo.API_KEY in AndroidManifest.", Toast.LENGTH_LONG).show());
+                    Toast.makeText(this, "Places API key required.", Toast.LENGTH_LONG).show());
             return;
         }
         if (!Places.isInitialized()) {
@@ -174,20 +165,14 @@ public class EventEditActivity extends AppCompatActivity {
         ActivityResultLauncher<Intent> placeAutocompleteLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
-                    if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null) {
-                        return;
-                    }
+                    if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null) return;
                     Place place = Autocomplete.getPlaceFromIntent(result.getData());
                     String address = place.getAddress();
-                    if (address == null || address.trim().isEmpty()) {
-                        address = place.getName();
-                    }
+                    if (address == null || address.trim().isEmpty()) address = place.getName();
                     if (address != null && !address.trim().isEmpty()) {
                         inputLocation.setText(address.trim());
                         locationSelectedFromPlaces = true;
-                        if (inputLayoutLocation != null) {
-                            inputLayoutLocation.setError(null);
-                        }
+                        if (inputLayoutLocation != null) inputLayoutLocation.setError(null);
                     }
                     if (place.getLatLng() != null) {
                         selectedPlaceLat = place.getLatLng().latitude;
@@ -206,8 +191,7 @@ public class EventEditActivity extends AppCompatActivity {
             if (ai != null && ai.metaData != null) {
                 return ai.metaData.getString("com.google.android.geo.API_KEY");
             }
-        } catch (PackageManager.NameNotFoundException ignored) {
-        }
+        } catch (PackageManager.NameNotFoundException ignored) {}
         return null;
     }
 
@@ -260,7 +244,6 @@ public class EventEditActivity extends AppCompatActivity {
 
     private void setupConfirmButton() {
         btnConfirm.setOnClickListener(v -> saveEvent());
-        eventImageContainer.setOnClickListener(v -> openImagePicker());
     }
 
     private void openImagePicker() {
@@ -307,9 +290,6 @@ public class EventEditActivity extends AppCompatActivity {
                 });
     }
 
-    /**
-     * Create mode: ensure current device has an organizer account; if not, offer to register.
-     */
     private void ensureOrganizerAccountThenAllowCreate() {
         db.collection(COLLECTION_ORGANIZERS).document(deviceId).get()
                 .addOnSuccessListener(this::onOrganizerDocFetched)
@@ -353,7 +333,6 @@ public class EventEditActivity extends AppCompatActivity {
         locationSelectedFromPlaces = (event.getLocation() != null
                 && !event.getLocation().trim().isEmpty());
 
-        // Show existing poster when editing; track for "keep" on save
         existingPosterUri = event.getPosterUri();
         if (existingPosterUri != null && !existingPosterUri.isEmpty()) {
             if (existingPosterUri.startsWith("content://")) {
@@ -371,20 +350,18 @@ public class EventEditActivity extends AppCompatActivity {
                 ? String.valueOf(event.getWaitingListLimit()) : "");
         switchGeolocation.setChecked(event.isGeolocationRequired());
 
+        // US 02.01.02 — load private event flag
+        switchPrivateEvent.setChecked(event.isPrivate());
+
         registrationStartMillis = event.getRegistrationStartMillis();
         registrationEndMillis   = event.getRegistrationEndMillis();
-        if (registrationStartMillis > 0) {
-            inputRegStart.setText(formatDateForDisplay(registrationStartMillis));
-        }
-        if (registrationEndMillis > 0) {
-            inputRegEnd.setText(formatDateForDisplay(registrationEndMillis));
-        }
+        if (registrationStartMillis > 0) inputRegStart.setText(formatDateForDisplay(registrationStartMillis));
+        if (registrationEndMillis > 0) inputRegEnd.setText(formatDateForDisplay(registrationEndMillis));
 
         selectedPlaceLat = event.getLatitude();
         selectedPlaceLng = event.getLongitude();
         selectEventTypeOnSpinner(event.getEventType());
 
-        // US 01.05.05 — load existing selection criteria into the field
         List<String> criteria = event.getSelectionCriteria();
         if (criteria != null && !criteria.isEmpty()) {
             inputSelectionCriteria.setText(android.text.TextUtils.join("\n", criteria));
@@ -436,9 +413,7 @@ public class EventEditActivity extends AppCompatActivity {
             Toast.makeText(this, R.string.event_location_required, Toast.LENGTH_LONG).show();
             return;
         }
-        if (inputLayoutLocation != null) {
-            inputLayoutLocation.setError(null);
-        }
+        if (inputLayoutLocation != null) inputLayoutLocation.setError(null);
 
         String description = inputDescription.getText() != null
                 ? inputDescription.getText().toString().trim() : "";
@@ -447,9 +422,8 @@ public class EventEditActivity extends AppCompatActivity {
         String limitStr = inputLimit.getText() != null
                 ? inputLimit.getText().toString().trim() : "";
         if (!limitStr.isEmpty()) {
-            try {
-                limit = Integer.parseInt(limitStr);
-            } catch (NumberFormatException ignored) { }
+            try { limit = Integer.parseInt(limitStr); }
+            catch (NumberFormatException ignored) {}
         }
 
         // US 01.05.05 — parse selection criteria (one per line)
@@ -464,7 +438,6 @@ public class EventEditActivity extends AppCompatActivity {
         }
 
         boolean isCreate = eventId == null || eventId.isEmpty();
-
         if (isCreate && (organizerName == null || organizerName.isEmpty())) {
             Toast.makeText(this, "Organizer account not ready. Please try again.", Toast.LENGTH_SHORT).show();
             return;
@@ -481,7 +454,8 @@ public class EventEditActivity extends AppCompatActivity {
         event.setRegistrationEndMillis(registrationEndMillis);
         event.setEventDateMillis(registrationEndMillis);
         event.setGeolocationRequired(switchGeolocation.isChecked());
-        event.setSelectionCriteria(criteriaList); // US 01.05.05
+        event.setPrivate(switchPrivateEvent.isChecked()); // US 02.01.02
+        event.setSelectionCriteria(criteriaList);
         event.setLatitude(selectedPlaceLat);
         event.setLongitude(selectedPlaceLng);
         if (spinnerEventType.getSelectedItem() != null) {
@@ -501,7 +475,6 @@ public class EventEditActivity extends AppCompatActivity {
         }
     }
 
-    /** Uploads selected image to Storage at events/{eventId}/poster, then persists event. */
     private void uploadPosterAndThenSave(Event event, boolean isCreate) {
         StorageReference posterRef = FirebaseStorage.getInstance().getReference()
                 .child("events").child(eventId).child("poster.jpg");
@@ -529,7 +502,10 @@ public class EventEditActivity extends AppCompatActivity {
                     .addOnSuccessListener(aVoid -> {
                         saveCurrentEventId(eventId);
                         Toast.makeText(this, R.string.event_created_success, Toast.LENGTH_SHORT).show();
-                        openQRCodeScreen();
+                        // Only open QR code screen for public events
+                        if (!event.isPrivate()) {
+                            openQRCodeScreen();
+                        }
                         finish();
                     })
                     .addOnFailureListener(e ->
@@ -555,7 +531,8 @@ public class EventEditActivity extends AppCompatActivity {
                         existing.setRegistrationEndMillis(event.getRegistrationEndMillis());
                         existing.setEventDateMillis(event.getEventDateMillis());
                         existing.setGeolocationRequired(event.isGeolocationRequired());
-                        existing.setSelectionCriteria(event.getSelectionCriteria()); // US 01.05.05
+                        existing.setPrivate(event.isPrivate()); // US 02.01.02
+                        existing.setSelectionCriteria(event.getSelectionCriteria());
                         existing.setLatitude(event.getLatitude());
                         existing.setLongitude(event.getLongitude());
                         existing.setEventType(event.getEventType());
@@ -594,7 +571,6 @@ public class EventEditActivity extends AppCompatActivity {
                 .getString(KEY_CURRENT_EVENT_ID, null);
     }
 
-    /** Call when organizer selects an event (e.g. from dashboard) so QR / nav use it. */
     public static void setCurrentEventId(Context context, String eventId) {
         context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
                 .edit()

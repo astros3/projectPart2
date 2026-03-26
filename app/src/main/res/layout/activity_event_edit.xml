@@ -96,7 +96,7 @@
                     android:inputType="textMultiLine" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Event poster: tap to add/update image shown to entrants -->
+            <!-- Event poster -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -288,6 +288,37 @@
                     android:textColor="#0B162C" />
                 <com.google.android.material.materialswitch.MaterialSwitch
                     android:id="@+id/switch_geolocation"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <!-- Private Event Toggle (US 02.01.02, 01.05.06, 01.05.07) -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Private Event"
+                        android:textSize="14sp"
+                        android:textColor="#0B162C" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Not visible on public listing. Invite entrants manually."
+                        android:textSize="11sp"
+                        android:textColor="#6C757D" />
+                </LinearLayout>
+                <com.google.android.material.materialswitch.MaterialSwitch
+                    android:id="@+id/switch_private_event"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
             </LinearLayout>

@@ -44,8 +44,9 @@ import java.util.Map;
 /**
  * Event details and join/leave waiting list (US 01.01.01, 01.01.02, 01.06.02). Enforces
  * registration window and optional waiting list limit before allowing join.
- * When event requires geolocation, captures entrant location once when joining—
- * no live tracking.
+ * When event requires geolocation, captures entrant location once when joining.
+ * Handles private event invitations: accept joins waiting list as PENDING,
+ * decline sets status to DECLINED (US 01.05.06, 01.05.07).
  */
 public class EventDetailsActivity extends AppCompatActivity {
 
@@ -62,10 +63,10 @@ public class EventDetailsActivity extends AppCompatActivity {
     private String deviceId;
     private boolean onWaitingList;
     private String waitingListStatus;
-    /** When we request location permission for join, store event to retry after permission result. */
     private Event pendingJoinEvent;
 
-    private TextView titleView, organizerView, dateView, statusView, descriptionView, criteriaView, waitingListCountView;
+    private TextView titleView, organizerView, dateView, statusView,
+            descriptionView, criteriaView, waitingListCountView;
     private ImageView posterView;
     private MaterialButton joinLeaveButton;
     private ListView commentsListView;
@@ -78,7 +79,6 @@ public class EventDetailsActivity extends AppCompatActivity {
     private final ArrayList<String> comments = new ArrayList<>();
     private final ArrayList<String> commentIds = new ArrayList<>();
     private ArrayAdapter<String> commentsAdapter;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -129,53 +129,47 @@ public class EventDetailsActivity extends AppCompatActivity {
     }
 
     private void bindViews() {
-        titleView = findViewById(R.id.event_title);
-        organizerView = findViewById(R.id.event_organizer);
-        dateView = findViewById(R.id.event_date);
-        statusView = findViewById(R.id.event_status);
-        descriptionView = findViewById(R.id.event_description);
-        criteriaView = findViewById(R.id.event_selection_criteria);
+        titleView            = findViewById(R.id.event_title);
+        organizerView        = findViewById(R.id.event_organizer);
+        dateView             = findViewById(R.id.event_date);
+        statusView           = findViewById(R.id.event_status);
+        descriptionView      = findViewById(R.id.event_description);
+        criteriaView         = findViewById(R.id.event_selection_criteria);
         waitingListCountView = findViewById(R.id.event_waiting_list_count);
-        posterView = findViewById(R.id.event_poster);
-        commentsListView = findViewById(R.id.listComments);
-        commentInput = findViewById(R.id.editComment);
-        postCommentButton = findViewById(R.id.buttonPostComment);
+        posterView           = findViewById(R.id.event_poster);
+        commentsListView     = findViewById(R.id.listComments);
+        commentInput         = findViewById(R.id.editComment);
+        postCommentButton    = findViewById(R.id.buttonPostComment);
         postCommentButton.setOnClickListener(v -> postComment());
 
         joinLeaveButton = findViewById(R.id.btn_join_leave);
         joinLeaveButton.setOnClickListener(v -> onJoinLeaveClicked());
 
-        commentsAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, comments);//from last version making it global instead of local variable
+        commentsAdapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_list_item_1, comments);
         commentsListView.setAdapter(commentsAdapter);
 
         invitationButtonsContainer = findViewById(R.id.invitation_buttons_container);
-        acceptInvitationButton = findViewById(R.id.btn_accept_invitation);
-        declineInvitationButton = findViewById(R.id.btn_decline_invitation);
-        acceptInvitationButton.setOnClickListener(v -> updateInvitationStatus(WaitingListEntry.Status.ACCEPTED));
-        declineInvitationButton.setOnClickListener(v -> updateInvitationStatus(WaitingListEntry.Status.DECLINED));
+        acceptInvitationButton     = findViewById(R.id.btn_accept_invitation);
+        declineInvitationButton    = findViewById(R.id.btn_decline_invitation);
+        acceptInvitationButton.setOnClickListener(v ->
+                updateInvitationStatus(WaitingListEntry.Status.ACCEPTED));
+        declineInvitationButton.setOnClickListener(v ->
+                updateInvitationStatus(WaitingListEntry.Status.DECLINED));
+
         commentsListView.setOnItemClickListener((parent, view, position, id) -> {
-            if (organizermode == true) {
+            if (organizermode) {
                 String selectedCommentId = commentIds.get(position);
-                //reference: https://developer.android.com/develop/ui/views/components/dialogs
                 new androidx.fragment.app.DialogFragment() {
                     @Override
                     public android.app.Dialog onCreateDialog(Bundle savedInstanceState) {
-
-                        androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(getActivity());
-
+                        androidx.appcompat.app.AlertDialog.Builder builder =
+                                new androidx.appcompat.app.AlertDialog.Builder(getActivity());
                         builder.setMessage("Do you want to delete this comment?(No Reverse)")
-
-                                .setPositiveButton("Yes", new android.content.DialogInterface.OnClickListener() {
-                                    public void onClick(android.content.DialogInterface dialog,int id) {
-                                        organizerdeleteComment(selectedCommentId);
-                                    }
-                                })
-                                .setNegativeButton("No", new android.content.DialogInterface.OnClickListener() {
-                                    public void onClick(android.content.DialogInterface dialog,int id) {
-                                        dialog.dismiss();
-                                    }
-                                });
-
+                                .setPositiveButton("Yes", (dialog, id) ->
+                                        organizerdeleteComment(selectedCommentId))
+                                .setNegativeButton("No", (dialog, id) ->
+                                        dialog.dismiss());
                         return builder.create();
                     }
                 }.show(getSupportFragmentManager(), "DELETE_COMMENT_DIALOG");
@@ -212,25 +206,19 @@ public class EventDetailsActivity extends AppCompatActivity {
                 .get()
                 .addOnSuccessListener(doc -> {
                     onWaitingList = doc != null && doc.exists();
-
                     if (onWaitingList) {
                         waitingListStatus = doc.getString("status");
                     } else {
                         waitingListStatus = null;
                     }
-
                     updateStatusAndButton();
                 });
 
         refreshWaitingListCount();
-        boolean currentlyviewingasentrant = getIntent().getBooleanExtra(EXTRA_VIEW_AS_ENTRANT, true);
 
-        if (currentlyviewingasentrant == true){
-            organizermode = false;
-        }
-        else{
-            organizermode = true;
-        }
+        boolean currentlyViewingAsEntrant =
+                getIntent().getBooleanExtra(EXTRA_VIEW_AS_ENTRANT, true);
+        organizermode = !currentlyViewingAsEntrant;
         loadComments();
     }
 
@@ -245,8 +233,10 @@ public class EventDetailsActivity extends AppCompatActivity {
     }
 
     private void bindEvent(Event event) {
-        titleView.setText(event.getTitle() != null ? event.getTitle() : getString(R.string.event_details));
-        organizerView.setText(event.getOrganizerName() != null && !event.getOrganizerName().isEmpty()
+        titleView.setText(event.getTitle() != null
+                ? event.getTitle() : getString(R.string.event_details));
+        organizerView.setText(event.getOrganizerName() != null
+                && !event.getOrganizerName().isEmpty()
                 ? "By " + event.getOrganizerName() : "By Organizer");
         if (event.getEventDateMillis() > 0) {
             dateView.setText(formatDate(event.getEventDateMillis()));
@@ -254,8 +244,10 @@ public class EventDetailsActivity extends AppCompatActivity {
         } else {
             dateView.setVisibility(View.GONE);
         }
-        descriptionView.setText(event.getDescription() != null && !event.getDescription().isEmpty()
-                ? event.getDescription() : "Description description description......");
+        descriptionView.setText(event.getDescription() != null
+                && !event.getDescription().isEmpty()
+                ? event.getDescription()
+                : "Description description description......");
 
         List<String> criteria = event.getSelectionCriteria();
         if (criteria != null && !criteria.isEmpty()) {
@@ -276,14 +268,16 @@ public class EventDetailsActivity extends AppCompatActivity {
     }
 
     private static String formatDate(long millis) {
-        return new SimpleDateFormat("MMM d, yyyy", Locale.getDefault()).format(new Date(millis));
+        return new SimpleDateFormat("MMM d, yyyy", Locale.getDefault())
+                .format(new Date(millis));
     }
 
     private void updateStatusAndButton() {
         if (!onWaitingList) {
             statusView.setText(R.string.status_not_joined);
             joinLeaveButton.setVisibility(View.VISIBLE);
-            if (invitationButtonsContainer != null) invitationButtonsContainer.setVisibility(View.GONE);
+            if (invitationButtonsContainer != null)
+                invitationButtonsContainer.setVisibility(View.GONE);
             joinLeaveButton.setText(R.string.request_to_join);
             return;
         }
@@ -291,7 +285,8 @@ public class EventDetailsActivity extends AppCompatActivity {
         if (waitingListStatus == null || waitingListStatus.isEmpty()) {
             statusView.setText(R.string.status_pending);
             joinLeaveButton.setVisibility(View.VISIBLE);
-            if (invitationButtonsContainer != null) invitationButtonsContainer.setVisibility(View.GONE);
+            if (invitationButtonsContainer != null)
+                invitationButtonsContainer.setVisibility(View.GONE);
             joinLeaveButton.setText(R.string.leave_waiting_list);
             return;
         }
@@ -308,6 +303,17 @@ public class EventDetailsActivity extends AppCompatActivity {
                 statusView.setText("Selected");
                 joinLeaveButton.setVisibility(View.GONE);
                 invitationButtonsContainer.setVisibility(View.VISIBLE);
+                acceptInvitationButton.setText("Accept");
+                declineInvitationButton.setText("Decline");
+                break;
+
+            case "INVITED":
+                // US 01.05.06 / 01.05.07 — invited to join private event waiting list
+                statusView.setText("Invited to Private Event 🔒");
+                joinLeaveButton.setVisibility(View.GONE);
+                invitationButtonsContainer.setVisibility(View.VISIBLE);
+                acceptInvitationButton.setText("Accept Invitation");
+                declineInvitationButton.setText("Decline Invitation");
                 break;
 
             case "ACCEPTED":
@@ -347,7 +353,12 @@ public class EventDetailsActivity extends AppCompatActivity {
         }
     }
 
-    /** Updates invitation status to ACCEPTED or DECLINED when current status is SELECTED. */
+    /**
+     * Updates invitation status to ACCEPTED or DECLINED.
+     * Handles both lottery selected (SELECTED -> ACCEPTED/DECLINED)
+     * and private event invitations (INVITED -> PENDING on accept, DECLINED on decline).
+     * US 01.05.02, 01.05.03, 01.05.07.
+     */
     private void updateInvitationStatus(WaitingListEntry.Status newStatus) {
         if (eventId == null || eventId.trim().isEmpty()) {
             Toast.makeText(this, "No event selected", Toast.LENGTH_SHORT).show();
@@ -361,41 +372,68 @@ public class EventDetailsActivity extends AppCompatActivity {
                 .get()
                 .addOnSuccessListener(documentSnapshot -> {
                     if (!documentSnapshot.exists()) {
-                        Toast.makeText(this, "Invitation record not found", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "Invitation record not found",
+                                Toast.LENGTH_SHORT).show();
                         return;
                     }
 
-                    WaitingListEntry entry = documentSnapshot.toObject(WaitingListEntry.class);
+                    WaitingListEntry entry =
+                            documentSnapshot.toObject(WaitingListEntry.class);
                     if (entry == null) {
-                        Toast.makeText(this, "Could not read invitation", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "Could not read invitation",
+                                Toast.LENGTH_SHORT).show();
                         return;
                     }
 
                     String currentStatus = entry.getStatus();
-                    if (!WaitingListEntry.Status.SELECTED.name().equals(currentStatus)) {
-                        Toast.makeText(this, "This invitation is no longer active", Toast.LENGTH_SHORT).show();
+
+                    // Valid statuses that can be responded to
+                    boolean isSelected = WaitingListEntry.Status.SELECTED.name()
+                            .equals(currentStatus);
+                    boolean isInvited  = WaitingListEntry.Status.INVITED.name()
+                            .equals(currentStatus);
+
+                    if (!isSelected && !isInvited) {
+                        Toast.makeText(this, "This invitation is no longer active",
+                                Toast.LENGTH_SHORT).show();
                         return;
+                    }
+
+                    // US 01.05.07 — accepting a private invite adds them to
+                    // the waiting list as PENDING
+                    String statusToSave;
+                    if (isInvited && newStatus == WaitingListEntry.Status.ACCEPTED) {
+                        statusToSave = WaitingListEntry.Status.PENDING.name();
+                    } else {
+                        statusToSave = newStatus.name();
                     }
 
                     db.collection("events")
                             .document(eventId)
                             .collection("waitingList")
                             .document(deviceId)
-                            .update("status", newStatus.name())
+                            .update("status", statusToSave)
                             .addOnSuccessListener(unused -> {
-                                String message = (newStatus == WaitingListEntry.Status.ACCEPTED)
-                                        ? "Registration confirmed!"
-                                        : "Invitation declined.";
+                                String message;
+                                if (newStatus == WaitingListEntry.Status.ACCEPTED) {
+                                    message = isInvited
+                                            ? "You've joined the waiting list!"
+                                            : "Registration confirmed!";
+                                } else {
+                                    message = "Invitation declined.";
+                                }
                                 Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-                                waitingListStatus = newStatus.name();
+                                waitingListStatus = statusToSave;
                                 updateStatusAndButton();
                                 refreshWaitingListCount();
                             })
                             .addOnFailureListener(e ->
-                                    Toast.makeText(this, "Failed to update invitation", Toast.LENGTH_SHORT).show());
+                                    Toast.makeText(this, "Failed to update invitation",
+                                            Toast.LENGTH_SHORT).show());
                 })
                 .addOnFailureListener(e ->
-                        Toast.makeText(this, "Failed to load invitation", Toast.LENGTH_SHORT).show());
+                        Toast.makeText(this, "Failed to load invitation",
+                                Toast.LENGTH_SHORT).show());
     }
 
     private void onJoinLeaveClicked() {
@@ -421,7 +459,8 @@ public class EventDetailsActivity extends AppCompatActivity {
                     }
 
                     if (!event.isRegistrationOpen()) {
-                        Toast.makeText(this, "Registration is closed for this event", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "Registration is closed for this event",
+                                Toast.LENGTH_SHORT).show();
                         return;
                     }
 
@@ -437,7 +476,6 @@ public class EventDetailsActivity extends AppCompatActivity {
                 });
     }
 
-    /** One-time location capture only; never uses requestLocationUpdates or live tracking. */
     private void captureLocationOnceThenAddToWaitingList(Event event) {
         pendingJoinEvent = event;
 
@@ -454,43 +492,39 @@ public class EventDetailsActivity extends AppCompatActivity {
         fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null)
                 .addOnSuccessListener(this, location -> {
                     if (location != null) {
-                        Log.d(TAG, "captureLocationOnceThenAddToWaitingList: got current location lat="
-                                + location.getLatitude() + " lng=" + location.getLongitude());
-
                         updateUserProfileWithLocationOnce(
                                 location.getLatitude(),
                                 location.getLongitude(),
                                 () -> checkLimitThenAddToWaitingList(event)
                         );
                     } else {
-                        Log.w(TAG, "captureLocationOnceThenAddToWaitingList: current location was null");
-                        Toast.makeText(
-                                this,
+                        Toast.makeText(this,
                                 getString(R.string.location_unavailable_joining_without),
-                                Toast.LENGTH_SHORT
-                        ).show();
+                                Toast.LENGTH_SHORT).show();
                         checkLimitThenAddToWaitingList(event);
                     }
                 })
                 .addOnFailureListener(e -> {
-                    Log.e(TAG, "captureLocationOnceThenAddToWaitingList: failed to get current location", e);
-                    Toast.makeText(
-                            this,
+                    Toast.makeText(this,
                             getString(R.string.location_unavailable_joining_without),
-                            Toast.LENGTH_SHORT
-                    ).show();
+                            Toast.LENGTH_SHORT).show();
                     checkLimitThenAddToWaitingList(event);
                 });
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == REQUEST_LOCATION_FOR_JOIN && pendingJoinEvent != null) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            if (grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 captureLocationOnceThenAddToWaitingList(pendingJoinEvent);
             } else {
-                Toast.makeText(this, getString(R.string.location_unavailable_joining_without), Toast.LENGTH_SHORT).show();
+                Toast.makeText(this,
+                        getString(R.string.location_unavailable_joining_without),
+                        Toast.LENGTH_SHORT).show();
                 checkLimitThenAddToWaitingList(pendingJoinEvent);
             }
             pendingJoinEvent = null;
@@ -500,31 +534,28 @@ public class EventDetailsActivity extends AppCompatActivity {
     private void checkLimitThenAddToWaitingList(Event event) {
         int limit = event.getWaitingListLimit();
         if (limit > 0) {
-            db.collection("events").document(eventId).collection("waitingList").get()
+            db.collection("events").document(eventId)
+                    .collection("waitingList").get()
                     .addOnSuccessListener(waitingSnapshot -> {
                         int currentCount = waitingSnapshot.size();
-                        Log.d(TAG, "checkLimitThenAddToWaitingList: currentCount=" + currentCount + " limit=" + limit);
-
                         if (currentCount >= limit) {
-                            Toast.makeText(this, getString(R.string.waiting_list_full), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(this,
+                                    getString(R.string.waiting_list_full),
+                                    Toast.LENGTH_SHORT).show();
                             return;
                         }
                         addToWaitingList();
                     })
-                    .addOnFailureListener(e -> {
-                        Log.e(TAG, "Failed to check waiting list", e);
-                        Toast.makeText(this, "Failed to check waiting list", Toast.LENGTH_SHORT).show();
-                    });
+                    .addOnFailureListener(e ->
+                            Toast.makeText(this, "Failed to check waiting list",
+                                    Toast.LENGTH_SHORT).show());
         } else {
             addToWaitingList();
         }
     }
 
-    /**
-     * Saves a one-time location snapshot to the entrant profile; then runs onDone.
-     * Lat/lng are saved immediately. Reverse geocoding is best-effort only.
-     */
-    private void updateUserProfileWithLocationOnce(double latitude, double longitude, Runnable onDone) {
+    private void updateUserProfileWithLocationOnce(double latitude, double longitude,
+                                                   Runnable onDone) {
         db.collection("users").document(deviceId).get()
                 .addOnSuccessListener(doc -> {
                     Entrant entrant = doc.exists() && doc.toObject(Entrant.class) != null
@@ -539,45 +570,35 @@ public class EventDetailsActivity extends AppCompatActivity {
                     entrant.setLongitude(longitude);
 
                     Entrant finalEntrant = entrant;
-
                     db.collection("users").document(deviceId).set(finalEntrant)
                             .addOnSuccessListener(unused -> {
-                                Log.d(TAG, "updateUserProfileWithLocationOnce: saved lat/lng for deviceId=" + deviceId);
                                 onDone.run();
-
                                 new Thread(() -> {
                                     try {
-                                        Geocoder geocoder = new Geocoder(this, Locale.getDefault());
-                                        List<Address> list = geocoder.getFromLocation(latitude, longitude, 1);
-                                        if (list != null && !list.isEmpty() && list.get(0).getAddressLine(0) != null) {
+                                        Geocoder geocoder =
+                                                new Geocoder(this, Locale.getDefault());
+                                        List<Address> list =
+                                                geocoder.getFromLocation(latitude, longitude, 1);
+                                        if (list != null && !list.isEmpty()
+                                                && list.get(0).getAddressLine(0) != null) {
                                             String addr = list.get(0).getAddressLine(0);
-
                                             db.collection("users").document(deviceId)
-                                                    .update("locationAddress", addr)
-                                                    .addOnSuccessListener(x ->
-                                                            Log.d(TAG, "updateUserProfileWithLocationOnce: saved locationAddress"))
-                                                    .addOnFailureListener(e ->
-                                                            Log.e(TAG, "updateUserProfileWithLocationOnce: failed to save locationAddress", e));
+                                                    .update("locationAddress", addr);
                                         }
                                     } catch (Exception e) {
                                         Log.e(TAG, "Geocode for join", e);
                                     }
                                 }).start();
                             })
-                            .addOnFailureListener(e -> {
-                                Log.e(TAG, "updateUserProfileWithLocationOnce: failed saving lat/lng", e);
-                                onDone.run();
-                            });
+                            .addOnFailureListener(e -> onDone.run());
                 })
-                .addOnFailureListener(e -> {
-                    Log.e(TAG, "updateUserProfileWithLocationOnce: failed reading user profile", e);
-                    onDone.run();
-                });
+                .addOnFailureListener(e -> onDone.run());
     }
 
-    /** Adds the current user to the event waiting list. Call after registration open and limit checks. */
+    /** Adds the current user to the event waiting list as PENDING. */
     private void addToWaitingList() {
-        WaitingListEntry entry = new WaitingListEntry(deviceId, WaitingListEntry.Status.PENDING);
+        WaitingListEntry entry =
+                new WaitingListEntry(deviceId, WaitingListEntry.Status.PENDING);
 
         db.collection("events")
                 .document(eventId)
@@ -585,17 +606,15 @@ public class EventDetailsActivity extends AppCompatActivity {
                 .document(deviceId)
                 .set(entry)
                 .addOnSuccessListener(aVoid -> {
-                    Log.d(TAG, "addToWaitingList: success for deviceId=" + deviceId);
                     onWaitingList = true;
                     waitingListStatus = WaitingListEntry.Status.PENDING.name();
                     updateStatusAndButton();
                     refreshWaitingListCount();
-                    Toast.makeText(this, "You have joined the waiting list", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "You have joined the waiting list",
+                            Toast.LENGTH_SHORT).show();
                 })
-                .addOnFailureListener(e -> {
-                    Log.e(TAG, "addToWaitingList: failed", e);
-                    Toast.makeText(this, "Failed to join", Toast.LENGTH_SHORT).show();
-                });
+                .addOnFailureListener(e ->
+                        Toast.makeText(this, "Failed to join", Toast.LENGTH_SHORT).show());
     }
 
     private void leaveWaitingList() {
@@ -607,13 +626,13 @@ public class EventDetailsActivity extends AppCompatActivity {
                     waitingListStatus = null;
                     updateStatusAndButton();
                     refreshWaitingListCount();
-                    Toast.makeText(this, "You have left the waiting list", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "You have left the waiting list",
+                            Toast.LENGTH_SHORT).show();
                 })
                 .addOnFailureListener(e ->
                         Toast.makeText(this, "Failed to leave", Toast.LENGTH_SHORT).show());
     }
 
-    //fetches and shows comments
     private void loadComments() {
         if (eventId == null || eventId.isEmpty()) return;
 
@@ -622,11 +641,8 @@ public class EventDetailsActivity extends AppCompatActivity {
                 .collection("comments")
                 .get()
                 .addOnSuccessListener(querySnapshot -> {
-                    //ArrayList<String> comments = new ArrayList<>();
-
                     comments.clear();
                     commentIds.clear();
-
                     for (DocumentSnapshot doc : querySnapshot.getDocuments()) {
                         String text = doc.getString("text");
                         if (text != null) {
@@ -635,20 +651,14 @@ public class EventDetailsActivity extends AppCompatActivity {
                         }
                     }
                     commentsAdapter.notifyDataSetChanged();
-                    //ArrayAdapter<String> adapter =
-                            //new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, comments);
-
-
-                    //commentsListView.setAdapter(adapter);
                 })
                 .addOnFailureListener(e ->
-                        Toast.makeText(this, "Failed to load comments", Toast.LENGTH_SHORT).show());
+                        Toast.makeText(this, "Failed to load comments",
+                                Toast.LENGTH_SHORT).show());
     }
 
-    //gets text from input, saves to events/{eventId}/comments, refreshes comments after posting
     private void postComment() {
         String text = commentInput.getText().toString().trim();
-
         if (text.isEmpty()) {
             Toast.makeText(this, "Enter a comment", Toast.LENGTH_SHORT).show();
             return;
@@ -666,24 +676,25 @@ public class EventDetailsActivity extends AppCompatActivity {
                 .addOnSuccessListener(docRef -> {
                     Toast.makeText(this, "Comment posted", Toast.LENGTH_SHORT).show();
                     commentInput.setText("");
-                    loadComments(); // refresh list
+                    loadComments();
                 })
                 .addOnFailureListener(e ->
-                        Toast.makeText(this, "Failed to post comment", Toast.LENGTH_SHORT).show());
+                        Toast.makeText(this, "Failed to post comment",
+                                Toast.LENGTH_SHORT).show());
     }
 
-    //organizer delete comment
-    private void organizerdeleteComment(String commentidtobedeleted) {
+    private void organizerdeleteComment(String commentIdToDelete) {
         db.collection("events")
                 .document(eventId)
                 .collection("comments")
-                .document(commentidtobedeleted)
+                .document(commentIdToDelete)
                 .delete()
                 .addOnSuccessListener(docRef -> {
                     Toast.makeText(this, "Comment deleted", Toast.LENGTH_SHORT).show();
-                    loadComments();// refresh list
+                    loadComments();
                 })
                 .addOnFailureListener(e ->
-                        Toast.makeText(this, "Failed to delete comment", Toast.LENGTH_SHORT).show());
+                        Toast.makeText(this, "Failed to delete comment",
+                                Toast.LENGTH_SHORT).show());
     }
 }

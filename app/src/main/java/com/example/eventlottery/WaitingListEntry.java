@@ -8,9 +8,13 @@ import com.google.firebase.Timestamp;
  */
 public class WaitingListEntry {
 
-    /** Lifecycle status of the entrant's application. */
+    /**
+     * Lifecycle status of the entrant's application.
+     * INVITED = entrant has been personally invited to join a private event's waiting list
+     * (US 01.05.06 / 01.05.07). Accepting changes status to PENDING.
+     */
     public enum Status {
-        WAITING, PENDING, SELECTED, ACCEPTED, DECLINED, CANCELLED
+        WAITING, PENDING, SELECTED, ACCEPTED, DECLINED, CANCELLED, INVITED
     }
 
     private String deviceId;
