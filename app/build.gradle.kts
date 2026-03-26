@@ -59,8 +59,20 @@ dependencies {
     implementation("com.github.bumptech.glide:glide:4.16.0")
     implementation("com.journeyapps:zxing-android-embedded:4.3.0")
     implementation("com.google.zxing:core:3.5.4")
+    implementation(libs.ext.junit)
+    implementation(libs.espresso.core)
 
     testImplementation(libs.junit)
+    testImplementation(libs.runner)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
+
+    // Unit Testing
+    testImplementation ("junit:junit:4.13.2")
+
+    // Android Instrumentation Testing (Intent/UI Tests)
+    androidTestImplementation ("androidx.test.ext:junit:1.1.5")
+    androidTestImplementation ("androidx.test.espresso:espresso-core:3.5.1")
+    androidTestImplementation ("androidx.test:runner:1.5.2")
+    androidTestImplementation ("androidx.test:rules:1.5.0")
 }

@@ -6,6 +6,16 @@
     android:layout_height="match_parent"
     android:background="#F6F7FB"
     >
+
+    <ImageButton
+        android:id="@+id/btn_promote_to_co_organizer"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:src="@drawable/ic_invite"
+        android:contentDescription="Invite as Co-Organizer"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        tools:ignore="MissingConstraints" />
+
     <!--
        Top Bar (Toolbar for ActionBar support)
     -->

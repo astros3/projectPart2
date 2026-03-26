@@ -146,4 +146,14 @@ public class EventTest {
         assertEquals("123 456", e.getPromoCode());
         assertEquals(9.99, e.getPrice(), 0.001);
     }
+
+    @Test
+    public void testEventImageDetails() {
+        Event event = new Event();
+        event.setEventId("Event001");
+        event.setPosterUri("https://example.com/image.png");
+
+        assertEquals("Event001", event.getEventId());
+        assertEquals("https://example.com/image.png", event.getPosterUri());
+    }
 }

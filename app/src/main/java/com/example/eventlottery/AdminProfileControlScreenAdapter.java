@@ -188,4 +188,3 @@ public class AdminProfileControlScreenAdapter extends ArrayAdapter<AdminProfileI
         return view;
     }
 }
-

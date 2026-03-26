@@ -1,5 +1,12 @@
 package com.example.eventlottery;
 
+
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.os.Build;
+import androidx.core.app.NotificationCompat;
+import com.google.firebase.firestore.DocumentChange;
+import com.google.firebase.firestore.FirebaseFirestore;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -19,6 +26,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 
+import com.google.firebase.firestore.DocumentChange;
+
+import androidx.annotation.NonNull;
+
+import androidx.activity.result.ActivityResultLauncher;
+
+import com.journeyapps.barcodescanner.ScanContract;
+import com.journeyapps.barcodescanner.ScanOptions;
 import android.location.Location;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -357,6 +372,55 @@ public class EntrantMainScreenActivity extends AppCompatActivity {
                     });
         }
     }
+
+    private void startInvitationListener() {
+        String myId = DeviceIdManager.getDeviceId(this);
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        // Listen only for unread invitations for THIS user
+        db.collection("users").document(myId).collection("notifications")
+                .whereEqualTo("type", "INVITATION")
+                .whereEqualTo("read", false)
+                .addSnapshotListener((snapshots, e) -> {
+                    if (e != null) return;
+
+                    if (snapshots != null && !snapshots.isEmpty()) {
+                        for (DocumentChange dc : snapshots.getDocumentChanges()) {
+                            if (dc.getType() == DocumentChange.Type.ADDED) {
+                                // Trigger the actual phone alert
+                                String title = dc.getDocument().getString("title");
+                                String msg = dc.getDocument().getString("message");
+
+                                triggerSystemAlert(title, msg);
+                            }
+                        }
+                    }
+                });
+
+    }
+
+    private void triggerSystemAlert(String title, String message) {
+        String channelId = "invite_channel";
+        NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+
+        // Create the Notification Channel (Required for Android 8.0+)
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(channelId, "Invitations", NotificationManager.IMPORTANCE_HIGH);
+            nm.createNotificationChannel(channel);
+        }
+
+        // Build the notification
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelId)
+                .setSmallIcon(R.drawable.ic_invite) // The XML icon we created earlier
+                .setContentTitle(title)
+                .setContentText(message)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setAutoCancel(true);
+
+        // Show it
+        nm.notify((int) System.currentTimeMillis(), builder.build());
+    }
+
 
     @Override
     protected void onResume() {
