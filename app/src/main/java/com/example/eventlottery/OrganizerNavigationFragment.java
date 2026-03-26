@@ -74,5 +74,17 @@ public class OrganizerNavigationFragment extends Fragment {
                 NavHostFragment.findNavController(OrganizerNavigationFragment.this)
                         .navigate(R.id.OrganizerNavigationFragment_to_Final_list)
         );
+
+        view.findViewById(R.id.buttonComments).setOnClickListener(v -> {
+            String eventId = EventEditActivity.getCurrentEventId(requireContext());
+            if (eventId == null || eventId.isEmpty()) {
+                Toast.makeText(requireContext(), "Create an event first", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            Intent intent = new Intent(requireContext(), EventDetailsActivity.class);
+            intent.putExtra(EventDetailsActivity.EXTRA_EVENT_ID, eventId);
+            intent.putExtra(EventDetailsActivity.EXTRA_VIEW_AS_ENTRANT, false);
+            startActivity(intent);
+        });
     }
 }

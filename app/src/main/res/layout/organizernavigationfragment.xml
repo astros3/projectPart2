@@ -124,6 +124,14 @@
                 android:text="@string/final_list"
                 android:textColor="#FFFFFF" />
 
+            <Button
+                android:id="@+id/buttonComments"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/black"
+                android:text="@string/comments"
+                android:textColor="#FFFFFF" />
+
         </LinearLayout>
     </ScrollView>
 

@@ -7,6 +7,7 @@
     <string name="export_csv_no_entrants">No entrants to export.</string>
     <string name="export_csv_failed">Could not export CSV.</string>
     <string name="notifications">Notifications</string>
+    <string name="comments">Comments</string>
     <string name="notification_empty">No notifications yet</string>
     <string name="notification_load_failed">Could not load notifications</string>
     <string name="cancelled_entrants">Cancelled Entrants</string>
