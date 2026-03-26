@@ -1,6 +1,8 @@
 package com.example.eventlottery;
 
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.WriteBatch;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,13 +15,19 @@ import java.util.Map;
  */
 public class NotificationHelper {
 
-    /** Notification type for when an entrant wins the lottery (US 01.04.01). */
-    public static final String TYPE_LOTTERY_WON  = "LOTTERY_WON";
+    /**
+     * Notification type for when an entrant wins the lottery (US 01.04.01).
+     */
+    public static final String TYPE_LOTTERY_WON = "LOTTERY_WON";
 
-    /** Notification type for when an entrant loses the lottery (US 01.04.02). */
+    /**
+     * Notification type for when an entrant loses the lottery (US 01.04.02).
+     */
     public static final String TYPE_LOTTERY_LOST = "LOTTERY_LOST";
 
-    /** Title/body for the “you won the lottery” / sign-up invitation (organizer + automatic draw). */
+    /**
+     * Title/body for the “you won the lottery” / sign-up invitation (organizer + automatic draw).
+     */
     public static final String LOTTERY_WIN_TITLE = "You've been selected! 🎉";
     public static final String LOTTERY_WIN_MESSAGE =
             "Congratulations! You were chosen from the waiting list. Open the event to accept or decline your spot.";
@@ -73,11 +81,12 @@ public class NotificationHelper {
                     NotificationMAINstorageForAdmin(db, title, message, eventId, deviceId);
                 });
     }
+
     //reference sendNotification function
     public static void NotificationMAINstorageForAdmin(FirebaseFirestore db, String title,
-                                                       String message, String eventId, String receiverID){
+                                                       String message, String eventId, String receiverID) {
 
-        Map<String, Object> NotificationMAINstorage= new HashMap<>();
+        Map<String, Object> NotificationMAINstorage = new HashMap<>();
 
         NotificationMAINstorage.put("title", title);
         NotificationMAINstorage.put("message", message);
@@ -91,3 +100,4 @@ public class NotificationHelper {
     }
 
 }
+

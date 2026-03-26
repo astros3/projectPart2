@@ -4,15 +4,20 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.firestore.FirebaseFirestore;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * RecyclerView adapter for organizer dashboard event cards. View/Edit open event nav or EventEditActivity.
@@ -127,5 +132,25 @@ public class OrganizerEventAdapter extends RecyclerView.Adapter<OrganizerEventAd
             return new SimpleDateFormat("MMM d, yyyy - h:mm a", Locale.getDefault())
                     .format(new Date(millis));
         }
+    }
+
+    private void sendInvitationNotification(String entrantDeviceId, String eventId, String eventName) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        // Create a data map for the notification
+        Map<String, Object> notif = new HashMap<>();
+        notif.put("type", "INVITATION");
+        notif.put("title", "Co-Organizer Invitation");
+        notif.put("message", "You've been invited to help manage: " + eventName);
+        notif.put("eventId", eventId);
+        notif.put("timestampMillis", System.currentTimeMillis());
+        notif.put("read", false);
+
+
+        db.collection("users").document(entrantDeviceId)
+                .collection("notifications").add(notif)
+                .addOnSuccessListener(docRef -> {
+                    Toast.makeText(this, "Invitation sent to Entrant!", Toast.LENGTH_SHORT).show();
+                });
     }
 }
