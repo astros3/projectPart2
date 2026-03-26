@@ -89,6 +89,11 @@
             android:exported="false"
             android:parentActivityName=".MainActivity" />
 
+        <activity
+            android:name=".OrganizerInviteEntrantActivity"
+            android:exported="false"
+            android:parentActivityName=".EventDetailsActivity" />
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"

@@ -173,6 +173,8 @@ public class EntrantMapActivity extends AppCompatActivity implements OnMapReadyC
                     clusterManager.clearItems();
                     for (QueryDocumentSnapshot doc : snap) {
                         Event e = EventFirestoreParser.fromSnapshot(doc);
+                        // Private events are not publicly discoverable (US 02.01.02)
+                        if (e.isPrivate()) continue;
                         if (!EventFilterUtils.matchesForMap(e, filter, userLat, userLng, hasFix)) {
                             continue;
                         }

@@ -46,6 +46,14 @@ public final class EventFirestoreParser {
         event.setEventType(eachevent.getString("eventType"));
         event.setLatitude(eachevent.getDouble("latitude"));
         event.setLongitude(eachevent.getDouble("longitude"));
+        // Backward compatibility: older events may not have the private flag in Firestore.
+        // Treat missing flag as false (public event).
+        Boolean isPrivate = eachevent.getBoolean("private");
+        if (isPrivate == null) {
+            // Defensive fallback if any older data used a different key.
+            isPrivate = eachevent.getBoolean("isPrivate");
+        }
+        event.setPrivate(Boolean.TRUE.equals(isPrivate));
         return event;
     }
 }
