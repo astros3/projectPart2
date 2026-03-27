@@ -1,8 +1,6 @@
 package com.example.eventlottery;
 
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.WriteBatch;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,26 +25,49 @@ public class NotificationHelper {
     public static final String TYPE_LOTTERY_LOST = "LOTTERY_LOST";
 
     /**
-     * Title/body for the “you won the lottery” / sign-up invitation (organizer + automatic draw).
+     * Notification type for private event invite notifications (US 01.05.06).
+     */
+    public static final String TYPE_PRIVATE_INVITE = "PRIVATE_INVITE";
+
+    /**
+     * Title/body for the “you won the lottery” / sign-up invitation.
      */
     public static final String LOTTERY_WIN_TITLE = "You've been selected! 🎉";
     public static final String LOTTERY_WIN_MESSAGE =
             "Congratulations! You were chosen from the waiting list. Open the event to accept or decline your spot.";
 
-    /** Title/body for the private event invite notification (US 01.05.06). */
+    /**
+     * Title/body for the “you were not selected” notification.
+     */
+    public static final String LOTTERY_LOST_TITLE = "Lottery update";
+    public static final String LOTTERY_LOST_MESSAGE =
+            "Thank you for your interest. You were not selected from the waiting list this time.";
+
+    /**
+     * Title/body for the private event invite notification (US 01.05.06).
+     */
     public static final String PRIVATE_INVITE_TITLE = "You've been invited! 🔒";
     public static final String PRIVATE_INVITE_MESSAGE =
             "You have been personally invited to join the waiting list for a private event. Open the event to accept or decline.";
 
     /**
      * Sends the standard lottery-win notification (US 01.04.01).
-     * Same payload as after a lottery draw; organizer may resend from Selected Entrants.
      */
     public static void sendLotteryWinNotification(FirebaseFirestore db,
                                                   String deviceId,
                                                   String eventId) {
         sendNotification(db, deviceId, TYPE_LOTTERY_WON,
                 LOTTERY_WIN_TITLE, LOTTERY_WIN_MESSAGE, eventId);
+    }
+
+    /**
+     * Sends the standard lottery-loss notification (US 01.04.02).
+     */
+    public static void sendLotteryLossNotification(FirebaseFirestore db,
+                                                   String deviceId,
+                                                   String eventId) {
+        sendNotification(db, deviceId, TYPE_LOTTERY_LOST,
+                LOTTERY_LOST_TITLE, LOTTERY_LOST_MESSAGE, eventId);
     }
 
     /**
@@ -70,15 +91,17 @@ public class NotificationHelper {
      *
      * @param db       Firestore instance
      * @param deviceId Target entrant's device ID
-     * @param type     Notification type (e.g. TYPE_LOTTERY_WON)
+     * @param type     Notification type
      * @param title    Notification title
      * @param message  Notification message body
      * @param eventId  Related event ID
      */
-    public static void sendNotification(FirebaseFirestore db, String deviceId,
-                                        String type, String title,
-                                        String message, String eventId) {
-        // Check opt-out preference before sending (US 01.04.03)
+    public static void sendNotification(FirebaseFirestore db,
+                                        String deviceId,
+                                        String type,
+                                        String title,
+                                        String message,
+                                        String eventId) {
         db.collection("users").document(deviceId).get()
                 .addOnSuccessListener(doc -> {
                     if (doc == null || !doc.exists()) return;
@@ -107,22 +130,14 @@ public class NotificationHelper {
                 });
     }
 
-    //reference sendNotification function
-    public static void NotificationMAINstorageForAdmin(FirebaseFirestore db, String title,
-                                                       String message, String eventId, String receiverID) {
-
-        Map<String, Object> NotificationMAINstorage = new HashMap<>();
-
-        NotificationMAINstorage.put("title", title);
-        NotificationMAINstorage.put("message", message);
-        NotificationMAINstorage.put("eventId", eventId);
-
     /**
      * Stores a copy of every notification in a top-level collection for admin log review
      * (US 03.08.01).
      */
-    public static void NotificationMAINstorageForAdmin(FirebaseFirestore db, String title,
-                                                       String message, String eventId,
+    public static void NotificationMAINstorageForAdmin(FirebaseFirestore db,
+                                                       String title,
+                                                       String message,
+                                                       String eventId,
                                                        String receiverID) {
         Map<String, Object> notificationMAINstorage = new HashMap<>();
         notificationMAINstorage.put("title", title);
@@ -134,6 +149,4 @@ public class NotificationHelper {
         db.collection("notificationStorageAdmin")
                 .add(notificationMAINstorage);
     }
-
 }
-
