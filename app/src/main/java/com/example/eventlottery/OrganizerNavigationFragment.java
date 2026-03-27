@@ -108,5 +108,9 @@ public class OrganizerNavigationFragment extends Fragment {
                 NavHostFragment.findNavController(OrganizerNavigationFragment.this)
                         .navigate(R.id.OrganizerNavigationFragment_to_Final_list)
         );
+        view.findViewById(R.id.buttonCancelled).setOnClickListener(v ->
+                NavHostFragment.findNavController(OrganizerNavigationFragment.this)
+                        .navigate(R.id.OrganizerNavigationFragment_to_Cancelled_list)
+        );
     }
 }

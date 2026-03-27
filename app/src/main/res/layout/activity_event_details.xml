@@ -107,6 +107,15 @@
                 android:layout_marginTop="12dp"
                 android:orientation="vertical"
                 android:visibility="gone">
+                <TextView
+                    android:id="@+id/text_invitation_countdown"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:textColor="#0B162C"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:visibility="gone" />
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_accept_invitation"
                     android:layout_width="match_parent"

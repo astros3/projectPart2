@@ -24,8 +24,10 @@ import com.google.firebase.firestore.WriteBatch;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -118,13 +120,17 @@ public class LotteryDraw extends Fragment {
 
                     WriteBatch batch = db.batch();
 
+                    long invitedAt = System.currentTimeMillis();
                     for (WaitingListEntry entry : selectedEntries) {
                         DocumentReference ref = db.collection("events")
                                 .document(eventId)
                                 .collection("waitingList")
                                 .document(entry.getDeviceId());
 
-                        batch.update(ref, "status", WaitingListEntry.Status.SELECTED.name());
+                        Map<String, Object> updates = new HashMap<>();
+                        updates.put("status", WaitingListEntry.Status.SELECTED.name());
+                        updates.put("invitationSentMillis", invitedAt);
+                        batch.update(ref, updates);
                     }
 
                     batch.commit()

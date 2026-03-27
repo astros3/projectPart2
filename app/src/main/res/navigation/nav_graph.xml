@@ -36,6 +36,10 @@
             app:destination="@id/Final_list" />
 
         <action
+            android:id="@+id/OrganizerNavigationFragment_to_Cancelled_list"
+            app:destination="@id/Cancelled_list" />
+
+        <action
             android:id="@+id/OrganizerNavigationFragment_to_EventLocationFragment"
             app:destination="@id/EventLocationFragment" />
     </fragment>
@@ -81,6 +85,16 @@
 
         <action
             android:id="@+id/Final_list_to_OrganizerNavigationFragment"
+            app:destination="@id/OrganizerNavigationFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/Cancelled_list"
+        android:name="com.example.eventlottery.CancelledListFragment"
+        android:label="Cancelled Entrants">
+
+        <action
+            android:id="@+id/Cancelled_list_to_OrganizerNavigationFragment"
             app:destination="@id/OrganizerNavigationFragment" />
     </fragment>
 

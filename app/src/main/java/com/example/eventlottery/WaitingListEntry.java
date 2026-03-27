@@ -20,6 +20,8 @@ public class WaitingListEntry {
     private String deviceId;
     private String status;
     private Timestamp joinTimestamp;
+    /** When the invitation to accept/decline was sent (SELECTED / INVITED); used for 24h expiry. */
+    private Long invitationSentMillis;
 
     /** No-arg constructor for Firestore deserialization. */
     public WaitingListEntry() {}
@@ -38,4 +40,9 @@ public class WaitingListEntry {
     public void setStatus(String status) { this.status = status; }
     public Timestamp getJoinTimestamp() { return joinTimestamp; }
     public void setJoinTimestamp(Timestamp joinTimestamp) { this.joinTimestamp = joinTimestamp; }
+
+    public Long getInvitationSentMillis() { return invitationSentMillis; }
+    public void setInvitationSentMillis(Long invitationSentMillis) {
+        this.invitationSentMillis = invitationSentMillis;
+    }
 }

@@ -11,6 +11,13 @@
     <string name="notification_empty">No notifications yet</string>
     <string name="notification_load_failed">Could not load notifications</string>
     <string name="cancelled_entrants">Cancelled Entrants</string>
+    <string name="redraw_replacement">Redraw</string>
+    <string name="cannot_draw_replacement_applicant">Cannot draw a replacement applicant</string>
+    <string name="redraw_replacement_success">One entrant was randomly selected from the waiting list.</string>
+    <string name="redraw_replacement_no_pending">No pending entrants available to redraw.</string>
+    <string name="redraw_replacement_failed">Redraw failed. Try again.</string>
+    <string name="invitation_countdown_format">Time left to respond: %1$d:%2$02d:%3$02d</string>
+    <string name="invitation_expiry_update_failed">Could not update expired invitation</string>
     <string name="selected_entrants">Selected Entrants</string>
     <string name="notify_chosen_entrants">Notify chosen entrants (lottery)</string>
     <string name="notify_chosen_entrants_sent">Notifications sent to %1$d chosen entrant(s)</string>

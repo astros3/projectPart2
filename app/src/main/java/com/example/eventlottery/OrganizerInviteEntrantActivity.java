@@ -159,6 +159,7 @@ public class OrganizerInviteEntrantActivity extends AppCompatActivity {
 
     private void writeInviteAndNotify(Entrant entrant, String targetDeviceId) {
         WaitingListEntry entry = new WaitingListEntry(targetDeviceId, WaitingListEntry.Status.INVITED);
+        entry.setInvitationSentMillis(System.currentTimeMillis());
         db.collection("events").document(eventId)
                 .collection("waitingList").document(targetDeviceId)
                 .set(entry)

@@ -27,12 +27,12 @@ public class SelectedEntryAdapter extends ArrayAdapter<WaitingListEntry> {
 
     private final FragmentActivity activity;
     private final ArrayList<WaitingListEntry> entries;
-    private final OnDeleteClickListener listener;
+    @Nullable private final OnDeleteClickListener listener;
     private Map<String, String> deviceIdToName = new HashMap<>();
 
     public SelectedEntryAdapter(FragmentActivity activity,
                                 ArrayList<WaitingListEntry> entries,
-                                OnDeleteClickListener listener) {
+                                @Nullable OnDeleteClickListener listener) {
         super(activity, 0, entries);
         this.activity = activity;
         this.entries = entries;
@@ -64,7 +64,13 @@ public class SelectedEntryAdapter extends ArrayAdapter<WaitingListEntry> {
                 : null;
         textEntrantName.setText(displayName != null && !displayName.isEmpty() ? displayName : "Unknown Entrant");
 
-        buttonDelete.setOnClickListener(v -> listener.onDeleteClick(entry));
+        if (listener != null) {
+            buttonDelete.setVisibility(View.VISIBLE);
+            buttonDelete.setOnClickListener(v -> listener.onDeleteClick(entry));
+        } else {
+            buttonDelete.setVisibility(View.GONE);
+            buttonDelete.setOnClickListener(null);
+        }
 
         return view;
     }
