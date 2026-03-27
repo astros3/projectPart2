@@ -1,6 +1,5 @@
 package com.example.eventlottery;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.EditText;
@@ -135,10 +134,8 @@ public class AdminEventControlScreenActivity extends AppCompatActivity {
                         }
                     }
                 });
-        backbutton.setOnClickListener(v -> {
-            startActivity(new Intent(this, WelcomePageActivity.class));
-            finish();
-        });
+        // Pop back to AdminMainScreenActivity (hub); do not send user to role picker.
+        backbutton.setOnClickListener(v -> finish());
 
 
 

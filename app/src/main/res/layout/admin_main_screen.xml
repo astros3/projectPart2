@@ -13,25 +13,40 @@
         android:id="@+id/topbar"
         android:layout_width="0dp"
         android:layout_height="65dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
         android:background="#FFFFFF"
         android:elevation="5dp"
-        >
-        <!-- LOG OUT BUTTON-->
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+        <!-- Back to role selection (same pattern as other admin screens) -->
         <ImageView
-            android:id="@+id/confirm_log_out_button"
-            android:layout_width="90dp"
-            android:layout_height="90dp"
+            android:id="@+id/back_button"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
             android:layout_marginStart="16dp"
             android:clickable="true"
             android:contentDescription="@string/back"
-            android:src="@drawable/log_out_icon" />
+            android:focusable="true"
+            android:src="@drawable/ic_back_arrow"
+            android:tint="@color/black" />
 
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/admin_dashboard"
+            android:textColor="@color/toolbar_content_dark"
+            android:textSize="25sp"
+            android:textStyle="bold" />
 
+        <!-- Spacer so title stays centered (same visual weight as back control) -->
+        <View
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginEnd="16dp" />
 
     </LinearLayout>
     <LinearLayout
@@ -40,6 +55,8 @@
         android:layout_height="60dp"
 
         android:background="#F5FFFF"
+        android:backgroundTint="@color/black"
+
         android:clickable="true"
 
         android:elevation="5dp"
@@ -62,6 +79,7 @@
             android:layout_height="wrap_content"
 
             android:text="REVIEW EVENTS"
+            android:textColor="@color/white"
 
             android:textSize="15dp"
             android:textStyle="bold"
@@ -72,6 +90,7 @@
             android:layout_height="wrap_content"
 
             android:text="›"
+            android:textColor="@color/white"
             android:textSize="25dp" />
     </LinearLayout>
 
@@ -81,6 +100,8 @@
         android:layout_height="60dp"
 
         android:background="#F5FFFF"
+        android:backgroundTint="@color/black"
+
         android:clickable="true"
 
         android:elevation="5dp"
@@ -103,6 +124,7 @@
             android:layout_height="wrap_content"
 
             android:text="REVIEW PROFILES"
+            android:textColor="@color/white"
 
             android:textSize="15dp"
             android:textStyle="bold"
@@ -113,6 +135,7 @@
             android:layout_height="wrap_content"
 
             android:text="›"
+            android:textColor="@color/white"
             android:textSize="25dp" />
     </LinearLayout>
 
@@ -121,39 +144,41 @@
         android:layout_width="0dp"
         android:layout_height="60dp"
 
-        android:background="#F5FFFF"
-        android:clickable="true"
 
-        android:elevation="5dp"
-
-
-
-        android:paddingStart="30dp"
-        android:paddingEnd="30dp"
         android:layout_marginStart="30dp"
         android:layout_marginTop="20dp"
+
         android:layout_marginEnd="30dp"
+
+
+        android:background="#F5FFFF"
+        android:backgroundTint="@color/black"
+        android:clickable="true"
+        android:elevation="5dp"
         android:gravity="center_vertical"
+        android:paddingStart="30dp"
+        android:paddingEnd="30dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/admin_review_profile_button"
-        >
+        app:layout_constraintTop_toBottomOf="@id/admin_review_profile_button">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="@color/white"
+
+            android:layout_weight="1"
 
             android:text="REVIEW IMAGES"
-
             android:textSize="15dp"
-            android:textStyle="bold"
-            android:layout_weight="1"/>
+            android:textStyle="bold" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
 
             android:text="›"
+            android:textColor="@color/white"
             android:textSize="25dp" />
     </LinearLayout>
 
@@ -162,23 +187,22 @@
         android:layout_width="0dp"
         android:layout_height="60dp"
 
-        android:background="#F5FFFF"
-        android:clickable="true"
-
-        android:elevation="5dp"
-
-
-
-        android:paddingStart="30dp"
-        android:paddingEnd="30dp"
         android:layout_marginStart="30dp"
         android:layout_marginTop="20dp"
+
         android:layout_marginEnd="30dp"
+
+
+        android:background="#F5FFFF"
+        android:backgroundTint="@color/black"
+        android:clickable="true"
+        android:elevation="5dp"
         android:gravity="center_vertical"
+        android:paddingStart="30dp"
+        android:paddingEnd="30dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/admin_review_image_button"
-        >
+        app:layout_constraintTop_toBottomOf="@id/admin_review_image_button">
 
         <TextView
             android:layout_width="278dp"
@@ -187,6 +211,7 @@
             android:layout_weight="1"
 
             android:text="REVIEW NOTIFICATION LOG"
+            android:textColor="@color/white"
             android:textSize="15dp"
             android:textStyle="bold" />
 
@@ -195,8 +220,8 @@
             android:layout_height="wrap_content"
 
 
-
             android:text="›"
+            android:textColor="@color/white"
             android:textSize="25dp" />
     </LinearLayout>
 
@@ -205,7 +230,9 @@
         android:layout_width="0dp"
         android:layout_height="60dp"
 
+
         android:background="#F5FFFF"
+        android:backgroundTint="@color/black"
         android:clickable="true"
 
         android:elevation="5dp"
@@ -226,6 +253,7 @@
         <TextView
             android:layout_width="278dp"
             android:layout_height="wrap_content"
+            android:textColor="@color/white"
 
             android:layout_weight="1"
 
@@ -238,8 +266,8 @@
             android:layout_height="wrap_content"
 
 
-
             android:text="›"
+            android:textColor="@color/white"
             android:textSize="25dp" />
     </LinearLayout>
 
