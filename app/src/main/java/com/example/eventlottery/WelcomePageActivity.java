@@ -122,7 +122,7 @@ public class WelcomePageActivity extends AppCompatActivity {
             adminDb.collection("admins").document(adminDeviceId).get()
                     .addOnSuccessListener(documentSnapshot -> {
                         if (documentSnapshot.exists()) {
-                            startActivity(new Intent(WelcomePageActivity.this, AdminEventControlScreenActivity.class));
+                            startActivity(new Intent(WelcomePageActivity.this, AdminMainScreenActivity.class));
                             finish();
                         } else {
                             Toast.makeText(this, "Access denied. You must be an admin to access this.", Toast.LENGTH_LONG).show();

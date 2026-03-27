@@ -11,7 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 public class AdminMainScreenActivity extends AppCompatActivity {
-    private ImageView confirmLogOutButton;
+    private ImageView backButton;
     private LinearLayout adminReviewEventsButton;
     private LinearLayout adminReviewProfileButton;
     private LinearLayout adminReviewImageButton;
@@ -46,15 +46,15 @@ public class AdminMainScreenActivity extends AppCompatActivity {
                 });
     }
     public void MainNavigation(){
-        confirmLogOutButton = findViewById(R.id.confirm_log_out_button);
+        backButton = findViewById(R.id.back_button);
         adminReviewEventsButton = findViewById(R.id.admin_review_events_button);
         adminReviewProfileButton = findViewById(R.id.admin_review_profile_button);
         adminReviewImageButton = findViewById(R.id.admin_review_image_button);
         adminReviewNotificationLogButton = findViewById(R.id.admin_review_notification_log_button);
         adminProfileButton = findViewById(R.id.admin_profile_button);
 
-        confirmLogOutButton.setOnClickListener(v -> {
-            Intent intent = new Intent(AdminMainScreenActivity.this, WelcomePageActivity.class);
+        backButton.setOnClickListener(v -> {
+            startActivity(new Intent(AdminMainScreenActivity.this, WelcomePageActivity.class));
             finish();
         });
 
@@ -64,13 +64,13 @@ public class AdminMainScreenActivity extends AppCompatActivity {
         });
 
         adminReviewProfileButton.setOnClickListener(v -> {
-            Intent intent = new Intent(AdminMainScreenActivity.this, AdminProfileControlScreenActivity.class);
+            Intent intent = new Intent(AdminMainScreenActivity.this, AdminBrowseProfilesActivity.class);
             startActivity(intent);
         });
 
         adminReviewImageButton.setOnClickListener(v -> {
-            //Intent intent = new Intent(AdminMainScreenActivity.this, WelcomePageActivity.class);
-            //startActivity(intent);
+            Intent intent = new Intent(AdminMainScreenActivity.this, AdminBrowseImagesActivity.class);
+            startActivity(intent);
         });
 
         adminReviewNotificationLogButton.setOnClickListener(v -> {

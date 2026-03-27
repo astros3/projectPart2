@@ -75,6 +75,7 @@
 
     <!-- Organizer Dashboard -->
     <string name="organizer_dashboard">Organizer Dashboard</string>
+    <string name="admin_dashboard">Admin Dashboard</string>
     <string name="create_new_event">Create a New Event</string>
     <string name="profile">PROFILE</string>
     <string name="edit_view">EDIT/VIEW</string>

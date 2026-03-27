@@ -14,12 +14,12 @@
 
     <ImageView
         android:id="@+id/delete_image_button"
-        android:layout_width="28dp"
-        android:layout_height="28dp"
+        android:layout_width="65dp"
+        android:layout_height="60dp"
         android:layout_gravity="top|start"
         android:layout_margin="4dp"
-        android:src="@drawable/delete"
         android:background="@android:color/transparent"
-        android:contentDescription="Delete Image" />
+        android:contentDescription="Delete Image"
+        android:src="@drawable/delete" />
 
 </FrameLayout>

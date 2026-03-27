@@ -53,7 +53,24 @@
             android:parentActivityName=".EntrantMainScreenActivity" />
 
         <activity
+            android:name=".AdminMainScreenActivity"
+            android:exported="false" />
+
+        <activity
             android:name=".AdminEventControlScreenActivity"
+            android:exported="false"
+            android:parentActivityName=".AdminMainScreenActivity" />
+
+        <activity
+            android:name=".AdminProfileControlScreenActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".AdminBrowseProfilesActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".AdminBrowseImagesActivity"
             android:exported="false" />
 
         <activity
