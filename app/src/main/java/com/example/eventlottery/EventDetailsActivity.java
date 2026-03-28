@@ -361,7 +361,14 @@ public class EventDetailsActivity extends AppCompatActivity {
                 .collection("waitingList")
                 .get()
                 .addOnSuccessListener(querySnapshot -> {
-                    int count = querySnapshot.size();
+                    int count = 0;
+                    for (DocumentSnapshot doc : querySnapshot.getDocuments()) {
+                        WaitingListEntry entry = doc.toObject(WaitingListEntry.class);
+                        if (entry != null
+                                && WaitingListEntry.Status.PENDING.name().equals(entry.getStatus())) {
+                            count++;
+                        }
+                    }
                     waitingListCountView.setText("Waiting List: " + count);
                 });
     }
