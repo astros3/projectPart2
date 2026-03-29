@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 //US 03.08.01
-public class AdminNotificationLogControlScreenActivity extends AppCompatActivity {
+public class AdminNotificationLogControlScreenActivity extends BaseActivity {
     //declearation
     private ImageView confirmbackButton1;
     private ListView nottificationlogListView;

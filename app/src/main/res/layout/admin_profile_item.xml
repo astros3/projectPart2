@@ -9,6 +9,7 @@
         android:id="@+id/profile_icon"
         android:layout_width="24dp"
         android:layout_height="24dp"
+        android:contentDescription="@string/acc_profile_photo"
         android:src="@drawable/person_icon"
         android:layout_centerVertical="true"
         android:alpha="0.6" />
@@ -57,6 +58,7 @@
         <ImageView
             android:layout_width="12dp"
             android:layout_height="12dp"
+            android:contentDescription="@null"
             android:src="@drawable/ic_chevron_right"
             android:layout_marginStart="8dp"
             android:alpha="0.4" />

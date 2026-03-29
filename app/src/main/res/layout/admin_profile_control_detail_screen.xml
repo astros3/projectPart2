@@ -24,6 +24,7 @@
         android:layout_height="21dp"
         android:layout_marginStart="20dp"
         android:layout_gravity="center_vertical"
+        android:contentDescription="@string/acc_profile_photo"
         android:src="@drawable/person" />
 
     <LinearLayout
@@ -45,7 +46,7 @@
 
 
             android:textColor="#111111"
-            android:textSize="20dp"
+            android:textSize="20sp"
             android:textStyle="bold" />
 
         <!--
@@ -57,7 +58,7 @@
             android:layout_marginTop="5dp"
             android:id="@+id/event_organizer_owner_name_input"
             android:text="Entrant"
-            android:textSize="18dp"
+            android:textSize="18sp"
 
             />
     </LinearLayout>
@@ -69,7 +70,7 @@
 
         android:id="@+id/admin_event_control_view_detail_button"
         android:text="VIEW DETAILS"
-        android:textSize="15dp"
+            android:textSize="15sp"
         android:clickable="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -88,6 +89,7 @@
         android:id="@+id/admin_event_control_delete_button"
         android:layout_height="50dp"
         android:clickable="true"
+        android:contentDescription="@string/acc_delete_event"
         android:src="@drawable/delete" />
 
 </LinearLayout>

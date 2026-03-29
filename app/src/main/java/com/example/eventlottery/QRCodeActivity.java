@@ -15,7 +15,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
  * Shows event QR code and editable promo code (US 02.01.01). Organizer-only; verifies
  * current user is event organizer. Saves promoCode to Firestore on pause.
  */
-public class QRCodeActivity extends AppCompatActivity {
+public class QRCodeActivity extends BaseActivity {
 
     public static final String EXTRA_EVENT_ID = "event_id";
 

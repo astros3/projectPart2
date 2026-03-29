@@ -9,7 +9,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.util.ArrayList;
 
-public class AdminBrowseImagesActivity extends AppCompatActivity {
+public class AdminBrowseImagesActivity extends BaseActivity {
 
     private GridView imagesGrid;
     private AdminBrowseImagesAdapter adapter;

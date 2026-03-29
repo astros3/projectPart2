@@ -19,7 +19,7 @@
         android:layout_width="100dp"
         android:id="@+id/event_photo"
         android:layout_height="100dp"
-
+        android:contentDescription="@string/event_poster"
         android:src="@drawable/home_selected" />
 
     <LinearLayout
@@ -40,7 +40,7 @@
 
 
 
-            android:textSize="20dp"
+            android:textSize="20sp"
             android:textStyle="bold"
             android:textColor="#111111" />
         <!--
@@ -54,7 +54,7 @@
 
             android:textColor="#969696"
             android:text="Oct 24, 2024 · 10:00 AM"
-            android:textSize="15dp"
+            android:textSize="15sp"
 
             />
         <!--
@@ -67,7 +67,7 @@
             android:id="@+id/event_organizer_owner_name_input"
 
             android:text="Owner Name"
-            android:textSize="15dp"
+            android:textSize="15sp"
 
             />
         <!--
@@ -77,7 +77,7 @@
             android:layout_marginTop="10dp"
             android:id="@+id/admin_event_control_view_detail_button"
             android:text="VIEW DETAILS"
-            android:textSize="20dp"
+            android:textSize="20sp"
             android:clickable="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -98,6 +98,7 @@
         android:id="@+id/admin_event_control_delete_button"
         android:layout_height="50dp"
         android:clickable="true"
+        android:contentDescription="@string/acc_delete_event"
         android:src="@drawable/delete" />
 
 </LinearLayout>

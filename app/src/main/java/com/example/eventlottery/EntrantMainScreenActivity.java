@@ -60,7 +60,7 @@ import java.util.Set;
  * registration open). Status counts use the full event set. Map tab opens {@link EntrantMapActivity}
  * with the same filter criteria.
  */
-public class EntrantMainScreenActivity extends AppCompatActivity {
+public class EntrantMainScreenActivity extends BaseActivity {
 
     private final ActivityResultLauncher<ScanOptions> qrScanner =
             registerForActivityResult(new ScanContract(), result -> {

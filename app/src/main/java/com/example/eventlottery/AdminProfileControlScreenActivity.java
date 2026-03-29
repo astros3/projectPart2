@@ -26,7 +26,7 @@ import java.util.Date;
 
 //US 03.02.01
 //US 03.07.01
-public class AdminProfileControlScreenActivity extends AppCompatActivity {
+public class AdminProfileControlScreenActivity extends BaseActivity {
     //declearation
     private ImageView confirmbackButton;
     private ImageView confirmsearchButton;

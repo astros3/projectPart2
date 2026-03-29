@@ -16,6 +16,7 @@
         <ImageView
             android:layout_width="24dp"
             android:layout_height="24dp"
+            android:contentDescription="@null"
             android:src="@drawable/ic_profile_header" />
 
         <TextView
@@ -31,6 +32,7 @@
         <ImageView
             android:layout_width="24dp"
             android:layout_height="24dp"
+            android:contentDescription="@string/notifications"
             android:src="@drawable/ic_notification_bell" />
     </LinearLayout>
 
@@ -57,6 +59,7 @@
                     android:layout_width="60dp"
                     android:layout_height="60dp"
                     android:layout_gravity="center"
+                    android:contentDescription="@string/acc_profile_photo"
                     android:src="@drawable/ic_user_placeholder" />
             </com.google.android.material.card.MaterialCardView>
 
@@ -75,7 +78,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="UserEmail@email.com"
-                android:textColor="#6C757D"
+                android:textColor="#4A5260"
                 android:textSize="14sp" />
 
             <com.google.android.material.textfield.TextInputLayout
@@ -138,7 +141,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Enable push notifications for updates"
-                        android:textColor="#6C757D"
+                        android:textColor="#4A5260"
                         android:textSize="12sp" />
                 </LinearLayout>
                 <com.google.android.material.switchmaterial.SwitchMaterial
@@ -195,6 +198,7 @@
                 android:id="@+id/navigationhome"
                 android:layout_width="25dp"
                 android:layout_height="25dp"
+                android:contentDescription="@null"
                 android:src="@drawable/home_unselected" />
             <TextView
                 android:id="@+id/hometext"
@@ -202,8 +206,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
                 android:text="HOME"
-                android:textColor="#696969"
-                android:textSize="10dp" />
+                android:textColor="#4A5260"
+                android:textSize="10sp" />
         </LinearLayout>
 
         <LinearLayout
@@ -218,6 +222,7 @@
                 android:id="@+id/navigationscan"
                 android:layout_width="25dp"
                 android:layout_height="25dp"
+                android:contentDescription="@null"
                 android:src="@drawable/scan_unselected" />
             <TextView
                 android:id="@+id/scantext"
@@ -225,8 +230,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
                 android:text="SCAN"
-                android:textColor="#696969"
-                android:textSize="10dp" />
+                android:textColor="#4A5260"
+                android:textSize="10sp" />
         </LinearLayout>
 
         <LinearLayout
@@ -241,6 +246,7 @@
                 android:id="@+id/navigationhistory"
                 android:layout_width="25dp"
                 android:layout_height="25dp"
+                android:contentDescription="@null"
                 android:src="@drawable/history_unselected" />
             <TextView
                 android:id="@+id/historytext"
@@ -248,8 +254,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
                 android:text="HISTORY"
-                android:textColor="#696969"
-                android:textSize="10dp" />
+                android:textColor="#4A5260"
+                android:textSize="10sp" />
         </LinearLayout>
 
         <LinearLayout
@@ -264,6 +270,7 @@
                 android:id="@+id/navigationprofile"
                 android:layout_width="25dp"
                 android:layout_height="25dp"
+                android:contentDescription="@null"
                 android:src="@drawable/profile_unselected" />
             <TextView
                 android:id="@+id/profiletext"
@@ -272,7 +279,7 @@
                 android:layout_marginTop="5dp"
                 android:text="PROFILE"
                 android:textColor="#000000"
-                android:textSize="10dp" />
+                android:textSize="10sp" />
         </LinearLayout>
 
     </LinearLayout>

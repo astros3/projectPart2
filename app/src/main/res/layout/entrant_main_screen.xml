@@ -47,6 +47,7 @@
                 android:layout_marginStart="16dp"
                 android:layout_width="25dp"
                 android:layout_height="25dp"
+                android:contentDescription="@null"
                 android:src="@drawable/home_selected" />
             <TextView
                 android:id="@+id/hometextdisplay"
@@ -56,13 +57,14 @@
                 android:layout_weight="1"
                 android:text="Home"
                 android:textColor="#000000"
-                android:textSize="20dp"
+                android:textSize="20sp"
                 android:textStyle="bold" />
             <ImageView
                 android:id="@+id/notification_Bell_Button"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:layout_marginEnd="30dp"
+                android:contentDescription="@string/notifications"
                 android:src="@drawable/bell" />
         </LinearLayout>
     </androidx.appcompat.widget.Toolbar>
@@ -96,8 +98,8 @@
             android:layout_weight="1"
 
             android:text="ACTIVE EVENTS"
-            android:textColor="#9AA3B2"
-            android:textSize="10dp"
+            android:textColor="#5A6270"
+            android:textSize="10sp"
             android:textStyle="bold" />
         <!--
             filter button
@@ -181,12 +183,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="TOTAL"
-                android:textSize="10dp" />
+                android:textSize="10sp" />
             <TextView
                 android:id="@+id/total_number"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="20dp"
+                android:textSize="20sp"
                 android:textStyle="bold"
                 android:text="03"
                 />
@@ -208,13 +210,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="ACCEPTED"
-                android:textSize="10dp" />
+                android:textSize="10sp" />
 
             <TextView
                 android:id="@+id/win_number"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="20dp"
+                android:textSize="20sp"
                 android:textStyle="bold"
                 android:text="01"
                 />
@@ -235,12 +237,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="PENDING"
-                android:textSize="10dp"/>
+                android:textSize="10sp"/>
             <TextView
                 android:id="@+id/pending_number"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="20dp"
+                android:textSize="20sp"
                 android:textStyle="bold"
                 android:text="02"
                 />
@@ -259,12 +261,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="INVITATIONS"
-                android:textSize="10dp"/>
+                android:textSize="10sp"/>
             <TextView
                 android:id="@+id/invitation_number"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="20dp"
+                android:textSize="20sp"
                 android:textStyle="bold"
                 android:text="0"
                 />
@@ -302,6 +304,7 @@
             <ImageView
                 android:layout_width="25dp"
                 android:layout_height="25dp"
+                android:contentDescription="@null"
                 android:src="@drawable/home_selected"
                 android:id="@+id/navigationhome"
                 />
@@ -311,7 +314,7 @@
                 android:id="@+id/hometext"
                 android:layout_marginTop="5dp"
                 android:text="HOME"
-                android:textSize="10dp"
+                android:textSize="10sp"
                 android:textColor="#000000"/>
         </LinearLayout>
         <!--
@@ -329,6 +332,7 @@
             <ImageView
                 android:layout_width="25dp"
                 android:layout_height="25dp"
+                android:contentDescription="@null"
                 android:id="@+id/navigationscan"
                 android:src="@drawable/scan_unselected"
                 />
@@ -338,8 +342,8 @@
                 android:id="@+id/scantext"
                 android:layout_marginTop="5dp"
                 android:text="SCAN"
-                android:textColor="#696969"
-                android:textSize="10dp" />
+                android:textColor="#4A5260"
+                android:textSize="10sp" />
         </LinearLayout>
         <!--
             map — nearby joinable events
@@ -358,6 +362,7 @@
                 android:id="@+id/navigationmap"
                 android:layout_width="25dp"
                 android:layout_height="25dp"
+                android:contentDescription="@null"
                 android:src="@drawable/ic_map_unselected" />
 
             <TextView
@@ -366,8 +371,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
                 android:text="@string/nav_map"
-                android:textColor="#696969"
-                android:textSize="10dp" />
+                android:textColor="#4A5260"
+                android:textSize="10sp" />
         </LinearLayout>
         <!--
             history button
@@ -385,6 +390,7 @@
                 android:id="@+id/navigationhistory"
                 android:layout_width="25dp"
                 android:layout_height="25dp"
+                android:contentDescription="@null"
                 android:src="@drawable/history_unselected"
                 />
 
@@ -394,8 +400,8 @@
                 android:id="@+id/historytext"
                 android:layout_marginTop="5dp"
                 android:text="HISTORY"
-                android:textColor="#696969"
-                android:textSize="10dp" />
+                android:textColor="#4A5260"
+                android:textSize="10sp" />
         </LinearLayout>
         <!--
             profile button
@@ -412,6 +418,7 @@
             <ImageView
                 android:layout_width="25dp"
                 android:layout_height="25dp"
+                android:contentDescription="@null"
                 android:id="@+id/navigationprofile"
                 android:src="@drawable/profile_unselected"
                 />
@@ -422,8 +429,8 @@
                 android:id="@+id/profiletext"
                 android:layout_marginTop="5dp"
                 android:text="PROFILE"
-                android:textColor="#696969"
-                android:textSize="10dp" />
+                android:textColor="#4A5260"
+                android:textSize="10sp" />
         </LinearLayout>
 
     </LinearLayout>

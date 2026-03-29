@@ -56,7 +56,7 @@
                 android:text="@string/event_name"
                 android:textSize="12sp"
                 android:textStyle="bold"
-                android:textColor="#6C757D" />
+                android:textColor="#4A5260" />
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -79,7 +79,7 @@
                 android:text="@string/event_description"
                 android:textSize="12sp"
                 android:textStyle="bold"
-                android:textColor="#6C757D" />
+                android:textColor="#4A5260" />
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -104,7 +104,7 @@
                 android:text="@string/event_image"
                 android:textSize="12sp"
                 android:textStyle="bold"
-                android:textColor="#6C757D" />
+                android:textColor="#4A5260" />
             <TextView
                 android:id="@+id/event_poster_hint"
                 android:layout_width="match_parent"
@@ -112,7 +112,7 @@
                 android:layout_marginTop="2dp"
                 android:text="@string/event_poster_tap_hint"
                 android:textSize="11sp"
-                android:textColor="#9E9E9E" />
+                android:textColor="#616161" />
             <FrameLayout
                 android:id="@+id/event_image_container"
                 android:layout_width="match_parent"
@@ -133,7 +133,7 @@
                     android:layout_gravity="center"
                     android:text="+"
                     android:textSize="32sp"
-                    android:textColor="#9E9E9E" />
+                    android:textColor="#616161" />
                 <ImageButton
                     android:id="@+id/btn_remove_poster"
                     android:layout_width="36dp"
@@ -155,7 +155,7 @@
                 android:text="@string/event_type"
                 android:textSize="12sp"
                 android:textStyle="bold"
-                android:textColor="#6C757D" />
+                android:textColor="#4A5260" />
             <Spinner
                 android:id="@+id/spinner_event_type"
                 android:layout_width="match_parent"
@@ -171,7 +171,7 @@
                 android:text="@string/event_location"
                 android:textSize="12sp"
                 android:textStyle="bold"
-                android:textColor="#6C757D" />
+                android:textColor="#4A5260" />
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/input_layout_event_location"
                 android:layout_width="match_parent"
@@ -200,7 +200,7 @@
                 android:text="@string/registration_start_date"
                 android:textSize="12sp"
                 android:textStyle="bold"
-                android:textColor="#6C757D" />
+                android:textColor="#4A5260" />
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -240,7 +240,7 @@
                 android:text="@string/registration_end_date"
                 android:textSize="12sp"
                 android:textStyle="bold"
-                android:textColor="#6C757D" />
+                android:textColor="#4A5260" />
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -315,7 +315,7 @@
                         android:layout_height="wrap_content"
                         android:text="Not visible on public listing. Invite entrants manually."
                         android:textSize="11sp"
-                        android:textColor="#6C757D" />
+                        android:textColor="#4A5260" />
                 </LinearLayout>
                 <com.google.android.material.materialswitch.MaterialSwitch
                     android:id="@+id/switch_private_event"
@@ -331,7 +331,7 @@
                 android:text="@string/limit_entrants"
                 android:textSize="12sp"
                 android:textStyle="bold"
-                android:textColor="#6C757D" />
+                android:textColor="#4A5260" />
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -355,7 +355,7 @@
                 android:text="Lottery Selection Criteria"
                 android:textSize="12sp"
                 android:textStyle="bold"
-                android:textColor="#6C757D" />
+                android:textColor="#4A5260" />
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

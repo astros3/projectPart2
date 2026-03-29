@@ -10,7 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.firestore.FirebaseFirestore;
 
-public class AdminMainScreenActivity extends AppCompatActivity {
+public class AdminMainScreenActivity extends BaseActivity {
     private ImageView backButton;
     private LinearLayout adminReviewEventsButton;
     private LinearLayout adminReviewProfileButton;

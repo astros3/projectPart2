@@ -16,6 +16,7 @@
             android:id="@+id/buttonBack"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:contentDescription="@string/back"
             android:src="@drawable/ic_back_arrow" />
         <TextView
             android:layout_width="wrap_content"
@@ -63,7 +64,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="OFFER EXPIRES IN"
-            android:textColor="#666666"
+            android:textColor="#4A5260"
             android:textSize="12sp"
             android:textStyle="bold" />
         <TextView

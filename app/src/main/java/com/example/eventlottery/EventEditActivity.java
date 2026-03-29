@@ -47,7 +47,7 @@ import java.util.Locale;
  * EXTRA_EVENT_ID; Edit: pass EXTRA_EVENT_ID. Enforces organizer-only; saves geolocation,
  * optional waiting list limit, lottery selection criteria, and private event flag.
  */
-public class EventEditActivity extends AppCompatActivity {
+public class EventEditActivity extends BaseActivity {
 
     public static final String EXTRA_EVENT_ID = "event_id";
 

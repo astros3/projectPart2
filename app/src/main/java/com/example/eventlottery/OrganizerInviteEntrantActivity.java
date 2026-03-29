@@ -32,7 +32,7 @@ import java.util.List;
  * Entrant is written to events/{eventId}/waitingList/{deviceId} with status INVITED,
  * and a private-invite in-app notification is sent (respects entrant opt-out).
  */
-public class OrganizerInviteEntrantActivity extends AppCompatActivity {
+public class OrganizerInviteEntrantActivity extends BaseActivity {
 
     public static final String EXTRA_EVENT_ID = "event_id";
 

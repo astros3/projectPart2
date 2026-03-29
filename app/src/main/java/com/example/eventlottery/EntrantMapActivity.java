@@ -30,7 +30,7 @@ import com.google.maps.android.clustering.ClusterManager;
  * (registration-open filter when enabled; distance needs location — toast if unavailable).
  * Markers cluster when zoomed out.
  */
-public class EntrantMapActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class EntrantMapActivity extends BaseActivity implements OnMapReadyCallback {
 
     public static final String EXTRA_FILTER = "entrant_map_filter";
 

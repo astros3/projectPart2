@@ -31,6 +31,7 @@
             <ImageView
                 android:layout_width="20dp"
                 android:layout_height="20dp"
+                android:contentDescription="@null"
                 android:src="@drawable/ic_menu"
                 android:alpha="0.5" />
 
@@ -48,6 +49,7 @@
                 android:id="@+id/search_icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:contentDescription="@string/acc_search"
                 android:alpha="0.5"
                 android:src="@drawable/search" />
         </LinearLayout>

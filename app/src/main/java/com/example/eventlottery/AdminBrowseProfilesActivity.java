@@ -19,7 +19,7 @@ import java.util.List;
  * Activity for administrators to browse and delete all profiles (Entrants and Organizers).
  * Implements US 03.05.01 (Browse)
  */
-public class AdminBrowseProfilesActivity extends AppCompatActivity {
+public class AdminBrowseProfilesActivity extends BaseActivity {
     private ArrayList<Entrant> displayList;
     private ArrayList<Entrant> backupList;
     private AdminBrowseProfilesAdapter adapter;

@@ -26,7 +26,7 @@ import java.util.ArrayList;
  * Entrant history: events this user has joined (has waitingList doc). Shows per-event status.
  * Scan nav opens QRCodeActivity (organizer screen); consider opening scanner → EventDetails instead.
  */
-public class EntrantHistoryScreenActivity extends AppCompatActivity {
+public class EntrantHistoryScreenActivity extends BaseActivity {
     private ListView eventshistory;
 
     private ImageView notificationbellbutton;

@@ -33,7 +33,7 @@ import java.util.List;
  * from the waiting list when assigned.
  * Only accessible by the primary event organizer (organizerId == deviceId).
  */
-public class CoOrganizerManagementActivity extends AppCompatActivity {
+public class CoOrganizerManagementActivity extends BaseActivity {
 
     public static final String EXTRA_EVENT_ID = "co_org_event_id";
 

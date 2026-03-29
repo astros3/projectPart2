@@ -19,7 +19,7 @@ import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.WriteBatch;
 
-public class EntrantProfileActivity extends AppCompatActivity {
+public class EntrantProfileActivity extends BaseActivity {
 
     private EditText nameInput, emailInput, phoneInput;
     private TextView displayName, displayEmail;

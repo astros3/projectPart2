@@ -13,7 +13,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 /**
  * Edit organizer profile (firstName, lastName, email, phone) in Firestore organizers/{deviceId}.
  */
-public class OrganizerProfileActivity extends AppCompatActivity {
+public class OrganizerProfileActivity extends BaseActivity {
 
     private static final String COLLECTION_ORGANIZERS = "organizers";
 

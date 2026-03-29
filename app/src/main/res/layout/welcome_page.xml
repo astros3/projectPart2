@@ -26,6 +26,7 @@
             android:id="@+id/logofordisplayonly"
             android:layout_width="50dp"
             android:layout_height="50dp"
+            android:contentDescription="@null"
             android:src="@drawable/logo" />
 
         <TextView
@@ -36,7 +37,7 @@
             android:textStyle="bold"
             android:text="Event Lottery System"
 
-            android:textSize="20dp"
+            android:textSize="20sp"
 
 
             />
@@ -93,6 +94,7 @@
             android:id="@+id/userroleiconfordisplayonly"
             android:layout_width="40dp"
             android:layout_height="40dp"
+            android:contentDescription="@null"
             android:src="@drawable/person_icon" />
 
         <LinearLayout
@@ -117,7 +119,7 @@
                 android:layout_height="wrap_content"
 
                 android:text="Join events and view tickets"
-                android:textSize="10dp" />
+                android:textSize="10sp" />
         </LinearLayout>
     </LinearLayout>
 
@@ -144,6 +146,7 @@
         <ImageView
             android:layout_width="40dp"
             android:layout_height="40dp"
+            android:contentDescription="@null"
             android:src="@drawable/person_icon" />
 
         <LinearLayout
@@ -167,7 +170,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Create and manage events"
-                android:textSize="10dp" />
+                android:textSize="10sp" />
         </LinearLayout>
     </LinearLayout>
 
@@ -197,7 +200,7 @@
         <ImageView
             android:layout_width="40dp"
             android:layout_height="40dp"
-
+            android:contentDescription="@null"
             android:src="@drawable/person_icon" />
 
         <LinearLayout
@@ -219,7 +222,7 @@
                 android:layout_height="wrap_content"
 
                 android:text="Admin"
-                android:textSize="10dp" />
+                android:textSize="10sp" />
         </LinearLayout>
     </LinearLayout>
 

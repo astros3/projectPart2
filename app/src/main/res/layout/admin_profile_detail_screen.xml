@@ -43,6 +43,7 @@
             <ImageView
                 android:layout_width="80dp"
                 android:layout_height="80dp"
+                android:contentDescription="@string/acc_profile_photo"
                 android:src="@drawable/person_icon"
                 android:alpha="0.4"
                 android:padding="16dp"

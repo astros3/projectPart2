@@ -15,7 +15,7 @@ import androidx.appcompat.widget.Toolbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-public class OrganizerSetupActivity extends AppCompatActivity {
+public class OrganizerSetupActivity extends BaseActivity {
 
     private static final String COLLECTION_ORGANIZERS = "organizers";
 

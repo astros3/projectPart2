@@ -26,7 +26,7 @@ import com.google.firebase.firestore.SetOptions;
 import java.util.HashMap;
 import java.util.Map;
 
-public class WelcomePageActivity extends AppCompatActivity {
+public class WelcomePageActivity extends BaseActivity {
 
     LinearLayout userbutton;
     LinearLayout organizerbutton;

@@ -18,6 +18,7 @@
             android:id="@+id/img_notif_icon"
             android:layout_width="40dp"
             android:layout_height="40dp"
+            android:contentDescription="@string/notifications"
             android:src="@drawable/ic_invite"
             app:tint="#6200EE" />
 
@@ -43,7 +44,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
                 android:text="You have been invited to help manage Event XYZ."
-                android:textColor="#757575"
+                android:textColor="#4A5260"
                 android:textSize="14sp" />
         </LinearLayout>
     </LinearLayout>

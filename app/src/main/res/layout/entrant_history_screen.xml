@@ -29,6 +29,7 @@
             android:layout_marginStart="30dp"
             android:layout_width="25dp"
             android:layout_height="25dp"
+            android:contentDescription="@null"
             android:src="@drawable/history_selected"
 
 
@@ -42,7 +43,7 @@
             android:layout_marginStart="15dp"
             android:text="History"
             android:layout_weight="1"
-            android:textSize="20dp"
+            android:textSize="20sp"
             android:textStyle="bold"
             android:textColor="#000000"/>
 
@@ -54,6 +55,7 @@
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:layout_marginEnd="30dp"
+            android:contentDescription="@string/notifications"
             android:src="@drawable/bell" />
     </LinearLayout>
 
@@ -115,6 +117,7 @@
             <ImageView
                 android:layout_width="25dp"
                 android:layout_height="25dp"
+                android:contentDescription="@null"
                 android:src="@drawable/home_unselected"
                 android:id="@+id/navigationhome"
                 />
@@ -125,8 +128,8 @@
                 android:id="@+id/hometext"
                 android:layout_marginTop="5dp"
                 android:text="HOME"
-                android:textSize="10dp"
-                android:textColor="#696969"/>
+                android:textSize="10sp"
+                android:textColor="#4A5260"/>
         </LinearLayout>
         <!--
            Scan navigation button
@@ -143,6 +146,7 @@
             <ImageView
                 android:layout_width="25dp"
                 android:layout_height="25dp"
+                android:contentDescription="@null"
                 android:id="@+id/navigationscan"
                 android:src="@drawable/scan_unselected"
                 />
@@ -152,8 +156,8 @@
                 android:id="@+id/scantext"
                 android:layout_marginTop="5dp"
                 android:text="SCAN"
-                android:textColor="#696969"
-                android:textSize="10dp" />
+                android:textColor="#4A5260"
+                android:textSize="10sp" />
         </LinearLayout>
         <!--
            History navigation button
@@ -171,6 +175,7 @@
                 android:id="@+id/navigationhistory"
                 android:layout_width="25dp"
                 android:layout_height="25dp"
+                android:contentDescription="@null"
                 android:src="@drawable/history_selected"
                 />
 
@@ -181,7 +186,7 @@
                 android:layout_marginTop="5dp"
                 android:text="HISTORY"
                 android:textColor="#000000"
-                android:textSize="10dp" />
+                android:textSize="10sp" />
         </LinearLayout>
         <!--
            Profile navigation button
@@ -198,6 +203,7 @@
             <ImageView
                 android:layout_width="25dp"
                 android:layout_height="25dp"
+                android:contentDescription="@null"
                 android:id="@+id/navigationprofile"
                 android:src="@drawable/profile_unselected"
                 />
@@ -208,8 +214,8 @@
                 android:id="@+id/profiletext"
                 android:layout_marginTop="5dp"
                 android:text="PROFILE"
-                android:textColor="#696969"
-                android:textSize="10dp" />
+                android:textColor="#4A5260"
+                android:textSize="10sp" />
         </LinearLayout>
 
     </LinearLayout>

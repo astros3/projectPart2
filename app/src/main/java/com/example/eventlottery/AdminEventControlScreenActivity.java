@@ -27,7 +27,7 @@ import java.util.Date;
  * Admin view: list all events from Firestore, search by title (in-memory).
  * Access restricted to devices that have an entry in Firestore "admins" collection (document ID = deviceId).
  */
-public class AdminEventControlScreenActivity extends AppCompatActivity {
+public class AdminEventControlScreenActivity extends BaseActivity {
     private ArrayList<Event> admineventlist;
     private ArrayList<Event> alladmineventlistbackup;
     private AdminEventControlScreenAdapter admineventadapter;

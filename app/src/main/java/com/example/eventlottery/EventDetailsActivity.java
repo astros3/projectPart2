@@ -50,7 +50,7 @@ import java.util.Map;
  * Handles private event invitations: accept joins waiting list as PENDING,
  * decline sets status to DECLINED (US 01.05.06, 01.05.07).
  */
-public class EventDetailsActivity extends AppCompatActivity {
+public class EventDetailsActivity extends BaseActivity {
 
     public static final String EXTRA_EVENT_ID = "event_id";
     /** When true, toolbar is white (entrant view); when false, black (organizer view). */

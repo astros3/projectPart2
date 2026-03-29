@@ -16,7 +16,7 @@ import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-public class EntrantSetupActivity extends AppCompatActivity {
+public class EntrantSetupActivity extends BaseActivity {
 
     private TextInputEditText firstNameInput;
     private TextInputEditText lastNameInput;
