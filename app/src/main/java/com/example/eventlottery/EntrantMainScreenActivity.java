@@ -146,6 +146,7 @@ public class EntrantMainScreenActivity extends AppCompatActivity {
                 });
 
         loadAllEventsFromFirestore();
+        startNotificationListener();
 
         notificationbellbutton.setOnClickListener(v ->
                 startActivity(new Intent(EntrantMainScreenActivity.this, EntrantNotificationsActivity.class)));
