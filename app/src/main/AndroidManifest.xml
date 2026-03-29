@@ -113,6 +113,11 @@
             android:exported="false"
             android:parentActivityName=".EventDetailsActivity" />
 
+        <activity
+            android:name=".CoOrganizerManagementActivity"
+            android:exported="false"
+            android:parentActivityName=".MainActivity" />
+
         <service
             android:name=".MyFirebaseMessagingService"
             android:exported="false">

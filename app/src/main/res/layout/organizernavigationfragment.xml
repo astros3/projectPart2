@@ -60,11 +60,21 @@
                 android:backgroundTint="@color/black"
                 android:textColor="#FFFFFF"/>
 
+            <!-- Visible only to primary organizer (not co-organizers) -->
+            <Button
+                android:id="@+id/buttonManageCoOrganizers"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/manage_co_organizers"
+                android:backgroundTint="#1565C0"
+                android:textColor="#FFFFFF"
+                android:visibility="gone"/>
+
             <Button
                 android:id="@+id/buttonComments"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Comments"
+                android:text="@string/comments"
                 android:backgroundTint="@color/black"
                 android:textColor="#FFFFFF"/>
 
@@ -140,14 +150,6 @@
                 android:layout_height="wrap_content"
                 android:backgroundTint="@color/black"
                 android:text="@string/final_list"
-                android:textColor="#FFFFFF" />
-
-            <Button
-                android:id="@+id/buttonComments"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:backgroundTint="@color/black"
-                android:text="@string/comments"
                 android:textColor="#FFFFFF" />
 
         </LinearLayout>

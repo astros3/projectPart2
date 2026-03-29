@@ -66,6 +66,21 @@
                 android:textColor="#6C757D"
                 android:text="Date" />
 
+            <!-- Co-organizer banner: shown instead of join/leave controls when user is co-organizer -->
+            <TextView
+                android:id="@+id/banner_co_organizer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:padding="14dp"
+                android:background="#1565C0"
+                android:gravity="center"
+                android:textSize="14sp"
+                android:textColor="#FFFFFF"
+                android:textStyle="bold"
+                android:text="@string/co_organizer_banner"
+                android:visibility="gone" />
+
             <!-- Status: NOT JOINED / PENDING -->
             <TextView
                 android:id="@+id/event_status"

@@ -1,30 +1,41 @@
 package com.example.eventlottery;
 
 /**
- * Provides a persistent device ID via SharedPreferences. Used as identity for both
+ * Provides a persistent device ID. Used as identity for both
  * entrant (users) and organizer (organizers) flows. Singleton-like: one ID per app install.
  */
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.provider.Settings;
 
 import java.util.UUID;
 
 public class DeviceIdManager {
-    //name of the storage file where we will save the device ID
     private static final String STORAGE_NAME = "EventLotteryDeviceStorage";
     private static final String DEVICE_ID_KEY = "device_id";
 
-    // returns the device's unique ID, creating one if it does not already exist
+    // Known bad ANDROID_ID returned by some emulators/unconfigured devices
+    private static final String BAD_ANDROID_ID = "9774d56d682e549c";
+
+    /**
+     * Returns the device's unique ID.
+     * Prefers Settings.Secure.ANDROID_ID (the real hardware-based ID). Falls back to a
+     * randomly generated UUID (stored persistently) if ANDROID_ID is unavailable or invalid.
+     */
     public static String getDeviceId(Context context) {
+        String androidId = Settings.Secure.getString(
+                context.getContentResolver(), Settings.Secure.ANDROID_ID);
+
+        if (androidId != null && !androidId.isEmpty() && !androidId.equals(BAD_ANDROID_ID)) {
+            return androidId;
+        }
+
+        // Fallback: persist a random UUID for devices that don't expose a valid ANDROID_ID
         SharedPreferences prefs = context.getSharedPreferences(STORAGE_NAME, Context.MODE_PRIVATE);
         String deviceId = prefs.getString(DEVICE_ID_KEY, null);
-
-        //generating and storing a unique device ID if it doesn't exist yet
         if (deviceId == null) {
             deviceId = UUID.randomUUID().toString();
-            SharedPreferences.Editor editor = prefs.edit();
-            editor.putString(DEVICE_ID_KEY, deviceId);
-            editor.apply();
+            prefs.edit().putString(DEVICE_ID_KEY, deviceId).apply();
         }
         return deviceId;
     }

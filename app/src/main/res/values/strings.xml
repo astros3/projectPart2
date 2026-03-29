@@ -128,4 +128,22 @@
     <string name="distance_filter_needs_location">Turn on location to use the distance filter.</string>
     <string name="entrant_map_title">Events near you</string>
     <string name="nav_map">MAP</string>
+
+    <!-- Co-Organizer Management -->
+    <string name="manage_co_organizers">Manage Co-Organizers</string>
+    <string name="co_organizer_title">Co-Organizer Management</string>
+    <string name="co_organizer_subtitle">Select a user to assign or remove as co-organizer</string>
+    <string name="assign_co_organizer">Assign</string>
+    <string name="remove_co_organizer">Remove</string>
+    <string name="co_organizer_badge">CO-ORGANIZER</string>
+    <string name="co_organizer_assigned">Assigned as co-organizer</string>
+    <string name="co_organizer_removed">Removed as co-organizer</string>
+    <string name="co_organizer_assign_failed">Failed to assign co-organizer</string>
+    <string name="co_organizer_remove_failed">Failed to remove co-organizer</string>
+    <string name="co_organizer_banner">You are a co-organizer for this event</string>
+    <string name="edit_lock_held">This event is currently being edited by another organizer. Try again later.</string>
+    <string name="edit_lock_acquire_failed">Could not acquire edit lock. Please try again.</string>
+    <string name="search_users_hint">Search by name or email</string>
+    <string name="no_users_found">No users found</string>
+    <string name="co_organized_event_label">Co-Organizer</string>
 </resources>

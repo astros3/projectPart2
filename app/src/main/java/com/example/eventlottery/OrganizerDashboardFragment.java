@@ -48,6 +48,7 @@ public class OrganizerDashboardFragment extends Fragment {
         recyclerView = view.findViewById(R.id.recycler_organizer_events);
         emptyView = view.findViewById(R.id.empty_events_message);
         adapter = new OrganizerEventAdapter();
+        adapter.setCurrentDeviceId(deviceId);
         recyclerView.setAdapter(adapter);
 
         adapter.setOnEventActionListener(new OrganizerEventAdapter.OnEventActionListener() {
@@ -86,30 +87,67 @@ public class OrganizerDashboardFragment extends Fragment {
     }
 
     private void loadMyEvents() {
+        final List<Event> mergedEvents = new ArrayList<>();
+        final boolean[] queriesDone = {false, false};
+
+        // Query 1: events owned by this device
         db.collection("events")
                 .whereEqualTo("organizerId", deviceId)
                 .get()
                 .addOnSuccessListener(snapshot -> {
-                    List<Event> events = new ArrayList<>();
                     for (QueryDocumentSnapshot doc : snapshot) {
                         Event event = doc.toObject(Event.class);
                         if (event != null) {
                             event.setEventId(doc.getId());
-                            events.add(event);
+                            mergedEvents.add(event);
                         }
                     }
-                    Collections.sort(events, (a, b) -> Long.compare(
-                            b.getEventDateMillis() != 0 ? b.getEventDateMillis() : b.getRegistrationEndMillis(),
-                            a.getEventDateMillis() != 0 ? a.getEventDateMillis() : a.getRegistrationEndMillis()));
-                    adapter.setEvents(events);
-                    showEmptyState(events.isEmpty());
+                    queriesDone[0] = true;
+                    if (queriesDone[1]) onBothQueriesDone(mergedEvents);
                 })
                 .addOnFailureListener(e -> {
-                    Log.e("FirestoreError", "Failed to load event", e);
-                    e.printStackTrace();
-                    Toast.makeText(requireContext(), "Could not load events", Toast.LENGTH_SHORT).show();
-                    showEmptyState(true);
+                    Log.e("FirestoreError", "Failed to load owned events", e);
+                    queriesDone[0] = true;
+                    if (queriesDone[1]) onBothQueriesDone(mergedEvents);
                 });
+
+        // Query 2: events where this device is a co-organizer
+        db.collection("events")
+                .whereArrayContains("coOrganizerIds", deviceId)
+                .get()
+                .addOnSuccessListener(snapshot -> {
+                    for (QueryDocumentSnapshot doc : snapshot) {
+                        Event event = doc.toObject(Event.class);
+                        if (event != null) {
+                            event.setEventId(doc.getId());
+                            // Deduplicate — shouldn't occur but defensive
+                            boolean alreadyAdded = false;
+                            for (Event e : mergedEvents) {
+                                if (doc.getId().equals(e.getEventId())) {
+                                    alreadyAdded = true;
+                                    break;
+                                }
+                            }
+                            if (!alreadyAdded) mergedEvents.add(event);
+                        }
+                    }
+                    queriesDone[1] = true;
+                    if (queriesDone[0]) onBothQueriesDone(mergedEvents);
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("FirestoreError", "Failed to load co-organized events", e);
+                    queriesDone[1] = true;
+                    if (queriesDone[0]) onBothQueriesDone(mergedEvents);
+                });
+    }
+
+    private void onBothQueriesDone(List<Event> events) {
+        if (!isAdded()) return;
+        Collections.sort(events, (a, b) -> Long.compare(
+                b.getEventDateMillis() != 0 ? b.getEventDateMillis() : b.getRegistrationEndMillis(),
+                a.getEventDateMillis() != 0 ? a.getEventDateMillis() : a.getRegistrationEndMillis()));
+        adapter.setEvents(events);
+        showEmptyState(events.isEmpty());
     }
 
     private void showEmptyState(boolean empty) {
@@ -159,6 +197,12 @@ public class OrganizerDashboardFragment extends Fragment {
     private void deleteEvent(Event event) {
         if (event == null || event.getEventId() == null) {
             Toast.makeText(requireContext(), "Event ID is missing", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        // Only the primary organizer can delete
+        if (!deviceId.equals(event.getOrganizerId())) {
+            Toast.makeText(requireContext(), "Only the event organizer can delete this event",
+                    Toast.LENGTH_SHORT).show();
             return;
         }
 
