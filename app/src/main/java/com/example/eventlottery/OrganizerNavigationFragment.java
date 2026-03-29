@@ -39,6 +39,19 @@ public class OrganizerNavigationFragment extends Fragment {
             startActivity(EventEditActivity.newIntent(requireContext(), eventId));
         });
 
+        // View event comments and post new ones as organizer
+        view.findViewById(R.id.buttonComments).setOnClickListener(v -> {
+            String eventId = EventEditActivity.getCurrentEventId(requireContext());
+            if (eventId == null || eventId.isEmpty()) {
+                Toast.makeText(requireContext(), "No event selected", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            Intent intent = new Intent(requireContext(), EventDetailsActivity.class);
+            intent.putExtra(EventDetailsActivity.EXTRA_EVENT_ID, eventId);
+            intent.putExtra(EventDetailsActivity.EXTRA_VIEW_AS_ENTRANT, false);
+            startActivity(intent);
+        });
+
         Button buttonQR = view.findViewById(R.id.buttonQR);
         Button buttonInviteEntrants = view.findViewById(R.id.buttonInviteEntrants);
 

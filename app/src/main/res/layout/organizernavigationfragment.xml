@@ -60,6 +60,14 @@
                 android:backgroundTint="@color/black"
                 android:textColor="#FFFFFF"/>
 
+            <Button
+                android:id="@+id/buttonComments"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Comments"
+                android:backgroundTint="@color/black"
+                android:textColor="#FFFFFF"/>
+
             <!-- Private events only (US 02.01.03) -->
             <Button
                 android:id="@+id/buttonInviteEntrants"

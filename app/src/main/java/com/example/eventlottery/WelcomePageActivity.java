@@ -5,15 +5,22 @@ package com.example.eventlottery;
  * based on Firestore profile (users vs organizers). Issue: Organizer doc has no "role" field,
  * so existing organizers are always sent to setup.
  */
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.firestore.SetOptions;
 
 import java.util.HashMap;
@@ -25,10 +32,19 @@ public class WelcomePageActivity extends AppCompatActivity {
     LinearLayout organizerbutton;
     LinearLayout adminbutton;
 
+    private final ActivityResultLauncher<String> notificationPermissionLauncher =
+            registerForActivityResult(new ActivityResultContracts.RequestPermission(), granted -> {
+                // Permission granted or denied — proceed regardless; in-app notifications still work
+            });
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.welcome_page);
+
+        NotificationChannelHelper.createChannel(this);
+        requestNotificationPermissionIfNeeded();
+        registerFcmToken();
 
         userbutton = findViewById(R.id.userbutton);
         organizerbutton = findViewById(R.id.organizerbutton);
@@ -134,6 +150,27 @@ public class WelcomePageActivity extends AppCompatActivity {
         });
     }
 
+    private void requestNotificationPermissionIfNeeded() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+                    != PackageManager.PERMISSION_GRANTED) {
+                notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
+            }
+        }
+    }
+
+    /** Fetches the FCM token and stores it on the user's Firestore document. */
+    private void registerFcmToken() {
+        String deviceId = DeviceIdManager.getDeviceId(this);
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        FirebaseMessaging.getInstance().getToken().addOnSuccessListener(token -> {
+            Map<String, Object> update = new HashMap<>();
+            update.put("fcmToken", token);
+            db.collection("users").document(deviceId).update(update);
+            db.collection("organizers").document(deviceId).update(update);
+        });
+    }
+  
     /**
      * US 03.09.01: Ensures Admin ID is present in all role collections.
      * Uses merge() so we don't overwrite existing user/organizer data.

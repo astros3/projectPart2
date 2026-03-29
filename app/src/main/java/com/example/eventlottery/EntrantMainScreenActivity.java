@@ -41,7 +41,9 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.Priority;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.journeyapps.barcodescanner.ScanContract;
@@ -95,6 +97,8 @@ public class EntrantMainScreenActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private String currentdeviceid;
     private EventFilterCriteria currentFilter = EventFilterCriteria.empty();
+    private ListenerRegistration notificationListener;
+    private long listenerAttachTime;
     private FusedLocationProviderClient fusedLocationClient;
     private Double lastUserLat;
     private Double lastUserLng;
@@ -157,6 +161,7 @@ public class EntrantMainScreenActivity extends AppCompatActivity {
                 });
 
         loadAllEventsFromFirestore();
+        startNotificationListener();
 
         notificationbellbutton.setOnClickListener(v ->
                 startActivity(new Intent(EntrantMainScreenActivity.this, EntrantNotificationsActivity.class)));
@@ -421,6 +426,54 @@ public class EntrantMainScreenActivity extends AppCompatActivity {
         nm.notify((int) System.currentTimeMillis(), builder.build());
     }
 
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        startNotificationListener();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (notificationListener != null) {
+            notificationListener.remove();
+            notificationListener = null;
+        }
+    }
+
+    /**
+     * Listens for new unread notification documents on this device's Firestore subcollection.
+     * When a new document arrives after we attached the listener, fires an OS notification banner.
+     */
+    private void startNotificationListener() {
+        if (db == null || currentdeviceid == null) return;
+        listenerAttachTime = System.currentTimeMillis();
+
+        notificationListener = db.collection("users")
+                .document(currentdeviceid)
+                .collection("notifications")
+                .whereEqualTo("read", false)
+                .addSnapshotListener((snapshots, error) -> {
+                    if (error != null || snapshots == null) return;
+                    for (DocumentChange change : snapshots.getDocumentChanges()) {
+                        if (change.getType() != DocumentChange.Type.ADDED) continue;
+                        Long ts = change.getDocument().getLong("timestampMillis");
+                        if (ts == null || ts < listenerAttachTime) continue;
+
+                        String title = change.getDocument().getString("title");
+                        String message = change.getDocument().getString("message");
+                        if (title == null) title = getString(R.string.app_name);
+                        if (message == null) message = "";
+
+                        MyFirebaseMessagingService.postNotification(
+                                EntrantMainScreenActivity.this,
+                                title, message,
+                                change.getDocument().getId().hashCode()
+                        );
+                    }
+                });
+    }
 
     @Override
     protected void onResume() {

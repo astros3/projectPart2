@@ -1,5 +1,7 @@
 package com.example.eventlottery;
 
+import android.content.Context;
+
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;

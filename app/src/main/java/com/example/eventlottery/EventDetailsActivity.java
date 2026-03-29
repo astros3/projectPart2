@@ -425,6 +425,13 @@ public class EventDetailsActivity extends AppCompatActivity {
     }
 
     private void updateStatusAndButton() {
+        if (organizermode) {
+            joinLeaveButton.setVisibility(View.GONE);
+            if (invitationButtonsContainer != null)
+                invitationButtonsContainer.setVisibility(View.GONE);
+            statusView.setVisibility(View.GONE);
+            return;
+        }
         cancelInvitationCountdown();
         if (!onWaitingList) {
             if (loadedEventIsPrivate) {
