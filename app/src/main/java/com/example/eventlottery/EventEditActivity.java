@@ -27,9 +27,13 @@ import com.google.android.libraries.places.widget.Autocomplete;
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+
+import java.util.HashMap;
+import java.util.Map;
 import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
@@ -78,6 +82,11 @@ public class EventEditActivity extends AppCompatActivity {
 
     private long registrationStartMillis = 0;
     private long registrationEndMillis = 0;
+
+    /** True while this activity holds the Firestore edit lock on the current event. */
+    private boolean editLockHeld = false;
+    /** 10-minute timeout for stale locks left by crashes. */
+    private static final long LOCK_TIMEOUT_MS = 10 * 60 * 1000L;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -246,6 +255,12 @@ public class EventEditActivity extends AppCompatActivity {
         btnConfirm.setOnClickListener(v -> saveEvent());
     }
 
+    @Override
+    protected void onDestroy() {
+        releaseEditLock();
+        super.onDestroy();
+    }
+
     private void openImagePicker() {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("image/*");
@@ -276,18 +291,73 @@ public class EventEditActivity extends AppCompatActivity {
                         return;
                     }
                     event.setEventId(doc.getId());
-                    if (!deviceId.equals(event.getOrganizerId())) {
+                    // Allow primary organizer OR co-organizer to edit
+                    if (!deviceId.equals(event.getOrganizerId()) && !event.isCoOrganizer(deviceId)) {
                         Toast.makeText(this, R.string.only_organizer_edit, Toast.LENGTH_SHORT).show();
                         finish();
                         return;
                     }
                     organizerName = event.getOrganizerName();
-                    populateForm(event);
+                    acquireEditLock(event);
                 })
                 .addOnFailureListener(e -> {
                     Toast.makeText(this, "Could not load event", Toast.LENGTH_SHORT).show();
                     finish();
                 });
+    }
+
+    /**
+     * Acquires the Firestore edit lock on the event using a transaction.
+     * If another user holds the lock (within the 10-min window), shows a toast and finishes.
+     */
+    private void acquireEditLock(Event event) {
+        com.google.firebase.firestore.DocumentReference eventRef =
+                db.collection("events").document(eventId);
+
+        db.runTransaction(transaction -> {
+            DocumentSnapshot doc = transaction.get(eventRef);
+            String lockHolder = doc.getString("editLockHeldBy");
+            Long lockAcquiredAt = doc.getLong("editLockAcquiredAt");
+            long now = System.currentTimeMillis();
+
+            boolean lockFree = lockHolder == null || lockHolder.isEmpty()
+                    || deviceId.equals(lockHolder)
+                    || (lockAcquiredAt != null && (now - lockAcquiredAt) > LOCK_TIMEOUT_MS);
+
+            if (!lockFree) {
+                throw new FirebaseFirestoreException(
+                        "Event is being edited by another organizer",
+                        FirebaseFirestoreException.Code.ABORTED);
+            }
+
+            Map<String, Object> lockUpdate = new HashMap<>();
+            lockUpdate.put("editLockHeldBy", deviceId);
+            lockUpdate.put("editLockAcquiredAt", now);
+            transaction.update(eventRef, lockUpdate);
+            return null;
+        }).addOnSuccessListener(unused -> {
+            editLockHeld = true;
+            populateForm(event);
+        }).addOnFailureListener(e -> {
+            if (e instanceof FirebaseFirestoreException
+                    && ((FirebaseFirestoreException) e).getCode()
+                    == FirebaseFirestoreException.Code.ABORTED) {
+                Toast.makeText(this, R.string.edit_lock_held, Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(this, R.string.edit_lock_acquire_failed, Toast.LENGTH_SHORT).show();
+            }
+            finish();
+        });
+    }
+
+    /** Releases the edit lock. Safe to call even if not held. */
+    private void releaseEditLock() {
+        if (!editLockHeld || eventId == null) return;
+        editLockHeld = false;
+        Map<String, Object> release = new HashMap<>();
+        release.put("editLockHeldBy", null);
+        release.put("editLockAcquiredAt", 0L);
+        db.collection("events").document(eventId).update(release);
     }
 
     private void ensureOrganizerAccountThenAllowCreate() {
@@ -501,8 +571,12 @@ public class EventEditActivity extends AppCompatActivity {
 
     private void persistEvent(Event event, boolean isCreate) {
         if (isCreate) {
+            // New events have no lock; ensure lock fields are blank
+            event.setEditLockHeldBy(null);
+            event.setEditLockAcquiredAt(0L);
             db.collection("events").document(eventId).set(event)
                     .addOnSuccessListener(aVoid -> {
+                        editLockHeld = false; // no lock to release for new events
                         saveCurrentEventId(eventId);
                         Toast.makeText(this, R.string.event_created_success, Toast.LENGTH_SHORT).show();
                         // Only open QR code screen for public events
@@ -542,9 +616,13 @@ public class EventEditActivity extends AppCompatActivity {
                         if (event.getPosterUri() != null) {
                             existing.setPosterUri(event.getPosterUri());
                         }
+                        // Clear lock as part of save so the doc is unlocked after write
+                        existing.setEditLockHeldBy(null);
+                        existing.setEditLockAcquiredAt(0L);
 
                         db.collection("events").document(eventId).set(existing)
                                 .addOnSuccessListener(aVoid -> {
+                                    editLockHeld = false; // lock already cleared in set()
                                     Toast.makeText(this, R.string.event_updated_success,
                                             Toast.LENGTH_SHORT).show();
                                     finish();

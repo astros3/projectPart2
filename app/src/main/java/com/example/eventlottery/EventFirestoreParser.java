@@ -3,6 +3,9 @@ package com.example.eventlottery;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Maps Firestore event documents to {@link Event} (shared by list + map screens).
  */
@@ -54,6 +57,15 @@ public final class EventFirestoreParser {
             isPrivate = eachevent.getBoolean("isPrivate");
         }
         event.setPrivate(Boolean.TRUE.equals(isPrivate));
+
+        // Co-organizer and edit lock fields (new events may not have these).
+        @SuppressWarnings("unchecked")
+        List<String> coOrganizerIds = (List<String>) eachevent.get("coOrganizerIds");
+        event.setCoOrganizerIds(coOrganizerIds != null ? coOrganizerIds : new ArrayList<>());
+        event.setEditLockHeldBy(eachevent.getString("editLockHeldBy"));
+        Long lockAt = eachevent.getLong("editLockAcquiredAt");
+        event.setEditLockAcquiredAt(lockAt != null ? lockAt : 0L);
+
         return event;
     }
 }

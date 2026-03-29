@@ -83,10 +83,13 @@ public class EventDetailsActivity extends AppCompatActivity {
     private MaterialButton declineInvitationButton;
     private MaterialButton inviteEntrantsButton;
     private TextView invitationCountdownView;
+    private TextView coOrganizerBanner;
     private CountDownTimer invitationCountDownTimer;
     /** End of 24h window for current invitation; 0 if none. */
     private long invitationResponseDeadlineMillis;
     private boolean organizermode = false;
+    /** True when the current user is a co-organizer for this event. */
+    private boolean isCoOrganizer = false;
     private final ArrayList<String> comments = new ArrayList<>();
     private final ArrayList<String> commentIds = new ArrayList<>();
     private ArrayAdapter<String> commentsAdapter;
@@ -170,6 +173,7 @@ public class EventDetailsActivity extends AppCompatActivity {
                 updateInvitationStatus(WaitingListEntry.Status.DECLINED));
 
         inviteEntrantsButton = findViewById(R.id.btn_invite_entrants);
+        coOrganizerBanner = findViewById(R.id.banner_co_organizer);
 
         commentsListView.setOnItemClickListener((parent, view, position, id) -> {
             if (organizermode) {
@@ -212,6 +216,8 @@ public class EventDetailsActivity extends AppCompatActivity {
         if (event != null) {
             event.setEventId(eventDoc.getId());
             loadedEventIsPrivate = event.isPrivate();
+            // Determine co-organizer status for this device
+            isCoOrganizer = event.isCoOrganizer(deviceId);
             bindEvent(event);
         }
 
@@ -225,7 +231,8 @@ public class EventDetailsActivity extends AppCompatActivity {
 
         boolean currentlyViewingAsEntrant =
                 getIntent().getBooleanExtra(EXTRA_VIEW_AS_ENTRANT, true);
-        organizermode = !currentlyViewingAsEntrant;
+        // Co-organizers see the organizer-style view (comments moderation, no join button)
+        organizermode = !currentlyViewingAsEntrant || isCoOrganizer;
         loadComments();
     }
 
@@ -407,10 +414,11 @@ public class EventDetailsActivity extends AppCompatActivity {
             posterView.setImageDrawable(null);
         }
 
-        // Show "Invite Entrants" only for the organizer viewing their own private event (US 02.01.03)
-        boolean viewAsEntrant = getIntent().getBooleanExtra(EXTRA_VIEW_AS_ENTRANT, true);
-        if (!viewAsEntrant && event.isPrivate()
-                && DeviceIdManager.getDeviceId(this).equals(event.getOrganizerId())) {
+        // Show "Invite Entrants" for the primary organizer OR co-organizer on private events (US 02.01.03)
+        String currentDeviceId = DeviceIdManager.getDeviceId(this);
+        boolean isOrganizerOrCoOrg = currentDeviceId.equals(event.getOrganizerId())
+                || event.isCoOrganizer(currentDeviceId);
+        if (event.isPrivate() && isOrganizerOrCoOrg) {
             inviteEntrantsButton.setVisibility(View.VISIBLE);
             inviteEntrantsButton.setOnClickListener(v ->
                     startActivity(OrganizerInviteEntrantActivity.newIntent(this, eventId)));
@@ -425,6 +433,16 @@ public class EventDetailsActivity extends AppCompatActivity {
     }
 
     private void updateStatusAndButton() {
+        if (isCoOrganizer) {
+            // Co-organizers see a banner and cannot interact with the waiting list
+            if (coOrganizerBanner != null) coOrganizerBanner.setVisibility(View.VISIBLE);
+            joinLeaveButton.setVisibility(View.GONE);
+            if (invitationButtonsContainer != null)
+                invitationButtonsContainer.setVisibility(View.GONE);
+            statusView.setVisibility(View.GONE);
+            return;
+        }
+        if (coOrganizerBanner != null) coOrganizerBanner.setVisibility(View.GONE);
         if (organizermode) {
             joinLeaveButton.setVisibility(View.GONE);
             if (invitationButtonsContainer != null)

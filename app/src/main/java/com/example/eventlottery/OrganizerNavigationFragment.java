@@ -28,6 +28,8 @@ public class OrganizerNavigationFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        String deviceId = DeviceIdManager.getDeviceId(requireContext());
+
         view.findViewById(R.id.btn_back).setOnClickListener(v -> {
             androidx.navigation.NavController nav = NavHostFragment.findNavController(OrganizerNavigationFragment.this);
             nav.popBackStack(R.id.OrganizerDashboardFragment, false);
@@ -52,8 +54,19 @@ public class OrganizerNavigationFragment extends Fragment {
             startActivity(intent);
         });
 
+        Button buttonManageCoOrganizers = view.findViewById(R.id.buttonManageCoOrganizers);
         Button buttonQR = view.findViewById(R.id.buttonQR);
         Button buttonInviteEntrants = view.findViewById(R.id.buttonInviteEntrants);
+
+        // Manage Co-Organizers — only shown to the primary organizer
+        buttonManageCoOrganizers.setOnClickListener(v -> {
+            String eventId = EventEditActivity.getCurrentEventId(requireContext());
+            if (eventId == null || eventId.isEmpty()) {
+                Toast.makeText(requireContext(), "No event selected", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            startActivity(CoOrganizerManagementActivity.newIntent(requireContext(), eventId));
+        });
 
         // View QR Code (US 02.01.01) — hidden for private events
         buttonQR.setOnClickListener(v -> {
@@ -75,7 +88,7 @@ public class OrganizerNavigationFragment extends Fragment {
             startActivity(OrganizerInviteEntrantActivity.newIntent(requireContext(), eventId));
         });
 
-        // Load event to show/hide QR vs Invite button based on isPrivate
+        // Load event to show/hide QR vs Invite button, and show Manage Co-Organizers for primary organizer only
         String eventId = EventEditActivity.getCurrentEventId(requireContext());
         if (eventId != null && !eventId.isEmpty()) {
             FirebaseFirestore.getInstance().collection("events").document(eventId).get()
@@ -89,6 +102,12 @@ public class OrganizerNavigationFragment extends Fragment {
                         } else {
                             buttonQR.setVisibility(View.VISIBLE);
                             buttonInviteEntrants.setVisibility(View.GONE);
+                        }
+                        // Show Manage Co-Organizers only to the primary organizer
+                        if (deviceId.equals(event.getOrganizerId())) {
+                            buttonManageCoOrganizers.setVisibility(View.VISIBLE);
+                        } else {
+                            buttonManageCoOrganizers.setVisibility(View.GONE);
                         }
                     });
         }

@@ -21,11 +21,13 @@ import java.util.Map;
 
 /**
  * RecyclerView adapter for organizer dashboard event cards. View/Edit open event nav or EventEditActivity.
+ * For co-organized events (where deviceId != organizerId), the delete button is hidden.
  */
 public class OrganizerEventAdapter extends RecyclerView.Adapter<OrganizerEventAdapter.EventCardViewHolder> {
 
     private final List<Event> events = new ArrayList<>();
     private OnEventActionListener listener;
+    private String currentDeviceId = "";
 
     interface OnEventActionListener {
         void onViewClick(Event event);
@@ -35,6 +37,10 @@ public class OrganizerEventAdapter extends RecyclerView.Adapter<OrganizerEventAd
 
     void setOnEventActionListener(OnEventActionListener listener) {
         this.listener = listener;
+    }
+
+    void setCurrentDeviceId(String deviceId) {
+        this.currentDeviceId = deviceId != null ? deviceId : "";
     }
 
     void setEvents(List<Event> newEvents) {
@@ -68,7 +74,9 @@ public class OrganizerEventAdapter extends RecyclerView.Adapter<OrganizerEventAd
     @Override
     public void onBindViewHolder(@NonNull EventCardViewHolder holder, int position) {
         Event event = events.get(position);
-        holder.bind(event, listener);
+        boolean isCoOrganized = !currentDeviceId.isEmpty()
+                && !currentDeviceId.equals(event.getOrganizerId());
+        holder.bind(event, listener, isCoOrganized);
     }
 
     @Override
@@ -79,21 +87,22 @@ public class OrganizerEventAdapter extends RecyclerView.Adapter<OrganizerEventAd
     static class EventCardViewHolder extends RecyclerView.ViewHolder {
         private final TextView titleView;
         private final TextView dateView;
+        private final TextView coOrgBadge;
         private final View viewButton;
         private final View editButton;
-
         private final View deleteButton;
 
         EventCardViewHolder(View itemView) {
             super(itemView);
             titleView = itemView.findViewById(R.id.event_card_title);
             dateView = itemView.findViewById(R.id.event_card_date);
+            coOrgBadge = itemView.findViewById(R.id.event_card_co_org_badge);
             viewButton = itemView.findViewById(R.id.event_card_view);
             editButton = itemView.findViewById(R.id.event_card_edit);
             deleteButton = itemView.findViewById(R.id.event_card_delete);
         }
 
-        void bind(Event event, OnEventActionListener listener) {
+        void bind(Event event, OnEventActionListener listener, boolean isCoOrganized) {
             titleView.setText(event.getTitle() != null && !event.getTitle().isEmpty()
                     ? event.getTitle() : "Untitled Event");
 
@@ -106,6 +115,15 @@ public class OrganizerEventAdapter extends RecyclerView.Adapter<OrganizerEventAd
                 dateView.setVisibility(View.VISIBLE);
             } else {
                 dateView.setVisibility(View.GONE);
+            }
+
+            // Show co-organizer badge and hide delete for co-organized events
+            if (isCoOrganized) {
+                coOrgBadge.setVisibility(View.VISIBLE);
+                deleteButton.setVisibility(View.GONE);
+            } else {
+                coOrgBadge.setVisibility(View.GONE);
+                deleteButton.setVisibility(View.VISIBLE);
             }
 
             viewButton.setOnClickListener(v -> {

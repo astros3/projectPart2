@@ -37,9 +37,17 @@ public class Event {
     private Double longitude;
     private String userapplicationstatus = "User not signed up for this event";
 
-    /** No-arg constructor; selectionCriteria initialized to empty list. */
+    /** Device IDs of users assigned as co-organizers for this event. */
+    private List<String> coOrganizerIds;
+    /** DeviceId of whoever currently holds the edit lock; null when unlocked. */
+    private String editLockHeldBy;
+    /** Epoch-ms when the edit lock was acquired; used for 10-min timeout. */
+    private long editLockAcquiredAt;
+
+    /** No-arg constructor; selectionCriteria and coOrganizerIds initialized to empty lists. */
     public Event() {
         this.selectionCriteria = new ArrayList<>();
+        this.coOrganizerIds = new ArrayList<>();
     }
 
     /**
@@ -133,4 +141,21 @@ public class Event {
     /** UI-only: current user's application status for this event. Do not persist to Firestore. */
     public String getUserApplicationStatus() { return userapplicationstatus; }
     public void setUserApplicationStatus(String applicationStatus) { this.userapplicationstatus = applicationStatus; }
+
+    public List<String> getCoOrganizerIds() {
+        return coOrganizerIds != null ? coOrganizerIds : new ArrayList<>();
+    }
+    public void setCoOrganizerIds(List<String> coOrganizerIds) {
+        this.coOrganizerIds = coOrganizerIds != null ? coOrganizerIds : new ArrayList<>();
+    }
+
+    /** Returns true if the given deviceId is a co-organizer of this event. */
+    public boolean isCoOrganizer(String deviceId) {
+        return coOrganizerIds != null && coOrganizerIds.contains(deviceId);
+    }
+
+    public String getEditLockHeldBy() { return editLockHeldBy; }
+    public void setEditLockHeldBy(String editLockHeldBy) { this.editLockHeldBy = editLockHeldBy; }
+    public long getEditLockAcquiredAt() { return editLockAcquiredAt; }
+    public void setEditLockAcquiredAt(long editLockAcquiredAt) { this.editLockAcquiredAt = editLockAcquiredAt; }
 }
