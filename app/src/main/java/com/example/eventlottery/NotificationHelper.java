@@ -29,6 +29,8 @@ public class NotificationHelper {
      */
     public static final String TYPE_LOTTERY_LOST = "LOTTERY_LOST";
 
+    public static final String TYPE_PRIVATE_INVITE = "PRIVATE_INVITE";
+
 
 
 
@@ -57,6 +59,7 @@ public class NotificationHelper {
     public static final String PRIVATE_INVITE_TITLE = "You've been invited! 🔒";
     public static final String PRIVATE_INVITE_MESSAGE =
             "You have been personally invited to join the waiting list for a private event. Open the event to accept or decline.";
+
 
     /**
      * Sends the standard lottery-win notification (US 01.04.01).
