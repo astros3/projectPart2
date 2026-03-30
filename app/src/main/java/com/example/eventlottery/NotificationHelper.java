@@ -18,7 +18,6 @@ import java.util.Map;
 
 public class NotificationHelper {
 
-    public static final String TYPE_PRIVATE_INVITE = "PRIVATE_INVITE";
 
     /**
      * Notification type for when an entrant wins the lottery (US 01.04.01).
