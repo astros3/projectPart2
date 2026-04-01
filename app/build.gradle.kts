@@ -67,6 +67,9 @@ dependencies {
     testImplementation(libs.runner)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
+    // FragmentScenario / fragment testing utilities
+    androidTestImplementation("androidx.fragment:fragment-testing:1.8.6")
+    debugImplementation("androidx.fragment:fragment-testing:1.8.6")
 
     // Unit Testing
     testImplementation ("junit:junit:4.13.2")

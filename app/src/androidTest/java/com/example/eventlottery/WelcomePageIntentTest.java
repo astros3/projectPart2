@@ -7,9 +7,12 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import android.Manifest;
+
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
+import androidx.test.rule.GrantPermissionRule;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -27,6 +30,14 @@ public class WelcomePageIntentTest {
     @Rule
     public ActivityScenarioRule<WelcomePageActivity> rule =
             new ActivityScenarioRule<>(WelcomePageActivity.class);
+
+    /**
+     * Avoid runtime permission dialogs (which pause the activity and can cause
+     * NoActivityResumedException during Espresso actions).
+     */
+    @Rule
+    public GrantPermissionRule grantPostNotifications =
+            GrantPermissionRule.grant(Manifest.permission.POST_NOTIFICATIONS);
 
     /** US: Welcome page shows role selection. Entrant (User) and Organizer buttons are always visible. */
     @Test
