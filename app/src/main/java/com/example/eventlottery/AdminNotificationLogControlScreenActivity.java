@@ -128,6 +128,9 @@ public class AdminNotificationLogControlScreenActivity extends BaseActivity {
                                     currentnotificationrelatedeventidvalue = "IMPORTANT:NO ID FOUND";
                                 }
 
+                                String currentnotificationreceiverid = eachnotification.getString("receiverID");
+                                if (currentnotificationreceiverid == null) currentnotificationreceiverid = "";
+
                                 Long currentnotificationtimevalue = eachnotification.getLong("timestampMillis");
                                 long currentnotificationsenttime = 0;
                                 if (currentnotificationtimevalue != null) {
@@ -135,8 +138,7 @@ public class AdminNotificationLogControlScreenActivity extends BaseActivity {
                                 }
 
                                 if(currentnotificationrelatedeventidvalue.equals("IMPORTANT:NO ID FOUND")) {
-                                    AdminNotificationLogItemTemporary newitemtoadd = new AdminNotificationLogItemTemporary(currentnotificationsenttime, currentnotificationtitlevalue, currentnotificationmessagevalue, "", "UNKNOWN ORGANZIER", "UNKNOWN EVENT",currentnotificationid);
-
+                                    AdminNotificationLogItemTemporary newitemtoadd = new AdminNotificationLogItemTemporary(currentnotificationsenttime, currentnotificationtitlevalue, currentnotificationmessagevalue, "", "UNKNOWN ORGANIZER", "UNKNOWN EVENT", currentnotificationid, "");
                                     notificationloglist.add(newitemtoadd);
                                     adminnotificationlogcontrolscreenadapter.notifyDataSetChanged();
                                 }
@@ -146,6 +148,7 @@ public class AdminNotificationLogControlScreenActivity extends BaseActivity {
                                     final String currentnotificationrelatedeventidvalue1 = currentnotificationrelatedeventidvalue;
                                     final long currentnotificationsenttime1 = currentnotificationsenttime;
                                     final String currentnotificationid1 = currentnotificationid;
+                                    final String currentreceiverid1 = currentnotificationreceiverid;
 
                                     db.collection("events")
                                             .get()
@@ -156,35 +159,39 @@ public class AdminNotificationLogControlScreenActivity extends BaseActivity {
                                                         QuerySnapshot alleventinformation = task.getResult();
                                                         String currenteventorganizername1 = "UNKNOWN ORGANIZER";
                                                         String currentnotificationeventname1 = "UNKNOWN EVENT";
-                                                        //go through every event in firestore
                                                         for (QueryDocumentSnapshot eachevent : alleventinformation) {
-                                                            //extracting all information
                                                             String currenteventid = eachevent.getId();
                                                             if (currentnotificationrelatedeventidvalue1.equals(currenteventid)) {
                                                                 String currenteventorganizername = eachevent.getString("organizerName");
-
                                                                 if ((currenteventorganizername != null) && (!currenteventorganizername.trim().equals(""))) {
-                                                                    currenteventorganizername = currenteventorganizername.trim();
-                                                                    currenteventorganizername1 = currenteventorganizername;
-                                                                }
-
-                                                                else{
-                                                                    currenteventorganizername1 = "UNKNOWN ORGANIZER";
+                                                                    currenteventorganizername1 = currenteventorganizername.trim();
                                                                 }
                                                                 String currentnotificationeventname = eachevent.getString("title");
                                                                 if((currentnotificationeventname != null) && (!currentnotificationeventname.trim().equals(""))) {
                                                                     currentnotificationeventname1 = currentnotificationeventname.trim();
                                                                 }
-                                                                else{
-                                                                    currentnotificationeventname1 = "UNKNOWN EVENT";
-                                                                }
                                                                 break;
-
                                                             }
                                                         }
-                                                        AdminNotificationLogItemTemporary currentnotifciationitem = new AdminNotificationLogItemTemporary(currentnotificationsenttime1, currentnotificationtitlevalue1, currentnotificationmessagevalue1, currentnotificationrelatedeventidvalue1, currenteventorganizername1, currentnotificationeventname1, currentnotificationid1);
+                                                        AdminNotificationLogItemTemporary currentnotifciationitem = new AdminNotificationLogItemTemporary(currentnotificationsenttime1, currentnotificationtitlevalue1, currentnotificationmessagevalue1, currentnotificationrelatedeventidvalue1, currenteventorganizername1, currentnotificationeventname1, currentnotificationid1, "");
                                                         notificationloglist.add(currentnotifciationitem);
                                                         adminnotificationlogcontrolscreenadapter.notifyDataSetChanged();
+
+                                                        // Look up receiver name async
+                                                        if (!currentreceiverid1.isEmpty()) {
+                                                            final AdminNotificationLogItemTemporary itemRef = currentnotifciationitem;
+                                                            db.collection("users").document(currentreceiverid1).get()
+                                                                    .addOnSuccessListener(userDoc -> {
+                                                                        if (userDoc.exists()) {
+                                                                            String name = userDoc.getString("fullName");
+                                                                            if (name == null || name.trim().isEmpty()) name = userDoc.getString("name");
+                                                                            if (name != null && !name.trim().isEmpty()) {
+                                                                                itemRef.setReceiverName(name.trim());
+                                                                                adminnotificationlogcontrolscreenadapter.notifyDataSetChanged();
+                                                                            }
+                                                                        }
+                                                                    });
+                                                        }
                                                     } else {
                                                         Log.d("AdminNotificationControl", "Error getting documents: ", task.getException());
                                                     }

@@ -156,7 +156,7 @@ public class LotteryDraw extends Fragment {
                                                 entry.getDeviceId(),
                                                 NotificationHelper.TYPE_LOTTERY_LOST,
                                                 "Lottery result",
-                                                "Unfortunately, you were not selected in this draw. You may still get a chance if someone declines their invitation.",
+                                                "Thank you for joining! You weren't selected this time, but don't give up — a spot could open up if someone declines their invitation. Keep your eyes open! ⭐️",
                                                 eventId
                                         );
                                     }

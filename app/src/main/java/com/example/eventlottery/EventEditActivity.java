@@ -61,7 +61,7 @@ public class EventEditActivity extends BaseActivity {
     private String organizerName;
 
     private TextInputEditText inputName, inputDescription, inputLocation,
-            inputRegStart, inputRegEnd, inputLimit, inputSelectionCriteria;
+            inputRegStart, inputRegEnd, inputEventDate, inputLimit, inputSelectionCriteria;
     private TextInputLayout inputLayoutLocation;
     private Spinner spinnerEventType;
     private MaterialSwitch switchGeolocation;
@@ -82,6 +82,7 @@ public class EventEditActivity extends BaseActivity {
 
     private long registrationStartMillis = 0;
     private long registrationEndMillis = 0;
+    private long eventDateMillis = 0;
 
     /** True while this activity holds the Firestore edit lock on the current event. */
     private boolean editLockHeld = false;
@@ -119,6 +120,7 @@ public class EventEditActivity extends BaseActivity {
         inputLocation          = findViewById(R.id.input_event_location);
         inputRegStart          = findViewById(R.id.input_registration_start);
         inputRegEnd            = findViewById(R.id.input_registration_end);
+        inputEventDate         = findViewById(R.id.input_event_date);
         inputLimit             = findViewById(R.id.input_waiting_list_limit);
         inputSelectionCriteria = findViewById(R.id.input_selection_criteria);
         spinnerEventType       = findViewById(R.id.spinner_event_type);
@@ -226,12 +228,53 @@ public class EventEditActivity extends BaseActivity {
         findViewById(R.id.btn_calendar_start).setOnClickListener(v -> showDatePicker(true));
         inputRegEnd.setOnClickListener(v -> showDatePicker(false));
         findViewById(R.id.btn_calendar_end).setOnClickListener(v -> showDatePicker(false));
+        inputEventDate.setOnClickListener(v -> showEventDatePicker());
+        findViewById(R.id.btn_calendar_event_date).setOnClickListener(v -> showEventDatePicker());
+    }
+
+    private void showEventDatePicker() {
+        if (registrationEndMillis <= 0) {
+            Toast.makeText(this, "Please select a Registration End date first", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        // Event Date must be strictly after Registration End
+        long minDate = registrationEndMillis + 86_400_000L;
+        Calendar cal = Calendar.getInstance();
+        cal.setTimeInMillis(eventDateMillis > minDate ? eventDateMillis : minDate);
+        DatePickerDialog dialog = new DatePickerDialog(this,
+                (view, year, month, dayOfMonth) -> {
+                    cal.set(year, month, dayOfMonth, 0, 0, 0);
+                    cal.set(Calendar.MILLISECOND, 0);
+                    eventDateMillis = cal.getTimeInMillis();
+                    inputEventDate.setText(String.format(Locale.getDefault(),
+                            "%04d-%02d-%02d", year, month + 1, dayOfMonth));
+                },
+                cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
+        dialog.getDatePicker().setMinDate(minDate);
+        dialog.show();
     }
 
     private void showDatePicker(boolean isStart) {
+        // For Reg End, require Reg Start to be set first
+        if (!isStart && registrationStartMillis <= 0) {
+            Toast.makeText(this, "Please select a Registration Start date first", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Determine the minimum selectable date
+        long todayStart = todayMidnightMillis();
+        long minDate = isStart
+                ? todayStart                  // Reg Start: not before today
+                : registrationStartMillis + 86_400_000L; // Reg End: day after Reg Start
+
         Calendar cal = Calendar.getInstance();
-        if (isStart && registrationStartMillis > 0) cal.setTimeInMillis(registrationStartMillis);
-        else if (!isStart && registrationEndMillis > 0) cal.setTimeInMillis(registrationEndMillis);
+        if (isStart && registrationStartMillis >= minDate) {
+            cal.setTimeInMillis(registrationStartMillis);
+        } else if (!isStart && registrationEndMillis > registrationStartMillis) {
+            cal.setTimeInMillis(registrationEndMillis);
+        } else {
+            cal.setTimeInMillis(minDate);
+        }
 
         DatePickerDialog dialog = new DatePickerDialog(this,
                 (view, year, month, dayOfMonth) -> {
@@ -242,13 +285,38 @@ public class EventEditActivity extends BaseActivity {
                     if (isStart) {
                         registrationStartMillis = cal.getTimeInMillis();
                         inputRegStart.setText(formatted);
+                        // If Reg End or Event Date are now invalid, clear them
+                        if (registrationEndMillis > 0 && registrationEndMillis <= registrationStartMillis) {
+                            registrationEndMillis = 0;
+                            inputRegEnd.setText("");
+                        }
+                        if (eventDateMillis > 0 && registrationEndMillis <= 0) {
+                            eventDateMillis = 0;
+                            inputEventDate.setText("");
+                        }
                     } else {
                         registrationEndMillis = cal.getTimeInMillis();
                         inputRegEnd.setText(formatted);
+                        // If Event Date is now before the new Reg End, clear it
+                        if (eventDateMillis > 0 && eventDateMillis < registrationEndMillis) {
+                            eventDateMillis = 0;
+                            inputEventDate.setText("");
+                        }
                     }
                 },
                 cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
+        dialog.getDatePicker().setMinDate(minDate);
         dialog.show();
+    }
+
+    /** Midnight (00:00:00.000) of today in local time, as epoch millis. */
+    private long todayMidnightMillis() {
+        Calendar today = Calendar.getInstance();
+        today.set(Calendar.HOUR_OF_DAY, 0);
+        today.set(Calendar.MINUTE, 0);
+        today.set(Calendar.SECOND, 0);
+        today.set(Calendar.MILLISECOND, 0);
+        return today.getTimeInMillis();
     }
 
     private void setupConfirmButton() {
@@ -425,8 +493,10 @@ public class EventEditActivity extends BaseActivity {
 
         registrationStartMillis = event.getRegistrationStartMillis();
         registrationEndMillis   = event.getRegistrationEndMillis();
+        eventDateMillis         = event.getEventDateMillis();
         if (registrationStartMillis > 0) inputRegStart.setText(formatDateForDisplay(registrationStartMillis));
         if (registrationEndMillis > 0) inputRegEnd.setText(formatDateForDisplay(registrationEndMillis));
+        if (eventDateMillis > 0) inputEventDate.setText(formatDateForDisplay(eventDateMillis));
 
         selectedPlaceLat = event.getLatitude();
         selectedPlaceLng = event.getLongitude();
@@ -469,8 +539,20 @@ public class EventEditActivity extends BaseActivity {
             Toast.makeText(this, R.string.fill_required_fields, Toast.LENGTH_SHORT).show();
             return;
         }
+        if (registrationStartMillis < todayMidnightMillis()) {
+            Toast.makeText(this, "Registration Start cannot be in the past", Toast.LENGTH_SHORT).show();
+            return;
+        }
         if (registrationEndMillis <= registrationStartMillis) {
             Toast.makeText(this, R.string.registration_end_after_start, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (eventDateMillis <= 0) {
+            Toast.makeText(this, "Please select an Event Date", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (eventDateMillis <= registrationEndMillis) {
+            Toast.makeText(this, "Event Date must be after Registration End date", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -522,7 +604,7 @@ public class EventEditActivity extends BaseActivity {
         event.setWaitingListLimit(limit);
         event.setRegistrationStartMillis(registrationStartMillis);
         event.setRegistrationEndMillis(registrationEndMillis);
-        event.setEventDateMillis(registrationEndMillis);
+        event.setEventDateMillis(eventDateMillis);
         event.setGeolocationRequired(switchGeolocation.isChecked());
         event.setPrivate(switchPrivateEvent.isChecked()); // US 02.01.02
         event.setSelectionCriteria(criteriaList);

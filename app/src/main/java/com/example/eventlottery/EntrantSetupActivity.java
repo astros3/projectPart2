@@ -15,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.SetOptions;
 
 public class EntrantSetupActivity extends BaseActivity {
 
@@ -78,7 +79,7 @@ public class EntrantSetupActivity extends BaseActivity {
 
         db.collection("users")
                 .document(deviceId)
-                .set(entrant)
+                .set(entrant, SetOptions.merge())
                 .addOnSuccessListener(unused -> {
                     Toast.makeText(this, "Profile saved successfully", Toast.LENGTH_SHORT).show();
                     startActivity(new Intent(this, EntrantMainScreenActivity.class));

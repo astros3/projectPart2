@@ -2,7 +2,7 @@ package com.example.eventlottery;
 
 /**
  * First-time organizer registration: firstName, lastName, email, phone. Writes Organizer
- * to organizers/{deviceId}, then starts MainActivity. Note: no "role" field stored.
+ * to organizers/{deviceId}, then starts MainActivity. Uses merge so fields like FCM token persist.
  */
 import android.content.Intent;
 import android.os.Bundle;
@@ -14,6 +14,7 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.SetOptions;
 
 public class OrganizerSetupActivity extends BaseActivity {
 
@@ -76,7 +77,7 @@ public class OrganizerSetupActivity extends BaseActivity {
 
         db.collection(COLLECTION_ORGANIZERS)
                 .document(deviceId)
-                .set(organizer)
+                .set(organizer, SetOptions.merge())
                 .addOnSuccessListener(unused -> {
                     Toast.makeText(this, "Organizer profile saved successfully", Toast.LENGTH_SHORT).show();
                     startActivity(new Intent(this, MainActivity.class));
