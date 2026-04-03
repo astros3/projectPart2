@@ -15,12 +15,13 @@ public class WaitingListEntryTest {
     /** Status strings are stored in Firestore and compared in app; enum names must stay stable. */
     @Test
     public void statusEnum_hasExpectedValues() {
-        assertEquals("WAITING", WaitingListEntry.Status.WAITING.name());
-        assertEquals("PENDING", WaitingListEntry.Status.PENDING.name());
-        assertEquals("SELECTED", WaitingListEntry.Status.SELECTED.name());
-        assertEquals("ACCEPTED", WaitingListEntry.Status.ACCEPTED.name());
-        assertEquals("DECLINED", WaitingListEntry.Status.DECLINED.name());
+        assertEquals("WAITING",   WaitingListEntry.Status.WAITING.name());
+        assertEquals("PENDING",   WaitingListEntry.Status.PENDING.name());
+        assertEquals("SELECTED",  WaitingListEntry.Status.SELECTED.name());
+        assertEquals("ACCEPTED",  WaitingListEntry.Status.ACCEPTED.name());
+        assertEquals("DECLINED",  WaitingListEntry.Status.DECLINED.name());
         assertEquals("CANCELLED", WaitingListEntry.Status.CANCELLED.name());
+        assertEquals("INVITED",   WaitingListEntry.Status.INVITED.name()); // US 01.05.06
     }
 
     /** Firestore loads with no-arg constructor then setters; all fields must be settable. */

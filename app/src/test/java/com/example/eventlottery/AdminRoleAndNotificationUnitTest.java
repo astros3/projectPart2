@@ -40,4 +40,9 @@ public class AdminRoleAndNotificationUnitTest {
         Organizer organizer = new Organizer();
         assertEquals("organizer", organizer.getRole());
     }
+
+    @Test
+    public void privateInviteNotificationType_constantIsStable() {
+        assertEquals("PRIVATE_INVITE", NotificationHelper.TYPE_PRIVATE_INVITE);
+    }
 }
