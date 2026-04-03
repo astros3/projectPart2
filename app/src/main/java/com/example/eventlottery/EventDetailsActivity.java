@@ -10,7 +10,7 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.util.Log;
 import android.view.View;
-import android.widget.ArrayAdapter;
+import androidx.appcompat.app.AlertDialog;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -90,9 +90,11 @@ public class EventDetailsActivity extends BaseActivity {
     private boolean organizermode = false;
     /** True when the current user is a co-organizer for this event. */
     private boolean isCoOrganizer = false;
+    /** Device ID of the event's creator; used to label organizer comments for entrants. */
+    private String organizerDeviceId = "";
     private final ArrayList<String> comments = new ArrayList<>();
     private final ArrayList<String> commentIds = new ArrayList<>();
-    private ArrayAdapter<String> commentsAdapter;
+    private CommentAdapter commentsAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -159,9 +161,7 @@ public class EventDetailsActivity extends BaseActivity {
         joinLeaveButton = findViewById(R.id.btn_join_leave);
         joinLeaveButton.setOnClickListener(v -> onJoinLeaveClicked());
 
-        commentsAdapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_list_item_1, comments);
-        commentsListView.setAdapter(commentsAdapter);
+        // Adapter is built in buildCommentsAdapter() after organizermode is determined.
 
         invitationButtonsContainer = findViewById(R.id.invitation_buttons_container);
         invitationCountdownView    = findViewById(R.id.text_invitation_countdown);
@@ -175,24 +175,7 @@ public class EventDetailsActivity extends BaseActivity {
         inviteEntrantsButton = findViewById(R.id.btn_invite_entrants);
         coOrganizerBanner = findViewById(R.id.banner_co_organizer);
 
-        commentsListView.setOnItemClickListener((parent, view, position, id) -> {
-            if (organizermode) {
-                String selectedCommentId = commentIds.get(position);
-                new androidx.fragment.app.DialogFragment() {
-                    @Override
-                    public android.app.Dialog onCreateDialog(Bundle savedInstanceState) {
-                        androidx.appcompat.app.AlertDialog.Builder builder =
-                                new androidx.appcompat.app.AlertDialog.Builder(getActivity());
-                        builder.setMessage("Do you want to delete this comment?(No Reverse)")
-                                .setPositiveButton("Yes", (dialog, id) ->
-                                        organizerdeleteComment(selectedCommentId))
-                                .setNegativeButton("No", (dialog, id) ->
-                                        dialog.dismiss());
-                        return builder.create();
-                    }
-                }.show(getSupportFragmentManager(), "DELETE_COMMENT_DIALOG");
-            }
-        });
+        // Delete handled via the dustbin button inside CommentAdapter (organizer mode only).
     }
 
     private void loadEventAndWaitingStatus() {
@@ -216,8 +199,10 @@ public class EventDetailsActivity extends BaseActivity {
         if (event != null) {
             event.setEventId(eventDoc.getId());
             loadedEventIsPrivate = event.isPrivate();
-            // Determine co-organizer status for this device
             isCoOrganizer = event.isCoOrganizer(deviceId);
+            if (event.getOrganizerId() != null) {
+                organizerDeviceId = event.getOrganizerId();
+            }
             bindEvent(event);
         }
 
@@ -233,6 +218,7 @@ public class EventDetailsActivity extends BaseActivity {
                 getIntent().getBooleanExtra(EXTRA_VIEW_AS_ENTRANT, true);
         // Co-organizers see the organizer-style view (comments moderation, no join button)
         organizermode = !currentlyViewingAsEntrant || isCoOrganizer;
+        buildCommentsAdapter();
         loadComments();
     }
 
@@ -822,6 +808,21 @@ public class EventDetailsActivity extends BaseActivity {
                         Toast.makeText(this, "Failed to leave", Toast.LENGTH_SHORT).show());
     }
 
+    /** (Re-)builds the comment adapter with the current organizer mode and attaches it. */
+    private void buildCommentsAdapter() {
+        commentsAdapter = new CommentAdapter(this, comments, organizermode, position -> {
+            if (position < 0 || position >= commentIds.size()) return;
+            String commentId = commentIds.get(position);
+            new AlertDialog.Builder(this)
+                    .setTitle("Delete Comment")
+                    .setMessage("Delete this comment? This cannot be undone.")
+                    .setPositiveButton("Delete", (dialog, which) -> organizerdeleteComment(commentId))
+                    .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
+                    .show();
+        });
+        commentsListView.setAdapter(commentsAdapter);
+    }
+
     //fetches and shows comments
     private void loadComments() {
         if (eventId == null || eventId.isEmpty()) return;
@@ -839,7 +840,10 @@ public class EventDetailsActivity extends BaseActivity {
                     for (DocumentSnapshot doc : querySnapshot.getDocuments()) {
                         String text = doc.getString("text");
                         if (text != null) {
-                            comments.add(text);
+                            String commenter = doc.getString("deviceId");
+                            boolean byOrganizer = !organizerDeviceId.isEmpty()
+                                    && organizerDeviceId.equals(commenter);
+                            comments.add(byOrganizer ? text + " (Organizer)" : text);
                             commentIds.add(doc.getId());
                         }
                     }

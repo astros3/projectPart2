@@ -17,6 +17,7 @@ public class AdminNotificationLogItemTemporary {
     private String notificationsendername;
     private String notificationrelatedeventname;
     private String notificationid;
+    private String notificationreceivername;
 
     /**
      * constructor
@@ -29,15 +30,19 @@ public class AdminNotificationLogItemTemporary {
      * @param notificationrelatedeventnameinput name of the related event
      * @param notificationidinput id of the notification
      */
-    public AdminNotificationLogItemTemporary(long notificationsenttimeinput,String notificationtitleinput,String notificationmessageinput, String notificationrelatedeventidinput, String notificationsendernameinput, String notificationrelatedeventnameinput,String notificationidinput) {
+    public AdminNotificationLogItemTemporary(long notificationsenttimeinput, String notificationtitleinput, String notificationmessageinput, String notificationrelatedeventidinput, String notificationsendernameinput, String notificationrelatedeventnameinput, String notificationidinput) {
+        this(notificationsenttimeinput, notificationtitleinput, notificationmessageinput, notificationrelatedeventidinput, notificationsendernameinput, notificationrelatedeventnameinput, notificationidinput, "");
+    }
+
+    public AdminNotificationLogItemTemporary(long notificationsenttimeinput, String notificationtitleinput, String notificationmessageinput, String notificationrelatedeventidinput, String notificationsendernameinput, String notificationrelatedeventnameinput, String notificationidinput, String notificationreceivernameinput) {
         this.notificationsenttime = notificationsenttimeinput;
         this.notificationtitle = notificationtitleinput;
         this.notificationmessage = notificationmessageinput;
         this.notificationrelatedeventid = notificationrelatedeventidinput;
         this.notificationid = notificationidinput;
         this.notificationsendername = notificationsendernameinput;
-        this.notificationrelatedeventname = notificationrelatedeventnameinput
-        ;
+        this.notificationrelatedeventname = notificationrelatedeventnameinput;
+        this.notificationreceivername = notificationreceivernameinput != null ? notificationreceivernameinput : "";
     }
 
     /**
@@ -91,6 +96,21 @@ public class AdminNotificationLogItemTemporary {
      */
     public String getNotificationID(){
         return this.notificationid;
+    }
+
+    /**
+     * getter
+     * @return the receiver (entrant) name
+     */
+    public String getReceiverName(){
+        return this.notificationreceivername;
+    }
+
+    /**
+     * setter for receiver name (resolved async after construction)
+     */
+    public void setReceiverName(String name){
+        this.notificationreceivername = name != null ? name : "";
     }
 
 }

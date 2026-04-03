@@ -1,9 +1,10 @@
 package com.example.eventlottery;
 
 /**
- * Launcher: role selection (Entrant / Organizer / Admin). Routes to setup or main screen
- * based on Firestore profile (users vs organizers). Issue: Organizer doc has no "role" field,
- * so existing organizers are always sent to setup.
+ * Launcher: role selection (Entrant / Organizer / Admin). Profiles live in separate
+ * Firestore collections ({@code users}, {@code organizers}, {@code admins}) keyed by device ID.
+ * An admin device may hold at most one profile per role; each profile is edited in its own flow
+ * (no syncing of name or other fields from admin into entrant/organizer).
  */
 import android.Manifest;
 import android.content.Intent;
@@ -54,16 +55,12 @@ public class WelcomePageActivity extends BaseActivity {
         // Admin button visible only to users who have an entry in Firestore "admins" collection
         String deviceId = DeviceIdManager.getDeviceId(this);
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        // Initial Admin Check & Auto-Enrollment (US 03.09.01)
+        // Admin button only if admins/{deviceId} exists; optional role-only fix for legacy docs
         db.collection("admins").document(deviceId).get()
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
                         adminbutton.setVisibility(View.VISIBLE);
-
-                        // Admin found! Mirror their ID to other collections so they gain full access
-                        String adminName = documentSnapshot.getString("name");
-                        if (adminName == null) adminName = "Admin User";
-                        enrollAdminInAllRoles(db, deviceId, adminName);
+                        ensureCorrectRoleOnExistingProfiles(db, deviceId);
                     } else {
                         adminbutton.setVisibility(View.GONE);
                     }
@@ -159,34 +156,46 @@ public class WelcomePageActivity extends BaseActivity {
         }
     }
 
-    /** Fetches the FCM token and stores it on the user's Firestore document. */
+    /** Fetches the FCM token and stores it on any profile documents that exist for this device. */
     private void registerFcmToken() {
         String deviceId = DeviceIdManager.getDeviceId(this);
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         FirebaseMessaging.getInstance().getToken().addOnSuccessListener(token -> {
             Map<String, Object> update = new HashMap<>();
             update.put("fcmToken", token);
-            db.collection("users").document(deviceId).update(update);
-            db.collection("organizers").document(deviceId).update(update);
+            for (String collection : new String[] { "users", "organizers", "admins" }) {
+                db.collection(collection).document(deviceId).update(update)
+                        .addOnFailureListener(e -> { /* no doc for this role yet */ });
+            }
         });
     }
-  
+
     /**
-     * US 03.09.01: Ensures Admin ID is present in all role collections.
-     * Uses merge() so we don't overwrite existing user/organizer data.
+     * If entrant/organizer documents already exist (e.g. legacy missing {@code role}),
+     * merge only {@code role} so welcome routing works. Does not create stubs or copy admin fields.
      */
-    private void enrollAdminInAllRoles(FirebaseFirestore db, String deviceId, String name) {
-        Map<String, Object> data = new HashMap<>();
-        data.put("name", name);
-
-        // Ensure "role" field matches what your buttons expect
-        Map<String, Object> userData = new HashMap<>(data);
-        userData.put("role", "entrant");
-
-        Map<String, Object> orgData = new HashMap<>(data);
-        orgData.put("role", "organizer");
-
-        db.collection("users").document(deviceId).set(userData, SetOptions.merge());
-        db.collection("organizers").document(deviceId).set(orgData, SetOptions.merge());
+    private void ensureCorrectRoleOnExistingProfiles(FirebaseFirestore db, String deviceId) {
+        db.collection("users").document(deviceId).get().addOnSuccessListener(usersDoc -> {
+            if (!usersDoc.exists()) {
+                return;
+            }
+            String r = usersDoc.getString("role");
+            if (r == null || !"entrant".equals(r)) {
+                Map<String, Object> patch = new HashMap<>();
+                patch.put("role", "entrant");
+                db.collection("users").document(deviceId).set(patch, SetOptions.merge());
+            }
+        });
+        db.collection("organizers").document(deviceId).get().addOnSuccessListener(orgDoc -> {
+            if (!orgDoc.exists()) {
+                return;
+            }
+            String r = orgDoc.getString("role");
+            if (r == null || !"organizer".equals(r)) {
+                Map<String, Object> patch = new HashMap<>();
+                patch.put("role", "organizer");
+                db.collection("organizers").document(deviceId).set(patch, SetOptions.merge());
+            }
+        });
     }
 }

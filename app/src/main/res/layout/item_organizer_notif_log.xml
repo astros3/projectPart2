@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/button_background"
+    android:elevation="1dp"
+    android:orientation="vertical"
+    android:padding="14dp">
+
+    <!-- Notification title -->
+    <TextView
+        android:id="@+id/text_log_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#000000"
+        android:textSize="15sp"
+        android:textStyle="bold" />
+
+    <!-- Notification message (trimmed to 2 lines) -->
+    <TextView
+        android:id="@+id/text_log_message"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:ellipsize="end"
+        android:maxLines="2"
+        android:textColor="#424242"
+        android:textSize="13sp" />
+
+    <!-- Sent to: entrant name (or device ID fallback) -->
+    <TextView
+        android:id="@+id/text_log_recipient"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:textColor="#1565C0"
+        android:textSize="12sp" />
+
+    <!-- Date and time sent -->
+    <TextView
+        android:id="@+id/text_log_time"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:textColor="#757575"
+        android:textSize="11sp" />
+
+</LinearLayout>

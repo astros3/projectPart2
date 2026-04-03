@@ -140,6 +140,15 @@ public class OrganizerNavigationFragment extends Fragment {
                 NavHostFragment.findNavController(OrganizerNavigationFragment.this)
                         .navigate(R.id.OrganizerNavigationFragment_to_Final_list)
         );
+
+        view.findViewById(R.id.buttonNotification).setOnClickListener(v -> {
+            String notifEventId = EventEditActivity.getCurrentEventId(requireContext());
+            if (notifEventId == null || notifEventId.isEmpty()) {
+                Toast.makeText(requireContext(), "No event selected", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            startActivity(OrganizerNotificationLogActivity.newIntent(requireContext(), notifEventId));
+        });
         view.findViewById(R.id.buttonCancelled).setOnClickListener(v ->
                 NavHostFragment.findNavController(OrganizerNavigationFragment.this)
                         .navigate(R.id.OrganizerNavigationFragment_to_Cancelled_list)

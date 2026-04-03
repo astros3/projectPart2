@@ -79,69 +79,34 @@ public class AdminNotificationLogControlScreenAdapter extends ArrayAdapter<Admin
         TextView notificationtitleinput = view.findViewById(R.id.notification_title_input);
         TextView relatedeventnameandeventidinput = view.findViewById(R.id.notification_related_event_name_and_event_id);
         TextView organizeroradmininput = view.findViewById(R.id.organizerOrAdmininput);
+        TextView recipientinput = view.findViewById(R.id.notification_recipient_name);
         TextView timeinput = view.findViewById(R.id.time);
         TextView notificationmessageinput = view.findViewById(R.id.notificationmessage);
 
         ImageView deletebutton = view.findViewById(R.id.admin_event_control_delete_button);
 
+        // Notification title
+        String title = currentnotification.getTitle();
+        notificationtitleinput.setText((title != null && !title.isEmpty()) ? title : "UNKNOWN TITLE");
 
-        //get required values using getter
-        String notificationtitletobedisplayed = currentnotification.getTitle();
-        String eventnametobedisplayed = currentnotification.getEventname();
+        // Event name only (no ID)
+        String eventname = currentnotification.getEventname();
+        relatedeventnameandeventidinput.setText("Event: " + ((eventname != null && !eventname.isEmpty()) ? eventname : "UNKNOWN EVENT"));
+
+        // Organizer (sender) name
+        String sendername = currentnotification.getSendername();
+        organizeroradmininput.setText("Organizer: " + ((sendername != null && !sendername.isEmpty()) ? sendername : "UNKNOWN ORGANIZER"));
+
+        // Entrant (recipient) name
+        String receivername = currentnotification.getReceiverName();
+        recipientinput.setText("Sent to: " + ((receivername != null && !receivername.isEmpty()) ? receivername : "Loading..."));
+
+        // Message
         String notificationmessage = currentnotification.getMessage();
-        String eventiddisplayed = currentnotification.getEventid();
-        String sendernamettobedisplayed = currentnotification.getSendername();
+        notificationmessageinput.setText((notificationmessage != null && !notificationmessage.isEmpty()) ? notificationmessage : "NO MESSAGE GIVEN");
 
-        long timetobedisplayed = currentnotification.getTime();
-
-        //displaying the value
-        if(!(notificationtitletobedisplayed == null)&&!(notificationtitletobedisplayed.equals(""))){
-            notificationtitleinput.setText(notificationtitletobedisplayed);
-        }
-        else{
-            notificationtitleinput.setText("UNKNOWN NOTIFCATION TITLE");
-        }
-
-        String eventname = "";
-        if(!(eventnametobedisplayed == null)&&!(eventnametobedisplayed.equals(""))){
-            eventname = eventnametobedisplayed;
-        }
-        else{
-            eventname ="UNKNOWN EVENT NAME";
-        }
-
-        String eventid = "";
-        if(!(eventiddisplayed == null)&&!(eventiddisplayed.equals(""))){
-            eventid = eventiddisplayed;
-        }
-        else{
-            eventid ="UNKNOWN EVENT ID";
-        }
-
-
-        String eventnameandid = eventname + ": " + eventid;
-
-
-        relatedeventnameandeventidinput.setText(eventnameandid);
-
-        if(!(sendernamettobedisplayed == null)&&!(sendernamettobedisplayed.equals(""))){
-            organizeroradmininput.setText(sendernamettobedisplayed);
-        }
-        else{
-            organizeroradmininput.setText("UNKNOWN ORGANIZER");
-        }
-
-        if(!(notificationmessage == null)&&!(notificationmessage.equals(""))) {
-            notificationmessageinput.setText(notificationmessage);
-        }
-        else{
-            notificationmessageinput.setText("NO MESSAGE GIVEN");
-        }
-
-        //reference entrant main screen activity
         SimpleDateFormat format1 = new SimpleDateFormat("MMM dd, yyyy · hh:mm a", Locale.CANADA);
-        String date = format1.format(timetobedisplayed);
-        timeinput.setText(date);
+        timeinput.setText(format1.format(new Date(currentnotification.getTime())));
 
 
 

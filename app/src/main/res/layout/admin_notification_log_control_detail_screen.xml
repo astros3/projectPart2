@@ -49,29 +49,32 @@
             android:textSize="18sp"
             android:textStyle="bold" />
 
-        <!--
-            event name and event id
-        -->
+        <!-- Event name only -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
             android:id="@+id/notification_related_event_name_and_event_id"
-            android:text="Event Name: Event ID"
-            android:textSize="12sp"
-            />
-        <!--
-            Admin/Organizer
-        -->
+            android:text="Event Name"
+            android:textSize="12sp" />
+
+        <!-- Organizer (sender) -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
             android:id="@+id/organizerOrAdmininput"
-            android:text="Organizer Name"
-            android:textSize="12sp"
+            android:text="Organizer: Name"
+            android:textSize="12sp" />
 
-            />
+        <!-- Entrant (recipient) -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:id="@+id/notification_recipient_name"
+            android:text="Sent to: Name"
+            android:textSize="12sp" />
 
         <!--
             time

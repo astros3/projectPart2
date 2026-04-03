@@ -272,6 +272,53 @@
                     app:tint="@color/black" />
             </LinearLayout>
 
+            <!-- Event Date (must be on or after Registration End) -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Event Date"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:textColor="#4A5260" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="Must be on or after the Registration End date"
+                android:textSize="11sp"
+                android:textColor="#616161" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    app:boxStrokeColor="@color/black">
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/input_event_date"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:focusable="false"
+                        android:clickable="true"
+                        android:hint="@string/date_hint"
+                        android:inputType="none" />
+                </com.google.android.material.textfield.TextInputLayout>
+                <ImageButton
+                    android:id="@+id/btn_calendar_event_date"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@android:drawable/ic_menu_my_calendar"
+                    android:contentDescription="Select event date"
+                    app:tint="@color/black" />
+            </LinearLayout>
+
             <!-- Geolocation Requirement -->
             <LinearLayout
                 android:layout_width="match_parent"
