@@ -5,6 +5,7 @@ package com.example.eventlottery;
  * Uses EventEditActivity.getCurrentEventId() for the selected event.
  * For private events: shows "Invite Entrants" instead of "View QR Code" (US 02.01.02, 02.01.03).
  */
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -29,6 +30,9 @@ public class OrganizerNavigationFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         String deviceId = DeviceIdManager.getDeviceId(requireContext());
+        // App-wide prefs: use application context so FragmentScenario / non-standard hosts still
+        // see the same organizer current-event id as EventEditActivity.
+        final Context appCtx = requireContext().getApplicationContext();
 
         view.findViewById(R.id.btn_back).setOnClickListener(v -> {
             androidx.navigation.NavController nav = NavHostFragment.findNavController(OrganizerNavigationFragment.this);
@@ -37,13 +41,13 @@ public class OrganizerNavigationFragment extends Fragment {
 
         // Update Event Information (US 02.01.01, 02.01.04)
         view.findViewById(R.id.buttonUpdate).setOnClickListener(v -> {
-            String eventId = EventEditActivity.getCurrentEventId(requireContext());
+            String eventId = EventEditActivity.getCurrentEventId(appCtx);
             startActivity(EventEditActivity.newIntent(requireContext(), eventId));
         });
 
         // View event comments and post new ones as organizer
         view.findViewById(R.id.buttonComments).setOnClickListener(v -> {
-            String eventId = EventEditActivity.getCurrentEventId(requireContext());
+            String eventId = EventEditActivity.getCurrentEventId(appCtx);
             if (eventId == null || eventId.isEmpty()) {
                 Toast.makeText(requireContext(), "No event selected", Toast.LENGTH_SHORT).show();
                 return;
@@ -60,7 +64,7 @@ public class OrganizerNavigationFragment extends Fragment {
 
         // Manage Co-Organizers — only shown to the primary organizer
         buttonManageCoOrganizers.setOnClickListener(v -> {
-            String eventId = EventEditActivity.getCurrentEventId(requireContext());
+            String eventId = EventEditActivity.getCurrentEventId(appCtx);
             if (eventId == null || eventId.isEmpty()) {
                 Toast.makeText(requireContext(), "No event selected", Toast.LENGTH_SHORT).show();
                 return;
@@ -70,7 +74,7 @@ public class OrganizerNavigationFragment extends Fragment {
 
         // View QR Code (US 02.01.01) — hidden for private events
         buttonQR.setOnClickListener(v -> {
-            String eventId = EventEditActivity.getCurrentEventId(requireContext());
+            String eventId = EventEditActivity.getCurrentEventId(appCtx);
             if (eventId == null || eventId.isEmpty()) {
                 Toast.makeText(requireContext(), "Create an event first", Toast.LENGTH_SHORT).show();
                 return;
@@ -80,7 +84,7 @@ public class OrganizerNavigationFragment extends Fragment {
 
         // Invite Entrants (US 02.01.03) — private events only
         buttonInviteEntrants.setOnClickListener(v -> {
-            String eventId = EventEditActivity.getCurrentEventId(requireContext());
+            String eventId = EventEditActivity.getCurrentEventId(appCtx);
             if (eventId == null || eventId.isEmpty()) {
                 Toast.makeText(requireContext(), "No event selected", Toast.LENGTH_SHORT).show();
                 return;
@@ -89,13 +93,22 @@ public class OrganizerNavigationFragment extends Fragment {
         });
 
         // Load event to show/hide QR vs Invite button, and show Manage Co-Organizers for primary organizer only
-        String eventId = EventEditActivity.getCurrentEventId(requireContext());
+        String eventId = EventEditActivity.getCurrentEventId(appCtx);
         if (eventId != null && !eventId.isEmpty()) {
             FirebaseFirestore.getInstance().collection("events").document(eventId).get()
                     .addOnSuccessListener(doc -> {
                         if (doc == null || !doc.exists()) return;
                         Event event = doc.toObject(Event.class);
                         if (event == null) return;
+                        event.setEventId(doc.getId());
+                        // Align with EventFirestoreParser: some POJO mappings miss boolean isPrivate.
+                        Boolean priv = doc.getBoolean("isPrivate");
+                        if (priv == null) {
+                            priv = doc.getBoolean("private");
+                        }
+                        if (priv != null) {
+                            event.setPrivate(priv);
+                        }
                         if (event.isPrivate()) {
                             buttonQR.setVisibility(View.GONE);
                             buttonInviteEntrants.setVisibility(View.VISIBLE);
@@ -142,7 +155,7 @@ public class OrganizerNavigationFragment extends Fragment {
         );
 
         view.findViewById(R.id.buttonNotification).setOnClickListener(v -> {
-            String notifEventId = EventEditActivity.getCurrentEventId(requireContext());
+            String notifEventId = EventEditActivity.getCurrentEventId(appCtx);
             if (notifEventId == null || notifEventId.isEmpty()) {
                 Toast.makeText(requireContext(), "No event selected", Toast.LENGTH_SHORT).show();
                 return;

@@ -39,8 +39,6 @@ import java.util.Map;
  * - Keyword search
  * - Availability (registration open) filtering
  * - Keyword + filtering combined
- *
- * Note: "Capacity filtering" is not implemented in EventFilterCriteria/EventFilterUtils yet.
  */
 @RunWith(AndroidJUnit4.class)
 public class EntrantEventSearchAndFilterIntentTest {

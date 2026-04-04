@@ -7,12 +7,15 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.SystemClock;
 
 import androidx.fragment.app.FragmentFactory;
 import androidx.fragment.app.testing.FragmentScenario;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -29,6 +32,9 @@ import java.util.Map;
 @RunWith(AndroidJUnit4.class)
 public class OrganizerReplacementDrawFlowTest {
 
+    private static final String ORG_PREFS_NAME = "EventLotteryPrefs";
+    private static final String KEY_ORG_CURRENT_EVENT_ID = "organizer_current_event_id";
+
     private FirebaseFirestore db;
     private Context appContext;
 
@@ -41,8 +47,8 @@ public class OrganizerReplacementDrawFlowTest {
         appContext = ApplicationProvider.getApplicationContext();
         db = FirebaseFirestore.getInstance();
 
-        // Set current event id so CancelledListFragment knows which event to use
-        EventEditActivity.setCurrentEventId(appContext, EVENT_ID);
+        // Persist current event id synchronously so the fragment reads it before loadRedraw runs.
+        setOrganizerCurrentEventIdSync(EVENT_ID);
 
         // Minimal event doc (so event exists; fragment mainly uses waitingList)
         Map<String, Object> event = new HashMap<>();
@@ -88,6 +94,8 @@ public class OrganizerReplacementDrawFlowTest {
         Tasks.await(db.collection("users").document(PENDING_ID).delete());
 
         Tasks.await(db.collection("events").document(EVENT_ID).delete());
+
+        setOrganizerCurrentEventIdSync(null);
     }
 
     @Test
@@ -103,6 +111,10 @@ public class OrganizerReplacementDrawFlowTest {
         // Ensure UI is present
         onView(withId(R.id.listCancelledEntrants)).check(matches(isDisplayed()));
         onView(withId(R.id.buttonRedrawReplacement)).check(matches(isDisplayed()));
+
+        // loadCancelledEntries() is async; empty list blocks redraw with a toast.
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        SystemClock.sleep(2500);
 
         // Click redraw
         onView(withId(R.id.buttonRedrawReplacement)).perform(click());
@@ -142,5 +154,19 @@ public class OrganizerReplacementDrawFlowTest {
         DocumentSnapshot doc = Tasks.await(db.collection("events").document(EVENT_ID)
                 .collection("waitingList").document(deviceId).get());
         return doc.getString("status");
+    }
+
+    private void setOrganizerCurrentEventIdSync(String eventId) {
+        Context storageCtx = appContext.getApplicationContext();
+        SharedPreferences sp = storageCtx.getSharedPreferences(ORG_PREFS_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor ed = sp.edit();
+        if (eventId == null || eventId.isEmpty()) {
+            ed.remove(KEY_ORG_CURRENT_EVENT_ID);
+        } else {
+            ed.putString(KEY_ORG_CURRENT_EVENT_ID, eventId);
+        }
+        if (!ed.commit()) {
+            throw new IllegalStateException("SharedPreferences commit failed");
+        }
     }
 }

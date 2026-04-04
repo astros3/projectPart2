@@ -31,7 +31,6 @@ import java.util.Map;
 
 /**
  * UI test for: Organizer can see on a map where an entrant joined from.
- *
  * This verifies GeolocationFragment renders with an entrant deviceId and
  * displays the header + map container + address text.
  */
