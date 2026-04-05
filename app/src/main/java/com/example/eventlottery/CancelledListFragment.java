@@ -61,6 +61,8 @@ public class CancelledListFragment extends Fragment {
                     CancelledListFragment.this::loadCancelledEntries);
         });
 
+        view.findViewById(R.id.buttonNotifyCancelled).setOnClickListener(v -> notifyCancelledEntrants());
+
         loadCancelledEntries();
     }
 
@@ -138,5 +140,53 @@ public class CancelledListFragment extends Fragment {
                         }
                     });
         }
+    }
+
+    /**
+     * Notify cancelled/declined entrants with a rejoin message
+     */
+    private void notifyCancelledEntrants() {
+        if (eventId == null || eventId.isEmpty()) {
+            Toast.makeText(getContext(), "No current event selected", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        db.collection("events")
+                .document(eventId)
+                .collection("waitingList")
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    int sent = 0;
+                    for (DocumentSnapshot doc : querySnapshot.getDocuments()) {
+                        WaitingListEntry entry = doc.toObject(WaitingListEntry.class);
+                        if (entry == null) {
+                            continue;
+                        }
+                        String st = entry.getStatus();
+                        if (!WaitingListEntry.Status.CANCELLED.name().equals(st)
+                                && !WaitingListEntry.Status.DECLINED.name().equals(st)) {
+                            continue;
+                        }
+                        String deviceId = entry.getDeviceId();
+                        if (deviceId == null || deviceId.isEmpty()) {
+                            deviceId = doc.getId();
+                        }
+                        if (deviceId == null || deviceId.isEmpty()) {
+                            continue;
+                        }
+                        NotificationHelper.sendCancelledEntrantRejoinNotification(
+                                db, requireContext(), deviceId, eventId);
+                        sent++;
+                    }
+                    if (sent == 0) {
+                        Toast.makeText(getContext(), R.string.notify_chosen_entrants_none, Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(getContext(),
+                                getString(R.string.notify_chosen_entrants_sent, sent),
+                                Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .addOnFailureListener(e ->
+                        Toast.makeText(getContext(), "Failed to load cancelled entrants", Toast.LENGTH_SHORT).show());
     }
 }

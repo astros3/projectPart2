@@ -134,7 +134,7 @@ public class WaitingListFragment extends Fragment {
         }
     }
 
-    //finds all waiting (pending) entrants and sends a notification to each of them
+    /** Notifies each PENDING waiting-list entrant with NotificationHelper.sendWaitingListUpdateNotification. */
     private void notifyWaitingEntrants() {
         if (eventId == null || eventId.isEmpty()) {
             Toast.makeText(getContext(), "No current event selected", Toast.LENGTH_SHORT).show();
@@ -164,7 +164,8 @@ public class WaitingListFragment extends Fragment {
                             continue;
                         }
 
-                        NotificationHelper.sendLotteryWinNotification(db, deviceId, eventId);
+                        NotificationHelper.sendWaitingListUpdateNotification(
+                                db, requireContext(), deviceId, eventId);
                         sent++;
                     }
 

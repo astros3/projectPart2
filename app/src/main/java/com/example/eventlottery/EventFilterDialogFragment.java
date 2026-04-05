@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Dialog to edit {@link EventFilterCriteria}; posts result on Apply/Clear.
+ * Dialog to edit EventFilterCriteria; posts result on Apply/Clear.
  */
 public class EventFilterDialogFragment extends DialogFragment {
 

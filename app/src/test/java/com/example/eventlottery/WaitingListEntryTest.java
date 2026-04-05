@@ -8,7 +8,7 @@ import static com.example.eventlottery.TestData.ENTRANT_DEVICE_ID;
 import static org.junit.Assert.*;
 
 /**
- * Unit tests for {@link WaitingListEntry} model.
+ * Unit tests for WaitingListEntry model.
  */
 public class WaitingListEntryTest {
 

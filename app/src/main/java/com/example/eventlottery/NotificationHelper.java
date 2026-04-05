@@ -12,7 +12,8 @@ import java.util.Map;
  * Notifications are stored in Firestore at users/{deviceId}/notifications.
  * Respects the entrant's notificationsEnabled flag (US 01.04.03).
  * Sends win notifications (US 01.04.01), loss notifications (US 01.04.02),
- * private event invite notifications (US 01.05.06), and co-organizer assignment.
+ * private event invite notifications (US 01.05.06), co-organizer assignment,
+ * cancelled-entrant rejoin, and waiting-list encouragement updates.
  */
 
 
@@ -38,6 +39,16 @@ public class NotificationHelper {
      * Notification type when a user is assigned as a co-organizer for an event.
      */
     public static final String TYPE_CO_ORGANIZER_ASSIGNED = "CO_ORGANIZER_ASSIGNED";
+
+    /**
+     * Organizer notified cancelled/declined entrants that they may rejoin the event.
+     */
+    public static final String TYPE_CANCELLED_ENTRANT_REJOIN = "CANCELLED_ENTRANT_REJOIN";
+
+    /**
+     * Organizer sent a kind update to entrants still pending on the waiting list (not a lottery win).
+     */
+    public static final String TYPE_WAITING_LIST_UPDATE = "WAITING_LIST_UPDATE";
 
     /**
      * Title/body for the “you won the lottery” / sign-up invitation.
@@ -106,6 +117,33 @@ public class NotificationHelper {
                                                           String title,
                                                           String message) {
         sendNotification(db, deviceId, TYPE_CO_ORGANIZER_ASSIGNED, title, message, eventId);
+    }
+
+    /**
+     * Notifies a cancelled or declined entrant that they may rejoin the event (organizer action).
+     * Title and body come from string resources notification_cancelled_rejoin_title and
+     * notification_cancelled_rejoin_message. Respects notification opt-out.
+     */
+    public static void sendCancelledEntrantRejoinNotification(FirebaseFirestore db,
+                                                              Context context,
+                                                              String deviceId,
+                                                              String eventId) {
+        String title = context.getString(R.string.notification_cancelled_rejoin_title);
+        String message = context.getString(R.string.notification_cancelled_rejoin_message);
+        sendNotification(db, deviceId, TYPE_CANCELLED_ENTRANT_REJOIN, title, message, eventId);
+    }
+
+    /**
+     * Notifies pending waiting-list entrants with an encouraging update (organizer action).
+     * Does not use the lottery-win copy — see TYPE_WAITING_LIST_UPDATE.
+     */
+    public static void sendWaitingListUpdateNotification(FirebaseFirestore db,
+                                                         Context context,
+                                                         String deviceId,
+                                                         String eventId) {
+        String title = context.getString(R.string.notification_waiting_list_title);
+        String message = context.getString(R.string.notification_waiting_list_message);
+        sendNotification(db, deviceId, TYPE_WAITING_LIST_UPDATE, title, message, eventId);
     }
 
     /**

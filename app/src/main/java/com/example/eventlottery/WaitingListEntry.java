@@ -3,8 +3,8 @@ package com.example.eventlottery;
 import com.google.firebase.Timestamp;
 
 /**
- * Model for one entrant's place on an event waiting list. Stored in Firestore at
- * {@code events/{eventId}/waitingList/{deviceId}}. Document ID is the entrant's device ID.
+ * This class models one entrant's waiting-list row in Firestore at
+ * events/{eventId}/waitingList/{deviceId}. The document id is the entrant's device id.
  */
 public class WaitingListEntry {
 
@@ -23,25 +23,83 @@ public class WaitingListEntry {
     /** When the invitation to accept/decline was sent (SELECTED / INVITED); used for 24h expiry. */
     private Long invitationSentMillis;
 
-    /** No-arg constructor for Firestore deserialization. */
-    public WaitingListEntry() {}
+    /**
+     * No-arg constructor for Firestore deserialization.
+     */
+    public WaitingListEntry() {
+    }
 
-    /** Creates entry with given status and joinTimestamp = now. */
+    /**
+     * Creates an entry with the given status and joinTimestamp set to now.
+     * @param deviceId entrant device id (document id)
+     * @param status application status enum
+     */
     public WaitingListEntry(String deviceId, Status status) {
         this.deviceId = deviceId;
         this.status = status.name();
         this.joinTimestamp = Timestamp.now();
     }
 
-    public String getDeviceId() { return deviceId; }
-    public void setDeviceId(String deviceId) { this.deviceId = deviceId; }
-    /** Status string (e.g. {@link Status#PENDING}.name()). */
-    public String getStatus() { return status; }
-    public void setStatus(String status) { this.status = status; }
-    public Timestamp getJoinTimestamp() { return joinTimestamp; }
-    public void setJoinTimestamp(Timestamp joinTimestamp) { this.joinTimestamp = joinTimestamp; }
+    /**
+     * Returns the entrant device id for this waiting-list document.
+     * @return device id, or null if unset
+     */
+    public String getDeviceId() {
+        return deviceId;
+    }
 
-    public Long getInvitationSentMillis() { return invitationSentMillis; }
+    /**
+     * Sets the entrant device id.
+     * @param deviceId device id string
+     */
+    public void setDeviceId(String deviceId) {
+        this.deviceId = deviceId;
+    }
+
+    /**
+     * Returns the status string (e.g. Status.PENDING.name()).
+     * @return status string, or null
+     */
+    public String getStatus() {
+        return status;
+    }
+
+    /**
+     * Sets the status string persisted in Firestore.
+     * @param status status name string
+     */
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    /**
+     * Returns when the entrant joined the waiting list.
+     * @return Firestore timestamp, or null
+     */
+    public Timestamp getJoinTimestamp() {
+        return joinTimestamp;
+    }
+
+    /**
+     * Sets the join timestamp.
+     * @param joinTimestamp when the entrant joined
+     */
+    public void setJoinTimestamp(Timestamp joinTimestamp) {
+        this.joinTimestamp = joinTimestamp;
+    }
+
+    /**
+     * Returns when the invitation was sent (for expiry), if set.
+     * @return epoch milliseconds, or null
+     */
+    public Long getInvitationSentMillis() {
+        return invitationSentMillis;
+    }
+
+    /**
+     * Sets when the invitation was sent.
+     * @param invitationSentMillis epoch ms, or null
+     */
     public void setInvitationSentMillis(Long invitationSentMillis) {
         this.invitationSentMillis = invitationSentMillis;
     }

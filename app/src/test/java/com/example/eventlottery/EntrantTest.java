@@ -6,7 +6,7 @@ import static com.example.eventlottery.TestData.*;
 import static org.junit.Assert.*;
 
 /**
- * Unit tests for {@link Entrant} model.
+ * Unit tests for Entrant model.
  */
 public class EntrantTest {
 

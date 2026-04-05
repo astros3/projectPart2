@@ -51,7 +51,7 @@ import java.util.concurrent.TimeUnit;
 public class CoOrganizerIntentTest {
 
     private static final String EVENT_ID = "test_event_co_organizer_intent";
-    /** Must differ from {@link DeviceIdManager} id (organizer is excluded from the user list). */
+    /** Must differ from DeviceIdManager id (organizer is excluded from the user list). */
     private static final String CO_ORG_USER_ID = "test_co_org_intent_entrant";
     private static final String CO_ORG_FULL_NAME = "CoOrgIntentUser UniqueSearchName";
 

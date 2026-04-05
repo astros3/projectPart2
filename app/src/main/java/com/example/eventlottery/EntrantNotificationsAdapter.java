@@ -17,7 +17,7 @@ import java.util.Date;
 import java.util.Locale;
 
 /**
- * List rows for {@link EntrantNotificationsActivity}.
+ * List rows for EntrantNotificationsActivity.
  */
 public class EntrantNotificationsAdapter extends ArrayAdapter<InAppNotification> {
 

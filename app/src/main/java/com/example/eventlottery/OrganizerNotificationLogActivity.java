@@ -25,7 +25,7 @@ import java.util.Locale;
 
 /**
  * Shows all notifications sent (automatically by lottery/invite, or manually) for a specific event.
- * Reads from the {@code notificationStorageAdmin} top-level collection filtered by {@code eventId}.
+ * Reads from the notificationStorageAdmin top-level collection filtered by eventId.
  * Each row shows: notification title, message, who it was sent to (entrant name + device ID),
  * and the date + time it was sent.
  */
@@ -146,7 +146,7 @@ public class OrganizerNotificationLogActivity extends BaseActivity {
     }
 
     /**
-     * For each log entry look up the entrant's name from {@code users/{receiverId}}.
+     * For each log entry look up the entrant's name from users/{receiverId}.
      * Updates the adapter as each name arrives so the list refreshes without a full reload.
      */
     private void resolveRecipientNames() {

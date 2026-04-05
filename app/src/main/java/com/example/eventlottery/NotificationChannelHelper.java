@@ -7,7 +7,7 @@ import android.os.Build;
 
 /**
  * Creates and registers the app's notification channel (required on Android 8+).
- * Call {@link #createChannel(Context)} once at app startup.
+ * Call createChannel(Context) once at app startup.
  */
 public class NotificationChannelHelper {
 
@@ -24,6 +24,9 @@ public class NotificationChannelHelper {
             );
             channel.setDescription(CHANNEL_DESC);
             channel.enableVibration(true);
+            channel.enableLights(true);
+            channel.setLockscreenVisibility(android.app.Notification.VISIBILITY_PUBLIC);
+            channel.setShowBadge(true);
             NotificationManager manager = context.getSystemService(NotificationManager.class);
             if (manager != null) {
                 manager.createNotificationChannel(channel);

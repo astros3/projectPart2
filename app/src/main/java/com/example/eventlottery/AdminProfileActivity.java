@@ -15,7 +15,7 @@ import java.util.Map;
 
 /**
  * Edit the signed-in admin's profile (firstName, lastName, email, optional phone)
- * in Firestore {@code admins/{deviceId}}. No notification toggle on this screen.
+ * in Firestore admins/{deviceId}. No notification toggle on this screen.
  */
 public class AdminProfileActivity extends AppCompatActivity {
 

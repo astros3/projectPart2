@@ -1,5 +1,6 @@
 package com.example.eventlottery;
 
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -66,8 +67,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     }
 
     /**
-     * Posts a visible OS notification.
-     * Used both from this service and from {@link NotificationHelper} when writing a Firestore doc.
+     * High-importance heads-up style alert for organizer / lottery / invite messaging.
+     * Used for FCM and for mirroring Firestore in-app notifications (EntrantNotificationBridge).
      */
     public static void postNotification(Context context, String title, String message, int id) {
         Intent intent = new Intent(context, EntrantMainScreenActivity.class);
@@ -84,7 +85,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 .setContentTitle(title)
                 .setContentText(message)
                 .setStyle(new NotificationCompat.BigTextStyle().bigText(message))
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setPriority(NotificationCompat.PRIORITY_MAX)
+                .setCategory(NotificationCompat.CATEGORY_MESSAGE)
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                .setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE | Notification.DEFAULT_LIGHTS)
                 .setAutoCancel(true)
                 .setContentIntent(pendingIntent);
 

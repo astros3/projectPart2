@@ -46,7 +46,7 @@ import java.util.concurrent.TimeUnit;
 public class OrganizerInviteEntrantIntentTest {
 
     private static final String EVENT_ID = "test_event_organizer_invite_intent";
-    /** Must differ from {@link DeviceIdManager} id (organizer is excluded from the list). */
+    /** Must differ from DeviceIdManager id (organizer is excluded from the list). */
     private static final String ENTRANT_MATCH_ID = "test_invite_intent_match_user";
     private static final String ENTRANT_OTHER_ID = "test_invite_intent_other_user";
 

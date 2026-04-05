@@ -1,11 +1,6 @@
 package com.example.eventlottery;
 
-
-import static androidx.fragment.app.FragmentManager.TAG;
-
 import android.content.Context;
-import android.content.Intent;
-import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,22 +8,17 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import android.util.Log;
+import androidx.appcompat.app.AlertDialog;
 
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
-import java.text.SimpleDateFormat;
 import java.util.Locale;
 
 
@@ -111,44 +101,24 @@ public class AdminNotificationLogControlScreenAdapter extends ArrayAdapter<Admin
 
 
 
-        //delete the profile from firestore when admin clicks delete icon
-        deletebutton.setOnClickListener(v -> {
-            String notificationidneedstobedeleted = currentnotification.getNotificationID();
-            db.collection("notificationStorageAdmin").document(notificationidneedstobedeleted)
-                    .delete()
-                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                        /**
-                         *@param aVoid
-                         *removes the notification from the list and refreshes the adapter
-                         */
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            adminnotificationlist.remove(currentnotification);
-                            notifyDataSetChanged();
-                        }
-                    })
-                    /**
-                     * this runs if delete failed
-                     * @param e prints the error in log
-                     * reference from https://firebase.google.com/docs/firestore/manage-data/delete-data#java
-                     */
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Log.w("AdminNotificationLogControlScreenAadpter", "Error deleting document", e);
-                        }
-                    });
-        });
-
-
-        ///MISSING, AWAITING FOR ORGANZIER NOTIFICATION TO BE COMPLETED
-        ///MISSING: REMOVE ALL THE NOTIFICATIONS UNDER USER DATABASE
-
-        ///MISSING: REMOVE THE NOTIFICATION UNDER ORGANIZER
-
-
-
-
+        deletebutton.setOnClickListener(v ->
+                new AlertDialog.Builder(context)
+                        .setTitle(R.string.admin_delete_notification_title)
+                        .setMessage(R.string.admin_delete_notification_message)
+                        .setPositiveButton(R.string.admin_delete_action, (dialog, which) -> {
+                            String notificationidneedstobedeleted = currentnotification.getNotificationID();
+                            db.collection("notificationStorageAdmin").document(notificationidneedstobedeleted)
+                                    .delete()
+                                    .addOnSuccessListener(aVoid -> {
+                                        adminnotificationlist.remove(currentnotification);
+                                        notifyDataSetChanged();
+                                    })
+                                    .addOnFailureListener(e ->
+                                            Log.w("AdminNotificationLogControlScreenAdapter",
+                                                    "Error deleting document", e));
+                        })
+                        .setNegativeButton(android.R.string.cancel, null)
+                        .show());
 
         return view;
     }

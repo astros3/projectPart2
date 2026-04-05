@@ -3,9 +3,6 @@ package com.example.eventlottery;
 import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
-import static androidx.test.espresso.action.ViewActions.replaceText;
-import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
@@ -13,15 +10,14 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.anything;
 
+import androidx.test.core.app.ActivityScenario;
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 
 import java.util.HashMap;
@@ -34,10 +30,13 @@ import java.util.Map;
 public class AdminNotificationLogControlScreenTest {
     private String testNotificationId;
     private String adminDeviceId;
-    @Rule
-    public ActivityScenarioRule<AdminNotificationLogControlScreenActivity> rule =new ActivityScenarioRule<>(AdminNotificationLogControlScreenActivity.class);
+    private ActivityScenario<AdminNotificationLogControlScreenActivity> scenario;
 
-    /** reference eventdetailsintenttest*/
+    /**
+     * Creates required Firestore documents BEFORE launching the activity so that
+     * the admin security check inside onCreate() succeeds and MainScreenAlgorithmn() is called.
+     * reference eventdetailsintenttest
+     */
     @Before
     public void createTest() throws Exception{
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -56,14 +55,24 @@ public class AdminNotificationLogControlScreenTest {
         notification.put("message", "123123");
         notification.put("timestampMillis", System.currentTimeMillis());
         Tasks.await(db.collection("notificationStorageAdmin").document(testNotificationId).set(notification));
+
+        // Launch the activity only after Firestore docs exist so the admin check passes
+        scenario = ActivityScenario.launch(AdminNotificationLogControlScreenActivity.class);
+        Thread.sleep(2000);
     }
 
     /** reference eventdetailsintenttest*/
     @After
     public void deletepreconditions() throws Exception{
+        if (scenario != null) {
+            scenario.close();
+        }
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         if (testNotificationId != null) {
             Tasks.await(db.collection("notificationStorageAdmin").document(testNotificationId).delete());
+        }
+        if (adminDeviceId != null) {
+            Tasks.await(db.collection("admins").document(adminDeviceId).delete());
         }
     }
 

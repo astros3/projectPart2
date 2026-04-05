@@ -22,6 +22,12 @@
     <string name="notify_chosen_entrants">Notify chosen entrants (lottery)</string>
     <string name="notify_chosen_entrants_sent">Notifications sent to %1$d chosen entrant(s)</string>
     <string name="notify_chosen_entrants_none">No chosen entrants to notify</string>
+    <string name="notify_cancelled_entrant">Notify cancelled entrant</string>
+    <string name="notify_waiting_list_entrants">Notify waiting list entrants</string>
+    <string name="notification_waiting_list_title">Waiting list update</string>
+    <string name="notification_waiting_list_message">Thank you for waiting — selections are still in progress. You may be chosen soon, and we will notify you if you are selected for this event.</string>
+    <string name="notification_cancelled_rejoin_title">Event update</string>
+    <string name="notification_cancelled_rejoin_message">You can rejoin this event again. Open the event details and join the waiting list if you would like to sign up once more.</string>
     <string name="waiting_list_decision_making">Waiting List (Decision Making)</string>
     <string name="lottery_draw">Lottery Draw</string>
     <string name="view_geolocation">View Geolocation</string>
@@ -98,6 +104,15 @@
     <string name="phone_optional">Optional</string>
     <string name="admin_profile_saved">Profile saved</string>
     <string name="admin_profile_save_failed">Failed to save profile</string>
+    <!-- Admin destructive actions: one confirmation dialog before delete -->
+    <string name="admin_delete_action">Delete</string>
+    <string name="admin_delete_event_title">Delete event</string>
+    <string name="admin_delete_event_message">Delete \"%1$s\"? This removes the event from Firestore and cannot be undone.</string>
+    <string name="admin_delete_event_message_generic">Delete this event? It will be removed from Firestore and cannot be undone.</string>
+    <string name="admin_delete_notification_title">Delete notification</string>
+    <string name="admin_delete_notification_message">Remove this notification log entry? This cannot be undone.</string>
+    <string name="admin_delete_profile_title">Delete profile</string>
+    <string name="admin_delete_profile_message">Delete the %1$s profile \"%2$s\"? This cannot be undone.</string>
 
     <!-- Entrant profile: delete account -->
     <string name="delete_my_profile">Delete my profile</string>
@@ -154,10 +169,31 @@
     <string name="no_users_found">No users found</string>
     <string name="co_organized_event_label">Co-Organizer</string>
 
-    <!-- Accessibility content descriptions -->
+    <string name="select_event_date">Select event date</string>
+
+    <!-- Accessibility: use @string references for contentDescription on all icons/images (TalkBack). -->
+    <!-- Prefer android:textSize in sp (scalable pixels) for all user-visible text in layouts. -->
     <string name="acc_delete_event">Delete event</string>
     <string name="acc_delete_notification">Delete notification</string>
     <string name="acc_search">Search</string>
     <string name="acc_view_event_details">View event details</string>
     <string name="acc_profile_photo">Profile photo</string>
+    <string name="acc_app_logo">App logo</string>
+    <string name="acc_app_icon">App icon</string>
+    <string name="acc_profile_screen_header">Profile</string>
+    <string name="acc_home_toolbar_icon">Home</string>
+    <string name="acc_nav_home">Home tab</string>
+    <string name="acc_nav_scan">Scan QR code tab</string>
+    <string name="acc_nav_map">Map tab</string>
+    <string name="acc_nav_history">History tab</string>
+    <string name="acc_nav_profile">Profile tab</string>
+    <string name="acc_entrant_sign_in">Entrant sign in</string>
+    <string name="acc_organizer_sign_in">Organizer sign in</string>
+    <string name="acc_admin_sign_in">Admin sign in</string>
+    <string name="acc_chevron_open_detail">Open details</string>
+    <string name="acc_invite_co_organizer">Invite as co-organizer</string>
+    <string name="acc_promotional_qr_code">Promotional QR code linking to this event</string>
+    <string name="acc_navigate_up">Navigate up</string>
+    <string name="acc_delete_profile_row">Delete profile</string>
+    <string name="acc_admin_browse_search">Search profiles</string>
 </resources>

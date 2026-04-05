@@ -9,9 +9,7 @@ import java.util.Collections;
 import static com.example.eventlottery.TestData.*;
 import static org.junit.Assert.*;
 
-/**
- * Unit tests for {@link Event} model.
- */
+/** Unit tests for Event model. Registration window: see EventRegistrationWindowUnitTest. */
 public class EventTest {
 
     private Event event;
@@ -61,22 +59,6 @@ public class EventTest {
         assertEquals(PRICE, event.getPrice(), 0.0);
         assertNotNull(event.getSelectionCriteria());
         assertTrue(event.getSelectionCriteria().isEmpty());
-    }
-
-    /** Registration is open when current time lies inside [start, end]; max window => always open. */
-    @Test
-    public void isRegistrationOpen_whenWindowIncludesFuture_returnsTrue() {
-        event.setRegistrationStartMillis(0);
-        event.setRegistrationEndMillis(Long.MAX_VALUE);
-        assertTrue(event.isRegistrationOpen());
-    }
-
-    /** When end time is in the past, registration must be closed (no joining). */
-    @Test
-    public void isRegistrationOpen_whenWindowAlreadyEnded_returnsFalse() {
-        event.setRegistrationStartMillis(0);
-        event.setRegistrationEndMillis(1);
-        assertFalse(event.isRegistrationOpen());
     }
 
     /** Getter must never return null; when internal list is null, return empty list. */

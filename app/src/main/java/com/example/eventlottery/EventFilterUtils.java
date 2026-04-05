@@ -1,11 +1,34 @@
 package com.example.eventlottery;
 
+import java.util.Set;
+
 /**
- * Applies {@link EventFilterCriteria} to events, including optional distance from the user.
+ * Applies EventFilterCriteria to events, including optional distance from the user.
  */
 public final class EventFilterUtils {
 
     private EventFilterUtils() {}
+
+    /**
+     * Entrant home list: private events appear only if the user has a waiting-list entry on that event
+     * (entrant home list filtering in EntrantMainScreenActivity.applyFilterToEventList).
+     */
+    public static boolean passesEntrantPrivateListVisibility(Event e, Set<String> userWaitingListEventIds) {
+        if (e == null) {
+            return false;
+        }
+        if (!e.isPrivate()) {
+            return true;
+        }
+        return userWaitingListEventIds != null && userWaitingListEventIds.contains(e.getEventId());
+    }
+
+    /**
+     * Entrant map: private events are never shown as map pins (EntrantMapActivity.loadMarkersFromFirestore).
+     */
+    public static boolean showEventOnEntrantMap(Event e) {
+        return e != null && !e.isPrivate();
+    }
 
     /** Haversine distance in kilometres between two WGS84 points. */
     public static double haversineKm(double lat1, double lon1, double lat2, double lon2) {
@@ -20,8 +43,8 @@ public final class EventFilterUtils {
     }
 
     /**
-     * List/home: optional registration window. Distance is applied only when {@code hasUserPosition}
-     * is true and {@code userLat}/{@code userLng} are non-null; otherwise the max-distance constraint
+     * List/home: optional registration window. Distance is applied only when hasUserPosition
+     * is true and userLat/userLng are non-null; otherwise the max-distance constraint
      * is skipped (caller should toast if the user asked for distance but no fix was available).
      */
     public static boolean matchesForList(Event e, EventFilterCriteria c,
@@ -33,7 +56,7 @@ public final class EventFilterUtils {
 
     /**
      * Map: only events with coordinates; registration window is constrained only when
-     * {@link EventFilterCriteria#isRegistrationOpenOnly()} is true (same rule as the list).
+     * EventFilterCriteria.isRegistrationOpenOnly() is true (same rule as the list).
      */
     public static boolean matchesForMap(Event e, EventFilterCriteria c,
                                        Double userLat, Double userLng, boolean hasUserPosition) {

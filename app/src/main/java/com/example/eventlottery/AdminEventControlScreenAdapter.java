@@ -2,7 +2,11 @@ package com.example.eventlottery;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,22 +14,13 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.util.Log;
-import androidx.annotation.NonNull;
-import com.bumptech.glide.Glide;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.firestore.FirebaseFirestore;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import com.bumptech.glide.Glide;
+import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Locale;
 
 
@@ -112,34 +107,26 @@ public class AdminEventControlScreenAdapter extends ArrayAdapter<Event> {
             context.startActivity(intent);
         });
 
-        //delete the event from firestore when admin clicks delete icon
         admindeletebutton.setOnClickListener(v -> {
-            //reference: https://firebase.google.com/docs/firestore/manage-data/delete-data#java
-            String eventidtobedeleted = event.getEventId();
-            db.collection("events").document(eventidtobedeleted)
-                    .delete()
-                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                        /**
-                         *@param aVoid
-                         *removes the event from the list and refreshes the adapter
-                         */
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            events.remove(event);
-                            notifyDataSetChanged();
-                        }
+            String title = eventnameinput_fromgetter != null ? eventnameinput_fromgetter.trim() : "";
+            String msg = title.isEmpty()
+                    ? context.getString(R.string.admin_delete_event_message_generic)
+                    : context.getString(R.string.admin_delete_event_message, title);
+            new AlertDialog.Builder(context)
+                    .setTitle(R.string.admin_delete_event_title)
+                    .setMessage(msg)
+                    .setPositiveButton(R.string.admin_delete_action, (dialog, which) -> {
+                        String eventidtobedeleted = event.getEventId();
+                        db.collection("events").document(eventidtobedeleted)
+                                .delete()
+                                .addOnSuccessListener(aVoid -> {
+                                    events.remove(event);
+                                    notifyDataSetChanged();
+                                })
+                                .addOnFailureListener(e -> Log.w(TAG, "Error deleting document", e));
                     })
-                    /**
-                     * this runs if delete failed
-                     * @param e prints the error in log
-                     * reference from https://firebase.google.com/docs/firestore/manage-data/delete-data#java
-                     */
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Log.w(TAG, "Error deleting document", e);
-                        }
-                    });
+                    .setNegativeButton(android.R.string.cancel, null)
+                    .show();
         });
 
         return view;
