@@ -5,11 +5,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.bumptech.glide.Glide;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -19,13 +21,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-/**
- * RecyclerView adapter for organizer dashboard event cards. View/Edit open event nav or EventEditActivity.
- * For co-organized events (where deviceId != organizerId), the delete button is hidden.
- */
 public class OrganizerEventAdapter extends RecyclerView.Adapter<OrganizerEventAdapter.EventCardViewHolder> {
 
-    /** No-arg constructor required by the RecyclerView.Adapter framework. */
     public OrganizerEventAdapter() {}
 
     private final List<Event> events = new ArrayList<>();
@@ -53,6 +50,7 @@ public class OrganizerEventAdapter extends RecyclerView.Adapter<OrganizerEventAd
         }
         notifyDataSetChanged();
     }
+
     void removeEventById(String eventId) {
         if (eventId == null) return;
 
@@ -94,6 +92,7 @@ public class OrganizerEventAdapter extends RecyclerView.Adapter<OrganizerEventAd
         private final View viewButton;
         private final View editButton;
         private final View deleteButton;
+        private final ImageView posterImage;
 
         EventCardViewHolder(View itemView) {
             super(itemView);
@@ -103,6 +102,7 @@ public class OrganizerEventAdapter extends RecyclerView.Adapter<OrganizerEventAd
             viewButton = itemView.findViewById(R.id.event_card_view);
             editButton = itemView.findViewById(R.id.event_card_edit);
             deleteButton = itemView.findViewById(R.id.event_card_delete);
+            posterImage = itemView.findViewById(R.id.event_card_image);
         }
 
         void bind(Event event, OnEventActionListener listener, boolean isCoOrganized) {
@@ -120,7 +120,18 @@ public class OrganizerEventAdapter extends RecyclerView.Adapter<OrganizerEventAd
                 dateView.setVisibility(View.GONE);
             }
 
-            // Show co-organizer badge and hide delete for co-organized events
+            String posterUri = event.getPosterUri();
+            if (posterUri != null && !posterUri.isEmpty()) {
+                posterImage.setVisibility(View.VISIBLE);
+                Glide.with(itemView.getContext())
+                        .load(posterUri)
+                        .centerCrop()
+                        .into(posterImage);
+            } else {
+                posterImage.setImageDrawable(null);
+                posterImage.setVisibility(View.GONE);
+            }
+
             if (isCoOrganized) {
                 coOrgBadge.setVisibility(View.VISIBLE);
                 deleteButton.setVisibility(View.GONE);
@@ -148,7 +159,6 @@ public class OrganizerEventAdapter extends RecyclerView.Adapter<OrganizerEventAd
             });
         }
 
-
         private static String formatDateTime(long millis) {
             return new SimpleDateFormat("MMM d, yyyy - h:mm a", Locale.getDefault())
                     .format(new Date(millis));
@@ -172,10 +182,10 @@ public class OrganizerEventAdapter extends RecyclerView.Adapter<OrganizerEventAd
         db.collection("users").document(entrantDeviceId)
                 .collection("notifications").add(notif)
                 .addOnSuccessListener(docRef -> {
-                    NotificationHelper.NotificationMAINstorageForAdmin(
-                            db, title, message, eventId, entrantDeviceId);
-                    Toast.makeText(docRef.getFirestore().getApp().getApplicationContext(),
-                            "Invitation sent to Entrant!", Toast.LENGTH_SHORT).show();
-                });
-    }
-}
+
+                    NotificationHelper.sendNotification(db, entrantDeviceId,
+                            "INVITATION", title, message, eventId);
+                })
+                .addOnFailureListener(e ->
+                        Toast.makeText(null, "Failed to send notification", Toast.LENGTH_SHORT).show());
+}}
