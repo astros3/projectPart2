@@ -145,7 +145,7 @@ public class EventEditIntentTest {
     }
 
     /**
-     * Opens edit for the seeded event ({@code geolocationRequired: false}), waits for Firestore/form load,
+     * Opens edit for the seeded event (geolocationRequired false), waits for Firestore/form load,
      * asserts the switch is off, taps it, asserts on.
      */
     @Test
@@ -160,7 +160,7 @@ public class EventEditIntentTest {
     }
 
     /**
-     * Updates the same event with {@code geolocationRequired: true}, launches edit, waits,
+     * Updates the same event with geolocationRequired true, launches edit, waits,
      * asserts switch on, taps, asserts off.
      */
     @Test

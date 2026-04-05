@@ -116,6 +116,8 @@ public class OrganizerCancelledEntrantsIntentTest {
         onView(withText(R.string.cancelled_entrants)).check(matches(isDisplayed()));
         onView(withId(R.id.listCancelledEntrants)).check(matches(isDisplayed()));
         onView(withId(R.id.buttonBack)).check(matches(isDisplayed()));
+        onView(withId(R.id.buttonRedrawReplacement)).check(matches(isDisplayed()));
+        onView(withId(R.id.buttonNotifyCancelled)).check(matches(isDisplayed()));
     }
 
     @Test

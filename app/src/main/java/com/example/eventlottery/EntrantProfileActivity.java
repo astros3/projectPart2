@@ -21,6 +21,9 @@ import com.google.firebase.firestore.WriteBatch;
 
 public class EntrantProfileActivity extends BaseActivity {
 
+    /** Firestore collection for entrant profiles (used when deleting user document). */
+    public static final String USERS_COLLECTION = "users";
+
     private EditText nameInput, emailInput, phoneInput;
     private TextView displayName, displayEmail;
     private SwitchMaterial notifSwitch;
@@ -71,7 +74,7 @@ public class EntrantProfileActivity extends BaseActivity {
     }
 
     private void loadProfile() {
-        db.collection("users").document(deviceId).get()
+        db.collection(USERS_COLLECTION).document(deviceId).get()
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
                         Entrant existing = documentSnapshot.toObject(Entrant.class);
@@ -123,7 +126,7 @@ public class EntrantProfileActivity extends BaseActivity {
         // US 01.04.03 — persist notification preference alongside profile
         entrant.setNotificationsEnabled(notifSwitch.isChecked());
 
-        db.collection("users").document(deviceId)
+        db.collection(USERS_COLLECTION).document(deviceId)
                 .set(entrant)
                 .addOnSuccessListener(aVoid -> runOnUiThread(() -> {
                     displayName.setText(entrant.getFullName());
@@ -180,7 +183,7 @@ public class EntrantProfileActivity extends BaseActivity {
     }
 
     private void deleteUserDocument() {
-        db.collection("users").document(deviceId)
+        db.collection(USERS_COLLECTION).document(deviceId)
                 .delete()
                 .addOnSuccessListener(aVoid -> runOnUiThread(() -> {
                     Toast.makeText(this, R.string.profile_deleted, Toast.LENGTH_SHORT).show();

@@ -7,7 +7,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.clustering.ClusterItem;
 
 /**
- * Map marker / cluster leaf for an {@link Event} with coordinates.
+ * Map marker / cluster leaf for an Event with coordinates.
  */
 public class EventMapClusterItem implements ClusterItem {
     private final LatLng position;

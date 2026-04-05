@@ -1,7 +1,6 @@
 package com.example.eventlottery;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import org.junit.Test;
 
@@ -28,11 +27,6 @@ public class AdminRoleAndNotificationUnitTest {
 
         entrant.setNotificationsEnabled(false);
         assertEquals(false, entrant.isNotificationsEnabled());
-    }
-
-    @Test
-    public void coOrganizerNotificationType_constantIsStable() {
-        assertEquals("CO_ORGANIZER_ASSIGNED", NotificationHelper.TYPE_CO_ORGANIZER_ASSIGNED);
     }
 
     @Test

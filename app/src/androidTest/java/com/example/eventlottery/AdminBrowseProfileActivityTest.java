@@ -13,15 +13,14 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.anything;
 
+import androidx.test.core.app.ActivityScenario;
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 
 import java.util.HashMap;
@@ -34,11 +33,13 @@ import java.util.Map;
 public class AdminBrowseProfileActivityTest {
     private String testUserId;
     private String adminDeviceId;
-    @Rule
-    public ActivityScenarioRule<AdminBrowseProfilesActivity> rule =
-            new ActivityScenarioRule<>(AdminBrowseProfilesActivity.class);
+    private ActivityScenario<AdminBrowseProfilesActivity> scenario;
 
-    /** reference eventdetailsintenttest*/
+    /**
+     * Creates required Firestore documents BEFORE launching the activity so that
+     * the admin security check inside onCreate() succeeds and setupUI() is called.
+     * reference eventdetailsintenttest
+     */
     @Before
     public void createTest() throws Exception {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -51,6 +52,7 @@ public class AdminBrowseProfileActivityTest {
         admin.put("email", "admin@123.com");
         admin.put("phoneNumber", "111234567");
         Tasks.await(db.collection("admins").document(adminDeviceId).set(admin));
+
         testUserId = "test1";
         Map<String, Object> user = new HashMap<>();
         user.put("deviceID", "test1");
@@ -59,15 +61,25 @@ public class AdminBrowseProfileActivityTest {
         user.put("phoneNumber", "111234567");
         user.put("role", "Entrant");
         Tasks.await(db.collection("users").document("test1").set(user));
+
+        // Launch the activity only after Firestore docs exist so the admin check passes
+        scenario = ActivityScenario.launch(AdminBrowseProfilesActivity.class);
+        Thread.sleep(2000);
     }
+
     /** reference eventdetailsintenttest*/
     @After
     public void deletepreconditions() throws Exception {
+        if (scenario != null) {
+            scenario.close();
+        }
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         if (testUserId != null) {
             Tasks.await(db.collection("users").document(testUserId).delete());
         }
-
+        if (adminDeviceId != null) {
+            Tasks.await(db.collection("admins").document(adminDeviceId).delete());
+        }
     }
     /** US: back button that will navigate back to admin main panel screen. */
     @Test
@@ -85,10 +97,15 @@ public class AdminBrowseProfileActivityTest {
 
     /** US: complete search test */
     @Test
-    public void testSearchButtoncompletetest() {
+    public void testSearchButtoncompletetest() throws InterruptedException {
         onView(withId(R.id.search_input_bar)).perform(typeText("test1"));
         onView(withId(R.id.search_icon)).perform(click());
-        onView(withText("test1")).check(matches(isDisplayed()));
+        Thread.sleep(3000);
+        onData(anything())
+                .inAdapterView(withId(R.id.profile_list_view))
+                .atPosition(0)
+                .onChildView(withId(R.id.profile_name))
+                .check(matches(withText("test1")));
     }
 
     /** US: check the profile list is shown. */
@@ -101,10 +118,11 @@ public class AdminBrowseProfileActivityTest {
     /** US: test search and view detail button. */
     //reference adminBrowseprofilesintenttest
     @Test
-    public void testSearchFunctionality() {
+    public void testSearchFunctionality() throws InterruptedException {
         // Type a name into the search bar created in the UI
         onView(withId(R.id.search_input_bar)).perform(typeText("test1"));
         onView(withId(R.id.search_icon)).perform(click());
+        Thread.sleep(3000);
 
         // Check if the list filters correctly
         onData(anything())
@@ -119,7 +137,8 @@ public class AdminBrowseProfileActivityTest {
     /** US: test search and detail button. */
     //reference AdminBrowseProfileIntentTest
     @Test
-    public void testDeleteButtonExists() {
+    public void testDeleteButtonExists() throws InterruptedException {
+        Thread.sleep(3000);
         // Verify the 'X' button is visible in the first row
         onData(anything())
                 .inAdapterView(withId(R.id.profile_list_view))

@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Maps Firestore event documents to {@link Event} (shared by list + map screens).
+ * Maps Firestore event documents to Event (shared by list + map screens).
  */
 public final class EventFirestoreParser {
 

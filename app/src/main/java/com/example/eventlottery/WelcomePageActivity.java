@@ -2,7 +2,7 @@ package com.example.eventlottery;
 
 /**
  * Launcher: role selection (Entrant / Organizer / Admin). Profiles live in separate
- * Firestore collections ({@code users}, {@code organizers}, {@code admins}) keyed by device ID.
+ * Firestore collections (users, organizers, admins) keyed by device ID.
  * An admin device may hold at most one profile per role; each profile is edited in its own flow
  * (no syncing of name or other fields from admin into entrant/organizer).
  */
@@ -171,8 +171,8 @@ public class WelcomePageActivity extends BaseActivity {
     }
 
     /**
-     * If entrant/organizer documents already exist (e.g. legacy missing {@code role}),
-     * merge only {@code role} so welcome routing works. Does not create stubs or copy admin fields.
+     * If entrant/organizer documents already exist (e.g. legacy missing role field),
+     * merge only role so welcome routing works. Does not create stubs or copy admin fields.
      */
     private void ensureCorrectRoleOnExistingProfiles(FirebaseFirestore db, String deviceId) {
         db.collection("users").document(deviceId).get().addOnSuccessListener(usersDoc -> {

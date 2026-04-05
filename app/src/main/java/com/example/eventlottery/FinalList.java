@@ -71,7 +71,7 @@ public class FinalList extends Fragment {
                         .navigate(R.id.Final_list_to_OrganizerNavigationFragment));
 
         view.findViewById(R.id.buttonExportCsv).setOnClickListener(v -> exportFinalListCsv());
-       // view.findViewById(R.id.buttonNotifyCancelled).setOnClickListener(v -> notifyCancelledEntrants());
+        // view.findViewById(R.id.buttonNotifyCancelled).setOnClickListener(v -> notifyCancelledEntrants());
 
         loadAcceptedEntries();
     }
@@ -269,7 +269,7 @@ public class FinalList extends Fragment {
         }
     }
 
-    private static String escapeCsv(String value) {
+    static String escapeCsv(String value) {
         if (value == null) return "\"\"";
         if (value.contains(",") || value.contains("\n") || value.contains("\"")) {
             return "\"" + value.replace("\"", "\"\"") + "\"";

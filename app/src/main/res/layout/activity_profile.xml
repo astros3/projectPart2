@@ -16,7 +16,7 @@
         <ImageView
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:contentDescription="@null"
+            android:contentDescription="@string/acc_profile_screen_header"
             android:src="@drawable/ic_profile_header" />
 
         <TextView
@@ -198,7 +198,7 @@
                 android:id="@+id/navigationhome"
                 android:layout_width="25dp"
                 android:layout_height="25dp"
-                android:contentDescription="@null"
+                android:contentDescription="@string/acc_nav_home"
                 android:src="@drawable/home_unselected" />
             <TextView
                 android:id="@+id/hometext"
@@ -222,7 +222,7 @@
                 android:id="@+id/navigationscan"
                 android:layout_width="25dp"
                 android:layout_height="25dp"
-                android:contentDescription="@null"
+                android:contentDescription="@string/acc_nav_scan"
                 android:src="@drawable/scan_unselected" />
             <TextView
                 android:id="@+id/scantext"
@@ -246,7 +246,7 @@
                 android:id="@+id/navigationhistory"
                 android:layout_width="25dp"
                 android:layout_height="25dp"
-                android:contentDescription="@null"
+                android:contentDescription="@string/acc_nav_history"
                 android:src="@drawable/history_unselected" />
             <TextView
                 android:id="@+id/historytext"
@@ -270,7 +270,7 @@
                 android:id="@+id/navigationprofile"
                 android:layout_width="25dp"
                 android:layout_height="25dp"
-                android:contentDescription="@null"
+                android:contentDescription="@string/acc_nav_profile"
                 android:src="@drawable/profile_unselected" />
             <TextView
                 android:id="@+id/profiletext"

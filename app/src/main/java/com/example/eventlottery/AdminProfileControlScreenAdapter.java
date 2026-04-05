@@ -2,8 +2,6 @@ package com.example.eventlottery;
 
 
 import android.content.Context;
-import android.content.Intent;
-import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,23 +9,15 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import android.util.Log;
+import androidx.appcompat.app.AlertDialog;
 
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.text.SimpleDateFormat;
-import java.util.Locale;
 
 
 /**
@@ -109,70 +99,42 @@ public class AdminProfileControlScreenAdapter extends ArrayAdapter<AdminProfileI
 
 
 
-        //delete the profile from firestore when admin clicks delete icon
         deletebutton.setOnClickListener(v -> {
-            //reference: https://firebase.google.com/docs/firestore/manage-data/delete-data#java
             String profileidneedstobedeleted = currentprofile.getId();
             String profiletypeneedstobedeleted = currentprofile.getType();
-
-            if(profileidneedstobedeleted != null && !profileidneedstobedeleted.equals("")
-                    && profiletypeneedstobedeleted != null && !profiletypeneedstobedeleted.equals("")) {
-
-                if(profiletypeneedstobedeleted.equalsIgnoreCase("Organizer")) {
-                    db.collection("organizers").document(profileidneedstobedeleted)
-                            .delete()
-                            .addOnSuccessListener(new OnSuccessListener<Void>(){
-                                /**
-                                 *@param aVoid
-                                 *removes the profile from the list and refreshes the adapter
-                                 */
-                                @Override
-                                public void onSuccess(Void aVoid) {
-                                    adminprofileitemlist.remove(currentprofile);
-                                    notifyDataSetChanged();
-                                }
-                            })
-                            .addOnFailureListener(new OnFailureListener(){
-                                /**
-                                 * this runs if delete failed
-                                 * @param e prints the error in log
-                                 * reference from https://firebase.google.com/docs/firestore/manage-data/delete-data#java
-                                 */
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    Log.w("AdminProfileControl", "Error deleting organizer document", e);
-                                }
-                            });
-                }
-
-                else if(profiletypeneedstobedeleted.equalsIgnoreCase("Entrant")) {
-                    db.collection("users").document(profileidneedstobedeleted)
-                            .delete()
-                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                /**
-                                 *@param aVoid
-                                 *removes the profile from the list and refreshes the adapter
-                                 */
-                                @Override
-                                public void onSuccess(Void aVoid) {
-                                    adminprofileitemlist.remove(currentprofile);
-                                    notifyDataSetChanged();
-                                }
-                            })
-
-                            .addOnFailureListener(new OnFailureListener() {
-                                /**
-                                 * this runs if delete failed
-                                 * @param e prints the error in log
-                                 * reference from https://firebase.google.com/docs/firestore/manage-data/delete-data#java
-                                 */
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    Log.w("AdminProfileControl", "Error deleting user document", e);
-                                }
-                            });
-                }
+            if (profileidneedstobedeleted == null || profileidneedstobedeleted.isEmpty()
+                    || profiletypeneedstobedeleted == null || profiletypeneedstobedeleted.isEmpty()) {
+                return;
             }
+            String nameForMsg = (profilenametobedisplayed == null || profilenametobedisplayed.isEmpty())
+                    ? "unknown" : profilenametobedisplayed;
+            new AlertDialog.Builder(context)
+                    .setTitle(R.string.admin_delete_profile_title)
+                    .setMessage(context.getString(R.string.admin_delete_profile_message,
+                            profiletypeneedstobedeleted, nameForMsg))
+                    .setPositiveButton(R.string.admin_delete_action, (dialog, which) -> {
+                        if (profiletypeneedstobedeleted.equalsIgnoreCase("Organizer")) {
+                            db.collection("organizers").document(profileidneedstobedeleted)
+                                    .delete()
+                                    .addOnSuccessListener(aVoid -> {
+                                        adminprofileitemlist.remove(currentprofile);
+                                        notifyDataSetChanged();
+                                    })
+                                    .addOnFailureListener(e ->
+                                            Log.w("AdminProfileControl", "Error deleting organizer document", e));
+                        } else if (profiletypeneedstobedeleted.equalsIgnoreCase("Entrant")) {
+                            db.collection("users").document(profileidneedstobedeleted)
+                                    .delete()
+                                    .addOnSuccessListener(aVoid -> {
+                                        adminprofileitemlist.remove(currentprofile);
+                                        notifyDataSetChanged();
+                                    })
+                                    .addOnFailureListener(e ->
+                                            Log.w("AdminProfileControl", "Error deleting user document", e));
+                        }
+                    })
+                    .setNegativeButton(android.R.string.cancel, null)
+                    .show();
         });
 
         //when user clicks on a specific profile item it will navigates to profile details screen

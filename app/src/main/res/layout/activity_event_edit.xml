@@ -315,7 +315,7 @@
                     android:layout_height="48dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:src="@android:drawable/ic_menu_my_calendar"
-                    android:contentDescription="Select event date"
+                    android:contentDescription="@string/select_event_date"
                     app:tint="@color/black" />
             </LinearLayout>
 

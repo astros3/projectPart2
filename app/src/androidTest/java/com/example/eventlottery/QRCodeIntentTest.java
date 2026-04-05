@@ -55,7 +55,7 @@ public class QRCodeIntentTest {
 
     private String deviceId;
     private String createdEventId;
-    /** Optional second event created inside a test; removed in {@code @After}. */
+    /** Optional second event created inside a test; removed in the After tear-down method. */
     private String secondEventId;
 
     @Before
@@ -139,7 +139,7 @@ public class QRCodeIntentTest {
     }
 
     /**
-     * US 02.01.01: Promotional QR encodes the app deep link so scanning opens {@link EventDetailsActivity} for this event.
+     * US 02.01.01: Promotional QR encodes the app deep link so scanning opens EventDetailsActivity for this event.
      */
     @Test
     public void promotionalQr_decodesToEventDeepLinkForFirestoreEventId() {

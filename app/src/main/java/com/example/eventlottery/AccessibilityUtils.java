@@ -8,8 +8,14 @@ import android.view.accessibility.AccessibilityManager;
 
 /**
  * Utilities for adapting the UI when system-level touch exploration (TalkBack,
- * Switch Access, etc.) is active.  All methods are safe to call at any time —
+ * Switch Access, etc.) is active. All methods are safe to call at any time —
  * they are no-ops when accessibility is not enabled.
+ *
+ * <p>Layout guidelines for accessibility: use android:textSize in <b>sp</b> (scalable
+ * pixels) for all user-visible text so font scale / system settings apply; reserve <b>dp</b> for
+ * non-text sizing (icons, margins, minimum touch targets). Give every ImageView,
+ * ImageButton, and meaningful graphic a non-empty android:contentDescription
+ * (or a string resource reference in XML) so TalkBack can announce it.
  */
 public final class AccessibilityUtils {
 
@@ -23,7 +29,7 @@ public final class AccessibilityUtils {
     }
 
     /**
-     * Walks every view in the hierarchy rooted at {@code root} and, for any
+     * Walks every view in the hierarchy rooted at the given root view and, for any
      * view that is clickable or focusable and smaller than 48 dp in either
      * dimension, raises its minimum size to 48 dp.
      *

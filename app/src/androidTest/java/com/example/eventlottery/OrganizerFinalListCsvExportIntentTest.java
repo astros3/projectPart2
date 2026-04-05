@@ -8,6 +8,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 
@@ -39,6 +40,9 @@ import java.util.Map;
 @LargeTest
 public class OrganizerFinalListCsvExportIntentTest {
 
+    private static final String ORG_PREFS_NAME = "EventLotteryPrefs";
+    private static final String KEY_ORG_CURRENT_EVENT_ID = "organizer_current_event_id";
+
     private static final String EVENT_ID = "test_event_final_list_csv_export";
 
     private FirebaseFirestore db;
@@ -48,7 +52,7 @@ public class OrganizerFinalListCsvExportIntentTest {
     public void setUp() throws Exception {
         appContext = ApplicationProvider.getApplicationContext();
         db = FirebaseFirestore.getInstance();
-        EventEditActivity.setCurrentEventId(appContext, EVENT_ID);
+        setOrganizerCurrentEventIdSync(EVENT_ID);
 
         Map<String, Object> event = new HashMap<>();
         event.put("eventId", EVENT_ID);
@@ -71,7 +75,7 @@ public class OrganizerFinalListCsvExportIntentTest {
             return;
         }
         Tasks.await(db.collection("events").document(EVENT_ID).delete());
-        EventEditActivity.setCurrentEventId(appContext, null);
+        setOrganizerCurrentEventIdSync(null);
     }
 
     @Test
@@ -86,6 +90,20 @@ public class OrganizerFinalListCsvExportIntentTest {
         onView(withText(R.string.final_list)).check(matches(isDisplayed()));
         onView(withId(R.id.buttonExportCsv)).check(matches(isDisplayed()));
         onView(withId(R.id.listFinalEntrants)).check(matches(isDisplayed()));
+    }
+
+    private void setOrganizerCurrentEventIdSync(String eventId) {
+        Context storageCtx = appContext.getApplicationContext();
+        SharedPreferences sp = storageCtx.getSharedPreferences(ORG_PREFS_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor ed = sp.edit();
+        if (eventId == null || eventId.isEmpty()) {
+            ed.remove(KEY_ORG_CURRENT_EVENT_ID);
+        } else {
+            ed.putString(KEY_ORG_CURRENT_EVENT_ID, eventId);
+        }
+        if (!ed.commit()) {
+            throw new IllegalStateException("SharedPreferences commit failed");
+        }
     }
 
     private static ViewAction waitFor(long millis) {

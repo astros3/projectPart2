@@ -12,7 +12,7 @@
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:src="@drawable/ic_invite"
-        android:contentDescription="Invite as Co-Organizer"
+        android:contentDescription="@string/acc_invite_co_organizer"
         android:background="?attr/selectableItemBackgroundBorderless"
         tools:ignore="MissingConstraints" />
 
@@ -47,7 +47,7 @@
                 android:layout_marginStart="16dp"
                 android:layout_width="25dp"
                 android:layout_height="25dp"
-                android:contentDescription="@null"
+                android:contentDescription="@string/acc_home_toolbar_icon"
                 android:src="@drawable/home_selected" />
             <TextView
                 android:id="@+id/hometextdisplay"
@@ -304,7 +304,7 @@
             <ImageView
                 android:layout_width="25dp"
                 android:layout_height="25dp"
-                android:contentDescription="@null"
+                android:contentDescription="@string/acc_nav_home"
                 android:src="@drawable/home_selected"
                 android:id="@+id/navigationhome"
                 />
@@ -332,7 +332,7 @@
             <ImageView
                 android:layout_width="25dp"
                 android:layout_height="25dp"
-                android:contentDescription="@null"
+                android:contentDescription="@string/acc_nav_scan"
                 android:id="@+id/navigationscan"
                 android:src="@drawable/scan_unselected"
                 />
@@ -362,7 +362,7 @@
                 android:id="@+id/navigationmap"
                 android:layout_width="25dp"
                 android:layout_height="25dp"
-                android:contentDescription="@null"
+                android:contentDescription="@string/acc_nav_map"
                 android:src="@drawable/ic_map_unselected" />
 
             <TextView
@@ -390,7 +390,7 @@
                 android:id="@+id/navigationhistory"
                 android:layout_width="25dp"
                 android:layout_height="25dp"
-                android:contentDescription="@null"
+                android:contentDescription="@string/acc_nav_history"
                 android:src="@drawable/history_unselected"
                 />
 
@@ -418,7 +418,7 @@
             <ImageView
                 android:layout_width="25dp"
                 android:layout_height="25dp"
-                android:contentDescription="@null"
+                android:contentDescription="@string/acc_nav_profile"
                 android:id="@+id/navigationprofile"
                 android:src="@drawable/profile_unselected"
                 />

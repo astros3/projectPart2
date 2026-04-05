@@ -19,6 +19,17 @@ public class QRCodeActivity extends BaseActivity {
 
     public static final String EXTRA_EVENT_ID = "event_id";
 
+    /** Prefix for promotional QR payloads; must match scanner parsing in the entrant scan flow. */
+    public static final String PROMOTIONAL_QR_URI_PREFIX = "eventlottery://event/";
+
+    /** Deep link encoded in the organizer promotional QR (opens event details, poster, and description). */
+    public static String buildPromotionalQrPayload(String eventId) {
+        if (eventId == null || eventId.isEmpty()) {
+            return PROMOTIONAL_QR_URI_PREFIX;
+        }
+        return PROMOTIONAL_QR_URI_PREFIX + eventId;
+    }
+
     private FirebaseFirestore db;
     private String eventId;
 
@@ -81,8 +92,7 @@ public class QRCodeActivity extends BaseActivity {
     }
 
     private void generateAndDisplayQrCode() {
-        // QR code encodes eventId - when scanned, MainActivity opens EventDetailsActivity with this id
-        String qrData = "eventlottery://event/" + eventId;
+        String qrData = buildPromotionalQrPayload(eventId);
         android.graphics.Bitmap bitmap = QRCodeService.generateQrCodeBitmap(qrData);
         if (bitmap != null) {
             qrCodeImage.setImageBitmap(bitmap);

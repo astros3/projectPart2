@@ -61,6 +61,11 @@ public class EventDetailsActivity extends BaseActivity {
     /** Accept/decline window after invitation (lottery SELECTED or private INVITED). */
     private static final long INVITATION_RESPONSE_WINDOW_MS = 24L * 60 * 60 * 1000;
 
+    /** Join/leave waiting list is hidden for co-organizers (see updateStatusAndButton). */
+    static boolean hidesJoinLeaveForCoOrganizer(Event event, String deviceId) {
+        return event != null && deviceId != null && event.isCoOrganizer(deviceId);
+    }
+
     private FirebaseFirestore db;
     private FusedLocationProviderClient fusedLocationClient;
     private String eventId;
@@ -199,7 +204,7 @@ public class EventDetailsActivity extends BaseActivity {
         if (event != null) {
             event.setEventId(eventDoc.getId());
             loadedEventIsPrivate = event.isPrivate();
-            isCoOrganizer = event.isCoOrganizer(deviceId);
+            isCoOrganizer = hidesJoinLeaveForCoOrganizer(event, deviceId);
             if (event.getOrganizerId() != null) {
                 organizerDeviceId = event.getOrganizerId();
             }

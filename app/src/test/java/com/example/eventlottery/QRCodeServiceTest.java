@@ -7,7 +7,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- * Unit tests for {@link QRCodeService}.
+ * Unit tests for QRCodeService.
  */
 public class QRCodeServiceTest {
 

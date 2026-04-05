@@ -26,7 +26,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.maps.android.clustering.ClusterManager;
 
 /**
- * Shows events with coordinates using the same {@link EventFilterCriteria} as the home list
+ * Shows events with coordinates using the same EventFilterCriteria as the home list
  * (registration-open filter when enabled; distance needs location — toast if unavailable).
  * Markers cluster when zoomed out.
  */
@@ -174,7 +174,7 @@ public class EntrantMapActivity extends BaseActivity implements OnMapReadyCallba
                     for (QueryDocumentSnapshot doc : snap) {
                         Event e = EventFirestoreParser.fromSnapshot(doc);
                         // Private events are not publicly discoverable (US 02.01.02)
-                        if (e.isPrivate()) continue;
+                        if (!EventFilterUtils.showEventOnEntrantMap(e)) continue;
                         if (!EventFilterUtils.matchesForMap(e, filter, userLat, userLng, hasFix)) {
                             continue;
                         }

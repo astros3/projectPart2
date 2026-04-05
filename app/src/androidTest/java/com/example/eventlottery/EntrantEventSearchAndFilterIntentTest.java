@@ -12,20 +12,20 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
-import static org.hamcrest.CoreMatchers.anything;
-
 import android.view.View;
 
 import androidx.test.core.app.ActivityScenario;
-import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.UiController;
 import androidx.test.espresso.ViewAction;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
+import org.hamcrest.TypeSafeMatcher;
+
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import org.hamcrest.Matcher;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -108,8 +108,12 @@ public class EntrantEventSearchAndFilterIntentTest {
         onView(isRoot()).perform(waitFor(1200));
 
         // Should contain Yoga events, should not show Music
-        onView(withText("Yoga for Beginners")).check(matches(isDisplayed()));
-        onView(withText("Advanced Yoga (Closed)")).check(matches(isDisplayed()));
+        onData(withTitle("Yoga for Beginners"))
+                .inAdapterView(withId(R.id.Events))
+                .check(matches(isDisplayed()));
+        onData(withTitle("Advanced Yoga (Closed)"))
+                .inAdapterView(withId(R.id.Events))
+                .check(matches(isDisplayed()));
         onView(withText("Live Music Night")).check(doesNotExist());
     }
 
@@ -128,8 +132,12 @@ public class EntrantEventSearchAndFilterIntentTest {
 
         // Closed event should be filtered out; open ones remain
         onView(withText("Advanced Yoga (Closed)")).check(doesNotExist());
-        onView(withText("Yoga for Beginners")).check(matches(isDisplayed()));
-        onView(withText("Live Music Night")).check(matches(isDisplayed()));
+        onData(withTitle("Yoga for Beginners"))
+                .inAdapterView(withId(R.id.Events))
+                .check(matches(isDisplayed()));
+        onData(withTitle("Live Music Night"))
+                .inAdapterView(withId(R.id.Events))
+                .check(matches(isDisplayed()));
     }
 
     @Test
@@ -146,7 +154,9 @@ public class EntrantEventSearchAndFilterIntentTest {
         onView(isRoot()).perform(waitFor(1200));
 
         // Only open yoga should remain
-        onView(withText("Yoga for Beginners")).check(matches(isDisplayed()));
+        onData(withTitle("Yoga for Beginners"))
+                .inAdapterView(withId(R.id.Events))
+                .check(matches(isDisplayed()));
         onView(withText("Advanced Yoga (Closed)")).check(doesNotExist());
         onView(withText("Live Music Night")).check(doesNotExist());
     }
@@ -175,6 +185,20 @@ public class EntrantEventSearchAndFilterIntentTest {
         m.put("geolocationRequired", false);
         m.put("isPrivate", false);
         return m;
+    }
+
+    private static Matcher<Object> withTitle(String expectedTitle) {
+        return new TypeSafeMatcher<Object>() {
+            @Override
+            protected boolean matchesSafely(Object item) {
+                if (!(item instanceof Event)) return false;
+                return expectedTitle.equals(((Event) item).getTitle());
+            }
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("Event with title: " + expectedTitle);
+            }
+        };
     }
 
     /** Simple Espresso wait helper (use sparingly). */

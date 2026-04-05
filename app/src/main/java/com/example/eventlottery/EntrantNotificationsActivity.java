@@ -16,8 +16,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 /**
- * Shows in-app notifications from Firestore {@code users/{deviceId}/notifications}.
- * Tapping a row opens {@link EventDetailsActivity} for the related event and marks the row read.
+ * Shows in-app notifications from Firestore.
+ * Tapping a row opens EventDetailsActivity for the related event and marks the row read.
  */
 public class EntrantNotificationsActivity extends BaseActivity {
 

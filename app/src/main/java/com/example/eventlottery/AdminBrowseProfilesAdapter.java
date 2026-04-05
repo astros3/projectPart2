@@ -2,6 +2,8 @@ package com.example.eventlottery;
 
 import android.content.Context;
 import android.view.LayoutInflater;
+
+import androidx.appcompat.app.AlertDialog;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -36,14 +38,20 @@ public class AdminBrowseProfilesAdapter extends ArrayAdapter<Entrant> {
         roleView.setText(user.getRole());
 
         deleteBtn.setOnClickListener(v -> {
-            // Determine collection based on role to fulfill removal requirement
-            String path = user.getRole().equalsIgnoreCase("Organizer") ? "organizers" : "users";
-
-            db.collection(path).document(user.getDeviceID()).delete()
-                    .addOnSuccessListener(aVoid -> {
-                        remove(user);
-                        notifyDataSetChanged();
-                    });
+            String role = user.getRole() != null ? user.getRole() : "";
+            String path = role.equalsIgnoreCase("Organizer") ? "organizers" : "users";
+            String nameForMsg = user.getFullName();
+            new AlertDialog.Builder(getContext())
+                    .setTitle(R.string.admin_delete_profile_title)
+                    .setMessage(getContext().getString(R.string.admin_delete_profile_message, role, nameForMsg))
+                    .setPositiveButton(R.string.admin_delete_action, (dialog, which) ->
+                            db.collection(path).document(user.getDeviceID()).delete()
+                                    .addOnSuccessListener(aVoid -> {
+                                        remove(user);
+                                        notifyDataSetChanged();
+                                    }))
+                    .setNegativeButton(android.R.string.cancel, null)
+                    .show();
         });
 
         return convertView;

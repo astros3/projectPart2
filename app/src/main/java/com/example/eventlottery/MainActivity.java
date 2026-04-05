@@ -1,16 +1,11 @@
 package com.example.eventlottery;
 
-/**
- * Organizer hub: hosts NavHostFragment (dashboard → navigation → lottery/waiting/selected).
- * Exposes QR scanner that opens EventDetailsActivity with scanned event ID.
- */
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
 import androidx.activity.EdgeToEdge;
 import androidx.activity.result.ActivityResultLauncher;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -18,6 +13,10 @@ import androidx.core.view.WindowInsetsCompat;
 import com.journeyapps.barcodescanner.ScanContract;
 import com.journeyapps.barcodescanner.ScanOptions;
 
+/**
+ * This activity is the organizer hub: it hosts NavHostFragment (dashboard, navigation, lottery, waiting, selected).
+ * It exposes a QR scanner that opens EventDetailsActivity with the scanned event id.
+ */
 public class MainActivity extends BaseActivity {
 
     private final ActivityResultLauncher<ScanOptions> qrScanner =
@@ -49,6 +48,9 @@ public class MainActivity extends BaseActivity {
         });
     }
 
+    /**
+     * Launches the barcode scanner restricted to QR codes for event check-in / browse flow.
+     */
     public void launchQrScanner() {
         ScanOptions options = new ScanOptions();
         options.setDesiredBarcodeFormats(ScanOptions.QR_CODE);

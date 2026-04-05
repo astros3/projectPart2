@@ -26,7 +26,7 @@
             android:id="@+id/logofordisplayonly"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:contentDescription="@null"
+            android:contentDescription="@string/acc_app_logo"
             android:src="@drawable/logo" />
 
         <TextView
@@ -94,7 +94,7 @@
             android:id="@+id/userroleiconfordisplayonly"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:contentDescription="@null"
+            android:contentDescription="@string/acc_entrant_sign_in"
             android:src="@drawable/person_icon" />
 
         <LinearLayout
@@ -146,7 +146,7 @@
         <ImageView
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:contentDescription="@null"
+            android:contentDescription="@string/acc_organizer_sign_in"
             android:src="@drawable/person_icon" />
 
         <LinearLayout
@@ -200,7 +200,7 @@
         <ImageView
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:contentDescription="@null"
+            android:contentDescription="@string/acc_admin_sign_in"
             android:src="@drawable/person_icon" />
 
         <LinearLayout

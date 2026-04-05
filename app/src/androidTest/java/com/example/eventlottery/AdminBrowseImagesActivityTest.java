@@ -13,7 +13,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
@@ -22,10 +21,12 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static androidx.test.espresso.action.ViewActions.click;
 
 import android.view.View;
+import android.widget.AdapterView;
 
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.espresso.UiController;
 import androidx.test.espresso.ViewAction;
+import androidx.test.espresso.ViewAssertion;
 
 import org.hamcrest.Matcher;
 
@@ -85,11 +86,20 @@ public class AdminBrowseImagesActivityTest {
                     .onChildView(withId(R.id.delete_image_button))
                     .perform(click());
             onView(isRoot()).perform(waitFor(1200));
-            onData(CoreMatchers.anything())
-                    .inAdapterView(withId(R.id.admin_images_grid))
-                    .atPosition(0)
-                    .check(doesNotExist());
+            onView(withId(R.id.admin_images_grid)).check(hasAdapterItemCount(0));
         }
+    }
+
+    private static ViewAssertion hasAdapterItemCount(int expectedCount) {
+        return (view, noViewFoundException) -> {
+            if (noViewFoundException != null) throw noViewFoundException;
+            AdapterView<?> adapterView = (AdapterView<?>) view;
+            int actual = adapterView.getAdapter() == null ? 0 : adapterView.getAdapter().getCount();
+            if (actual != expectedCount) {
+                throw new AssertionError(
+                        "Expected adapter item count <" + expectedCount + "> but was <" + actual + ">");
+            }
+        };
     }
 
     private static ViewAction waitFor(long millis) {

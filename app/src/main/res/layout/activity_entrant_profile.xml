@@ -28,6 +28,7 @@
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:layout_gravity="center"
+                    android:contentDescription="@string/acc_app_icon"
                     android:src="@drawable/app_icon" />
             </com.google.android.material.card.MaterialCardView>
 

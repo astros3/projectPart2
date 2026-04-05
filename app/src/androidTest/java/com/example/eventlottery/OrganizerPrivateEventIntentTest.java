@@ -62,7 +62,7 @@ public class OrganizerPrivateEventIntentTest {
     private static final String TITLE_PUBLIC = "US020102_Public_Visible_On_List";
     private static final String TITLE_PRIVATE = "US020102_Private_Hidden_From_List";
 
-    /** Same as {@link EventEditActivity} prefs — must match for {@code getCurrentEventId}. */
+    /** Same as EventEditActivity prefs — must match for getCurrentEventId. */
     private static final String ORG_PREFS_NAME = "EventLotteryPrefs";
     private static final String KEY_ORG_CURRENT_EVENT_ID = "organizer_current_event_id";
 

@@ -47,8 +47,6 @@
         </LinearLayout>
     </androidx.appcompat.widget.Toolbar>
 
-
-
     <ListView
         android:id="@+id/listFinalEntrants"
         android:layout_width="0dp"

@@ -11,6 +11,7 @@
         android:id="@+id/toolbar_event_details"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
+        app:navigationContentDescription="@string/acc_navigate_up"
         app:navigationIcon="@drawable/ic_back_arrow"
         app:title="@string/event_details" />
 
