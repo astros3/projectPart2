@@ -409,11 +409,12 @@ public class EventDetailsActivity extends BaseActivity {
             posterView.setImageDrawable(null);
         }
 
-        // Show "Invite Entrants" for the primary organizer OR co-organizer on private events (US 02.01.03)
+        boolean viewAsEntrant = getIntent().getBooleanExtra(EXTRA_VIEW_AS_ENTRANT, true);
         String currentDeviceId = DeviceIdManager.getDeviceId(this);
         boolean isOrganizerOrCoOrg = currentDeviceId.equals(event.getOrganizerId())
                 || event.isCoOrganizer(currentDeviceId);
-        if (event.isPrivate() && isOrganizerOrCoOrg) {
+
+        if (event.isPrivate() && isOrganizerOrCoOrg && !viewAsEntrant) {
             inviteEntrantsButton.setVisibility(View.VISIBLE);
             inviteEntrantsButton.setOnClickListener(v ->
                     startActivity(OrganizerInviteEntrantActivity.newIntent(this, eventId)));
