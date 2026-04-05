@@ -13,10 +13,22 @@ public final class EventFirestoreParser {
 
     private EventFirestoreParser() {}
 
+    /**
+     * Parses a QueryDocumentSnapshot into an Event.
+     *
+     * @param eachevent Firestore query document snapshot from the events collection
+     * @return a populated Event model, or a partially-filled one on missing fields
+     */
     public static Event fromSnapshot(QueryDocumentSnapshot eachevent) {
         return fromSnapshot((DocumentSnapshot) eachevent);
     }
 
+    /**
+     * Parses a DocumentSnapshot into an Event.
+     *
+     * @param eachevent Firestore document snapshot from the events collection
+     * @return a populated Event model, or a partially-filled one on missing fields
+     */
     public static Event fromSnapshot(DocumentSnapshot eachevent) {
         String id = eachevent.getId();
         String thecurrenteventtitle = eachevent.getString("title");

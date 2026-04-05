@@ -1,16 +1,19 @@
 package com.example.eventlottery;
 
-/**
- * Provides a persistent device ID. Used as identity for both
- * entrant (users) and organizer (organizers) flows. Singleton-like: one ID per app install.
- */
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.provider.Settings;
 
 import java.util.UUID;
 
+/**
+ * Provides a persistent device ID used as identity for both entrant and organizer flows.
+ * Singleton-like: one ID per app install.
+ */
 public class DeviceIdManager {
+
+    private DeviceIdManager() {}
+
     private static final String STORAGE_NAME = "EventLotteryDeviceStorage";
     private static final String DEVICE_ID_KEY = "device_id";
 
@@ -21,6 +24,9 @@ public class DeviceIdManager {
      * Returns the device's unique ID.
      * Prefers Settings.Secure.ANDROID_ID (the real hardware-based ID). Falls back to a
      * randomly generated UUID (stored persistently) if ANDROID_ID is unavailable or invalid.
+     *
+     * @param context any Context used to read Settings.Secure and SharedPreferences
+     * @return a non-null, non-empty unique device identifier string
      */
     public static String getDeviceId(Context context) {
         String androidId = Settings.Secure.getString(

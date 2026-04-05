@@ -1,9 +1,5 @@
 package com.example.eventlottery;
 
-/**
- * First-time entrant registration: name, email, phone. Writes Entrant to users/{deviceId}
- * with role "entrant", then starts EntrantMainScreenActivity.
- */
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -17,7 +13,15 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
 
+/**
+ * First-time entrant registration screen. Collects name, email, and phone,
+ * writes an Entrant document to users/{deviceId} with role "entrant",
+ * then launches EntrantMainScreenActivity.
+ */
 public class EntrantSetupActivity extends BaseActivity {
+
+    /** No-arg constructor required by the Android Activity lifecycle. */
+    public EntrantSetupActivity() {}
 
     private TextInputEditText firstNameInput;
     private TextInputEditText lastNameInput;

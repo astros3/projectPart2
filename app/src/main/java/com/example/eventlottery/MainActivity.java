@@ -19,6 +19,9 @@ import com.journeyapps.barcodescanner.ScanOptions;
  */
 public class MainActivity extends BaseActivity {
 
+    /** No-arg constructor required by the Android Activity lifecycle. */
+    public MainActivity() {}
+
     private final ActivityResultLauncher<ScanOptions> qrScanner =
             registerForActivityResult(new ScanContract(), result -> {
                 if (result.getContents() != null) {

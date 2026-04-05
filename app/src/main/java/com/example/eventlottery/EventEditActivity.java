@@ -49,6 +49,10 @@ import java.util.Locale;
  */
 public class EventEditActivity extends BaseActivity {
 
+    /** No-arg constructor required by the Android Activity lifecycle. */
+    public EventEditActivity() {}
+
+    /** Intent extra key for the Firestore event ID to edit (null means create new event). */
     public static final String EXTRA_EVENT_ID = "event_id";
 
     private static final String PREFS_NAME = "EventLotteryPrefs";
@@ -729,11 +733,23 @@ public class EventEditActivity extends BaseActivity {
                 .apply();
     }
 
+    /**
+     * Reads the currently active event ID from SharedPreferences.
+     *
+     * @param context any Context used to access SharedPreferences
+     * @return the stored event ID, or null if none is set
+     */
     public static String getCurrentEventId(Context context) {
         return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
                 .getString(KEY_CURRENT_EVENT_ID, null);
     }
 
+    /**
+     * Persists the given event ID as the currently active event in SharedPreferences.
+     *
+     * @param context  any Context used to access SharedPreferences
+     * @param eventId  Firestore document ID of the event to remember
+     */
     public static void setCurrentEventId(Context context, String eventId) {
         context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
                 .edit()
@@ -741,6 +757,13 @@ public class EventEditActivity extends BaseActivity {
                 .apply();
     }
 
+    /**
+     * Creates an Intent that opens this activity to edit the given event.
+     *
+     * @param context context used to build the intent
+     * @param eventId Firestore ID of the event to edit
+     * @return configured Intent ready to start EventEditActivity
+     */
     public static Intent newIntent(Context context, String eventId) {
         Intent i = new Intent(context, EventEditActivity.class);
         i.putExtra(EXTRA_EVENT_ID, eventId);

@@ -1,9 +1,5 @@
 package com.example.eventlottery;
 
-/**
- * List adapter for selected (SELECTED/ACCEPTED) WaitingListEntry in SelectedList fragment.
- * Shows entrant display name (from users collection); never exposes device ID. Supports delete callback per entry.
- */
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,9 +15,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * List adapter for SELECTED and ACCEPTED WaitingListEntry items in the SelectedList fragment.
+ * Resolves display names from the users collection and supports an optional delete callback.
+ */
 public class SelectedEntryAdapter extends ArrayAdapter<WaitingListEntry> {
 
+    /** Callback fired when the delete button on an entry row is clicked. */
     public interface OnDeleteClickListener {
+        /**
+         * Called when the user requests to remove the given waiting-list entry.
+         *
+         * @param entry the waiting-list entry to delete
+         */
         void onDeleteClick(WaitingListEntry entry);
     }
 
@@ -30,6 +36,13 @@ public class SelectedEntryAdapter extends ArrayAdapter<WaitingListEntry> {
     @Nullable private final OnDeleteClickListener listener;
     private Map<String, String> deviceIdToName = new HashMap<>();
 
+    /**
+     * Creates a new SelectedEntryAdapter.
+     *
+     * @param activity the hosting FragmentActivity
+     * @param entries  list of selected/accepted waiting-list entries to display
+     * @param listener optional callback for delete button taps; pass null to hide delete buttons
+     */
     public SelectedEntryAdapter(FragmentActivity activity,
                                 ArrayList<WaitingListEntry> entries,
                                 @Nullable OnDeleteClickListener listener) {
@@ -39,7 +52,11 @@ public class SelectedEntryAdapter extends ArrayAdapter<WaitingListEntry> {
         this.listener = listener;
     }
 
-    /** Sets display names (deviceId -> name). Call after loading from users collection. */
+    /**
+     * Sets display names resolved from the users collection.
+     *
+     * @param deviceIdToName map of device ID to entrant display name
+     */
     public void setDeviceIdToName(@NonNull Map<String, String> deviceIdToName) {
         this.deviceIdToName = deviceIdToName != null ? deviceIdToName : new HashMap<>();
     }

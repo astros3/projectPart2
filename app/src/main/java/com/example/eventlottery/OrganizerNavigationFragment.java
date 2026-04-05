@@ -1,10 +1,5 @@
 package com.example.eventlottery;
 
-/**
- * Organizer event menu: Update Event, QR Code, View Geolocation, Lottery Draw, waiting/selected/final lists.
- * Uses EventEditActivity.getCurrentEventId() for the selected event.
- * For private events: shows "Invite Entrants" instead of "View QR Code" (US 02.01.02, 02.01.03).
- */
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -19,8 +14,16 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.google.firebase.firestore.FirebaseFirestore;
 
+/**
+ * Organizer event menu: Update Event, QR Code, View Geolocation, Lottery Draw,
+ * and waiting/selected/final list navigation. For private events shows "Invite Entrants"
+ * instead of "View QR Code" (US 02.01.02, 02.01.03).
+ */
 public class OrganizerNavigationFragment extends Fragment {
 
+    /**
+     * Creates a new OrganizerNavigationFragment and binds it to the organizer navigation layout.
+     */
     public OrganizerNavigationFragment() {
         super(R.layout.organizernavigationfragment);
     }

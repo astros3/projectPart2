@@ -18,6 +18,12 @@ import java.util.ArrayList;
 public class AdminBrowseProfilesAdapter extends ArrayAdapter<Entrant> {
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
+    /**
+     * Creates a new adapter for the given profile list.
+     *
+     * @param context  the hosting context
+     * @param profiles list of entrant/organizer profiles to display
+     */
     public AdminBrowseProfilesAdapter(Context context, ArrayList<Entrant> profiles) {
         super(context, 0, profiles);
     }

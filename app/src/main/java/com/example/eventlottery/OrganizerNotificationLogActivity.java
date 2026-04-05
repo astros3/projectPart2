@@ -31,6 +31,10 @@ import java.util.Locale;
  */
 public class OrganizerNotificationLogActivity extends BaseActivity {
 
+    /** No-arg constructor required by the Android Activity lifecycle. */
+    public OrganizerNotificationLogActivity() {}
+
+    /** Intent extra key for the event ID passed to this activity. */
     public static final String EXTRA_EVENT_ID = "event_id";
 
     private static final class LogEntry {
@@ -85,6 +89,13 @@ public class OrganizerNotificationLogActivity extends BaseActivity {
     private LogAdapter adapter;
     private final ArrayList<LogEntry> items = new ArrayList<>();
 
+    /**
+     * Creates an Intent that opens this activity for the specified event.
+     *
+     * @param context context used to build the intent
+     * @param eventId Firestore ID of the event whose notification log to display
+     * @return configured Intent ready to start OrganizerNotificationLogActivity
+     */
     public static Intent newIntent(Context context, String eventId) {
         Intent i = new Intent(context, OrganizerNotificationLogActivity.class);
         i.putExtra(EXTRA_EVENT_ID, eventId);

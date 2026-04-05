@@ -18,6 +18,8 @@ import java.util.Map;
  */
 public class QRCodeService {
 
+    private QRCodeService() {}
+
     private static final int QR_SIZE_PX = 512;
 
     /**
@@ -48,6 +50,8 @@ public class QRCodeService {
     /**
      * Generates a human-readable promo code (e.g. "555 555") for manual entry.
      * Format: 3 digits, space, 3 digits.
+     *
+     * @return a randomly generated 7-character promo code string
      */
     public static String generatePromoCode() {
         int part1 = (int) (Math.random() * 900) + 100; // 100-999

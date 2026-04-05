@@ -24,8 +24,16 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 import java.util.Date;
 
-//US 03.08.01
+/**
+ * Admin notification log screen (US 03.08.01).
+ * Displays all notifications stored in Firestore "notificationStorageAdmin" with sender and event info.
+ * Access is restricted to devices registered in the Firestore "admins" collection.
+ */
 public class AdminNotificationLogControlScreenActivity extends BaseActivity {
+
+    /** No-arg constructor required by the Android Activity lifecycle. */
+    public AdminNotificationLogControlScreenActivity() {}
+
     //declearation
     private ImageView confirmbackButton1;
     private ListView nottificationlogListView;

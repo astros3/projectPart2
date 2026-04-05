@@ -1,9 +1,5 @@
 package com.example.eventlottery;
 
-/**
- * Lists entrants with status SELECTED (and optionally ACCEPTED) for current event.
- * Event ID from EventEditActivity.getCurrentEventId().
- */
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ListView;
@@ -22,6 +18,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * Shows entrants with status SELECTED or ACCEPTED for the current event.
+ * Event ID is read from EventEditActivity shared preferences.
+ */
 public class SelectedList extends Fragment {
 
     private final ArrayList<WaitingListEntry> selectedEntries = new ArrayList<>();
@@ -29,6 +29,9 @@ public class SelectedList extends Fragment {
     private FirebaseFirestore db;
     private String eventId;
 
+    /**
+     * Creates a new SelectedList fragment and binds it to the selected_list layout.
+     */
     public SelectedList() {
         super(R.layout.selected_list);
     }

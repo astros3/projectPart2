@@ -1,9 +1,5 @@
 package com.example.eventlottery;
 
-/**
- * Shows the event's location on a map for the organizer. The location is the one set in
- * Update Event details. Loads event from Firestore and geocodes the address to display on map.
- */
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
@@ -29,7 +25,18 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.Executors;
 
+/**
+ * Shows the event's location on a map for the organizer.
+ * Loads the event from Firestore and geocodes the address to display a marker on the map.
+ */
 public class EventLocationFragment extends Fragment implements OnMapReadyCallback {
+
+    /**
+     * Creates a new EventLocationFragment and binds it to the geolocation layout.
+     */
+    public EventLocationFragment() {
+        super(R.layout.geolocation);
+    }
 
     private static final String TAG = "EventLocation";
 
@@ -43,10 +50,6 @@ public class EventLocationFragment extends Fragment implements OnMapReadyCallbac
     private TextView textLocationAddress;
     private GoogleMap mMap;
     private FirebaseFirestore db;
-
-    public EventLocationFragment() {
-        super(R.layout.geolocation);
-    }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {

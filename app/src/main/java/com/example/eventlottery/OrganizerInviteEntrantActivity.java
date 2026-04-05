@@ -34,6 +34,10 @@ import java.util.List;
  */
 public class OrganizerInviteEntrantActivity extends BaseActivity {
 
+    /** No-arg constructor required by the Android Activity lifecycle. */
+    public OrganizerInviteEntrantActivity() {}
+
+    /** Intent extra key for the event ID passed to this activity. */
     public static final String EXTRA_EVENT_ID = "event_id";
 
     private FirebaseFirestore db;
@@ -172,6 +176,13 @@ public class OrganizerInviteEntrantActivity extends BaseActivity {
                         Toast.makeText(this, "Failed to send invite", Toast.LENGTH_SHORT).show());
     }
 
+    /**
+     * Creates an Intent that opens this activity for the specified event.
+     *
+     * @param context context used to build the intent
+     * @param eventId Firestore ID of the private event to invite entrants to
+     * @return configured Intent ready to start OrganizerInviteEntrantActivity
+     */
     public static Intent newIntent(Context context, String eventId) {
         Intent i = new Intent(context, OrganizerInviteEntrantActivity.class);
         i.putExtra(EXTRA_EVENT_ID, eventId);

@@ -52,6 +52,10 @@ import java.util.Map;
  */
 public class EventDetailsActivity extends BaseActivity {
 
+    /** No-arg constructor required by the Android Activity lifecycle. */
+    public EventDetailsActivity() {}
+
+    /** Intent extra key for the Firestore event ID to load. */
     public static final String EXTRA_EVENT_ID = "event_id";
     /** When true, toolbar is white (entrant view); when false, black (organizer view). */
     public static final String EXTRA_VIEW_AS_ENTRANT = "view_as_entrant";
@@ -905,10 +909,20 @@ public class EventDetailsActivity extends BaseActivity {
                                 Toast.LENGTH_SHORT).show());
     }
 
+    /**
+     * Returns whether the currently loaded event is a private (invite-only) event.
+     *
+     * @return true if the event is private
+     */
     public boolean isLoadedEventIsPrivate() {
         return loadedEventIsPrivate;
     }
 
+    /**
+     * Sets whether the currently loaded event is a private (invite-only) event.
+     *
+     * @param loadedEventIsPrivate true to mark the loaded event as private
+     */
     public void setLoadedEventIsPrivate(boolean loadedEventIsPrivate) {
         this.loadedEventIsPrivate = loadedEventIsPrivate;
     }

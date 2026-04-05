@@ -18,13 +18,27 @@ import java.util.List;
  */
 public class CommentAdapter extends ArrayAdapter<String> {
 
+    /** Callback fired when the delete button on a comment row is clicked. */
     public interface OnDeleteClickListener {
+        /**
+         * Called when the user requests to delete the comment at the given position.
+         *
+         * @param position adapter position of the comment to delete
+         */
         void onDelete(int position);
     }
 
     private final boolean organizerMode;
     private final OnDeleteClickListener deleteListener;
 
+    /**
+     * Creates a new CommentAdapter.
+     *
+     * @param context        the hosting context
+     * @param texts          list of comment strings to display
+     * @param organizerMode  when true a delete button is shown on each row
+     * @param deleteListener callback invoked when the delete button is tapped
+     */
     public CommentAdapter(@NonNull Context context,
                           @NonNull List<String> texts,
                           boolean organizerMode,

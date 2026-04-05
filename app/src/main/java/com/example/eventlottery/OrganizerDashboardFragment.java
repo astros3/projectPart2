@@ -27,6 +27,9 @@ import java.util.List;
  */
 public class OrganizerDashboardFragment extends Fragment {
 
+    /** No-arg constructor required by the Fragment framework. */
+    public OrganizerDashboardFragment() {}
+
     private FirebaseFirestore db;
     private String deviceId;
     private OrganizerEventAdapter adapter;

@@ -1,10 +1,5 @@
 package com.example.eventlottery;
 
-/**
- * Organizer lottery: enter count N, randomly select N PENDING waiting-list entrants and set
- * their status to SELECTED. Notifies winners (US 01.04.01) and losers (US 01.04.02) via
- * NotificationHelper after the draw. Uses EventEditActivity.getCurrentEventId().
- */
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -31,10 +26,18 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * Organizer lottery draw screen. The organizer enters a count N; N PENDING waiting-list
+ * entrants are randomly selected and set to SELECTED. Winners and losers are notified
+ * via NotificationHelper (US 01.04.01, 01.04.02).
+ */
 public class LotteryDraw extends Fragment {
 
     private FirebaseFirestore db;
 
+    /**
+     * Creates a new LotteryDraw fragment and binds it to the lotterydraw layout.
+     */
     public LotteryDraw() {
         super(R.layout.lotterydraw);
     }

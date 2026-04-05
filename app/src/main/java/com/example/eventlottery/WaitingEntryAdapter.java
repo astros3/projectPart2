@@ -1,9 +1,5 @@
 package com.example.eventlottery;
 
-/**
- * List adapter for WaitingListEntry in WaitingListFragment. Shows entrant display name (from users collection);
- * never exposes device ID. Can navigate to GeolocationFragment for an entrant.
- */
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -22,6 +18,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * List adapter for WAITING/PENDING WaitingListEntry items in WaitingListFragment.
+ * Shows entrant display names resolved from the users collection; never exposes device IDs.
+ * Tapping an entry can navigate to GeolocationFragment to view the entrant's location.
+ */
 public class WaitingEntryAdapter extends ArrayAdapter<WaitingListEntry> {
 
     private static final String TAG = "ViewGeolocation";
@@ -30,6 +31,12 @@ public class WaitingEntryAdapter extends ArrayAdapter<WaitingListEntry> {
     private final ArrayList<WaitingListEntry> entries;
     private Map<String, String> deviceIdToName = new HashMap<>();
 
+    /**
+     * Creates a new WaitingEntryAdapter.
+     *
+     * @param activity the hosting FragmentActivity
+     * @param entries  list of waiting/pending waiting-list entries to display
+     */
     public WaitingEntryAdapter(@NonNull FragmentActivity activity,
                                @NonNull ArrayList<WaitingListEntry> entries) {
         super(activity, 0, entries);
@@ -37,7 +44,11 @@ public class WaitingEntryAdapter extends ArrayAdapter<WaitingListEntry> {
         this.entries = entries;
     }
 
-    /** Sets the display names for entrants (deviceId -> name). Call after loading from users collection. */
+    /**
+     * Sets display names resolved from the users collection.
+     *
+     * @param deviceIdToName map of device ID to entrant display name
+     */
     public void setDeviceIdToName(@NonNull Map<String, String> deviceIdToName) {
         this.deviceIdToName = deviceIdToName;
     }

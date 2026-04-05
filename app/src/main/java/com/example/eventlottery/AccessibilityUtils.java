@@ -21,7 +21,12 @@ public final class AccessibilityUtils {
 
     private AccessibilityUtils() {}
 
-    /** Returns true when the user has an accessibility service with touch exploration active. */
+    /**
+     * Returns true when the user has an accessibility service with touch exploration active.
+     *
+     * @param context any Context used to reach the system AccessibilityManager
+     * @return true if touch exploration (e.g. TalkBack) is currently enabled
+     */
     public static boolean isTouchExplorationEnabled(Context context) {
         AccessibilityManager am =
                 (AccessibilityManager) context.getSystemService(Context.ACCESSIBILITY_SERVICE);
@@ -36,6 +41,9 @@ public final class AccessibilityUtils {
      * Call this after the layout has been inflated (e.g. from onResume) so
      * that view dimensions are already known, but it also works before first
      * measure because setMinimumWidth/Height only sets a floor.
+     *
+     * @param context any Context used to check whether touch exploration is active
+     * @param root    root view of the hierarchy to traverse
      */
     public static void enlargeSmallTouchTargets(Context context, View root) {
         if (!isTouchExplorationEnabled(context)) return;

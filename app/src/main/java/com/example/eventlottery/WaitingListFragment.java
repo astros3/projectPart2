@@ -1,8 +1,5 @@
 package com.example.eventlottery;
 
-/**
- * Shows PENDING entries in events/{eventId}/waitingList. Event ID from EventEditActivity.getCurrentEventId().
- */
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -22,6 +19,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * Shows PENDING waiting-list entries for the current event.
+ * Event ID is read from EventEditActivity shared preferences.
+ */
 public class WaitingListFragment extends Fragment {
 
     private static final String TAG = "ViewGeolocation";
@@ -31,6 +32,9 @@ public class WaitingListFragment extends Fragment {
     private FirebaseFirestore db;
     private String eventId;
 
+    /**
+     * Creates a new WaitingListFragment and binds it to the waiting_list layout.
+     */
     public WaitingListFragment() {
         super(R.layout.waiting_list);
     }

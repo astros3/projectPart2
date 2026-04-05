@@ -24,10 +24,21 @@ import java.util.List;
  */
 public class EventFilterDialogFragment extends DialogFragment {
 
+    /** Fragment result request key used to receive the updated criteria in the host fragment/activity. */
     public static final String REQUEST_KEY = "event_filter_request";
+    /** Bundle key for the EventFilterCriteria object in the fragment result. */
     public static final String BUNDLE_CRITERIA = "criteria";
     private static final String ARG_CRITERIA = "arg_criteria";
 
+    /** No-arg constructor required by the Fragment framework. */
+    public EventFilterDialogFragment() {}
+
+    /**
+     * Creates a new dialog fragment pre-populated with the given filter criteria.
+     *
+     * @param current the current filter state to pre-fill; pass null to start empty
+     * @return a new EventFilterDialogFragment instance
+     */
     public static EventFilterDialogFragment newInstance(EventFilterCriteria current) {
         EventFilterDialogFragment f = new EventFilterDialogFragment();
         Bundle args = new Bundle();

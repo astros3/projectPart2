@@ -27,6 +27,10 @@ import java.util.ArrayList;
  * Scan nav opens QRCodeActivity (organizer screen); consider opening scanner → EventDetails instead.
  */
 public class EntrantHistoryScreenActivity extends BaseActivity {
+
+    /** No-arg constructor required by the Android Activity lifecycle. */
+    public EntrantHistoryScreenActivity() {}
+
     private ListView eventshistory;
 
     private ImageView notificationbellbutton;
@@ -166,6 +170,10 @@ public class EntrantHistoryScreenActivity extends BaseActivity {
         });
     }
 
+    /**
+     * Notifies the adapter that the event history list has changed (may be empty).
+     * Called after the list is cleared or updated from Firestore.
+     */
     public void listisempty(){
         entranthistoryadapter.notifyDataSetChanged();
 

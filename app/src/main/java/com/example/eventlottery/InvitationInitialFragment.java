@@ -1,9 +1,5 @@
 package com.example.eventlottery;
 
-/**
- * Invitation flow entry: loads event and waiting-list status for current device. May navigate
- * to InvitationResponseFragment. Referenced in nav graph; integration with main flows may be partial.
- */
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -16,12 +12,19 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.google.firebase.firestore.FirebaseFirestore;
 
+/**
+ * Invitation flow entry point: loads the event and waiting-list status for the current device.
+ * Lets the entrant accept or decline a SELECTED invitation.
+ */
 public class InvitationInitialFragment extends Fragment {
 
     private FirebaseFirestore db;
     private String eventId;
     private String deviceId;
 
+    /**
+     * Creates a new InvitationInitialFragment and binds it to the invitation initial layout.
+     */
     public InvitationInitialFragment() {
         super(R.layout.fragment_invitation_initial);
     }

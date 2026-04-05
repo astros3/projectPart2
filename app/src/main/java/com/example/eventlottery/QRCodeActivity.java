@@ -17,12 +17,21 @@ import com.google.firebase.firestore.FirebaseFirestore;
  */
 public class QRCodeActivity extends BaseActivity {
 
+    /** No-arg constructor required by the Android Activity lifecycle. */
+    public QRCodeActivity() {}
+
+    /** Intent extra key for the Firestore event ID passed to this activity. */
     public static final String EXTRA_EVENT_ID = "event_id";
 
     /** Prefix for promotional QR payloads; must match scanner parsing in the entrant scan flow. */
     public static final String PROMOTIONAL_QR_URI_PREFIX = "eventlottery://event/";
 
-    /** Deep link encoded in the organizer promotional QR (opens event details, poster, and description). */
+    /**
+     * Builds the deep-link payload encoded in the organizer's promotional QR code.
+     *
+     * @param eventId the Firestore event ID to embed in the payload
+     * @return URI string in the format eventlottery://event/{eventId}
+     */
     public static String buildPromotionalQrPayload(String eventId) {
         if (eventId == null || eventId.isEmpty()) {
             return PROMOTIONAL_QR_URI_PREFIX;
@@ -143,6 +152,13 @@ public class QRCodeActivity extends BaseActivity {
                 });
     }
 
+    /**
+     * Creates an Intent that opens this activity for the specified event.
+     *
+     * @param context context used to build the intent
+     * @param eventId Firestore ID of the event whose QR code to display
+     * @return configured Intent ready to start QRCodeActivity
+     */
     public static Intent newIntent(android.content.Context context, String eventId) {
         Intent i = new Intent(context, QRCodeActivity.class);
         i.putExtra(EXTRA_EVENT_ID, eventId);

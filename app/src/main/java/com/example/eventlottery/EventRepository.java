@@ -1,12 +1,12 @@
 package com.example.eventlottery;
 
+import java.util.Date;
+
 /**
  * Singleton holding a "current" event for organizer flows. Not used elsewhere; current event
  * is tracked via EventEditActivity SharedPreferences instead.
  * Issue: Constructor uses null dummyOrganizer (NPE if getInstance() is ever called).
  */
-import java.util.Date;
-
 public class EventRepository {
 
     private static EventRepository instance;
@@ -32,6 +32,10 @@ public class EventRepository {
         );
     }
 
+    /**
+     * Returns the singleton instance of EventRepository, creating it if necessary.
+     * @return the single EventRepository instance
+     */
     public static EventRepository getInstance() {
         if (instance == null) {
             instance = new EventRepository();
@@ -39,10 +43,18 @@ public class EventRepository {
         return instance;
     }
 
+    /**
+     * Returns the currently held event.
+     * @return the current Event
+     */
     public Event getCurrentEvent() {
         return currentEvent;
     }
 
+    /**
+     * Replaces the currently held event.
+     * @param currentEvent the new Event to store
+     */
     public void setCurrentEvent(Event currentEvent) {
         this.currentEvent = currentEvent;
     }

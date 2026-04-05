@@ -1,9 +1,5 @@
 package com.example.eventlottery;
 
-/**
- * Invitation response UI: accept/decline for SELECTED entrants. Updates waitingList doc status
- * to ACCEPTED or DECLINED. Requires eventId (e.g. from nav args).
- */
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -16,12 +12,19 @@ import androidx.fragment.app.Fragment;
 
 import com.google.firebase.firestore.FirebaseFirestore;
 
+/**
+ * Invitation response screen for SELECTED entrants. Allows the entrant to accept or decline,
+ * updating the waitingList document status to ACCEPTED or DECLINED.
+ */
 public class InvitationResponseFragment extends Fragment {
 
     private FirebaseFirestore db;
     private String eventId;
     private String deviceId;
 
+    /**
+     * Creates a new InvitationResponseFragment and binds it to the invitation response layout.
+     */
     public InvitationResponseFragment() {
         super(R.layout.invitation_response);
     }

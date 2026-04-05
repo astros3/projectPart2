@@ -1,11 +1,5 @@
 package com.example.eventlottery;
 
-/**
- * Launcher: role selection (Entrant / Organizer / Admin). Profiles live in separate
- * Firestore collections (users, organizers, admins) keyed by device ID.
- * An admin device may hold at most one profile per role; each profile is edited in its own flow
- * (no syncing of name or other fields from admin into entrant/organizer).
- */
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -14,6 +8,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.Toast;
+
+import androidx.appcompat.widget.SwitchCompat;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -27,7 +23,14 @@ import com.google.firebase.firestore.SetOptions;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Launcher screen for role selection (Entrant, Organizer, or Admin).
+ * Each role has its own Firestore collection (users, organizers, admins) keyed by device ID.
+ */
 public class WelcomePageActivity extends BaseActivity {
+
+    /** No-arg constructor required by the Android Activity lifecycle. */
+    public WelcomePageActivity() {}
 
     LinearLayout userbutton;
     LinearLayout organizerbutton;
@@ -51,6 +54,13 @@ public class WelcomePageActivity extends BaseActivity {
         organizerbutton = findViewById(R.id.organizerbutton);
         adminbutton = findViewById(R.id.adminbutton);
         adminbutton.setVisibility(View.GONE); // show only after we confirm user is in "admins" collection
+
+        SwitchCompat switchAccessibility = findViewById(R.id.switchAccessibility);
+        switchAccessibility.setChecked(AppPreferences.isAccessibilityMode(this));
+        switchAccessibility.setOnCheckedChangeListener((btn, isChecked) -> {
+            AppPreferences.setAccessibilityMode(this, isChecked);
+            recreate();
+        });
 
         // Admin button visible only to users who have an entry in Firestore "admins" collection
         String deviceId = DeviceIdManager.getDeviceId(this);

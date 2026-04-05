@@ -9,7 +9,14 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.util.ArrayList;
 
+/**
+ * Admin screen for browsing and deleting event poster images (US 03.03.01).
+ * Displays a grid of all event posters fetched from Firestore; each image can be deleted.
+ */
 public class AdminBrowseImagesActivity extends BaseActivity {
+
+    /** No-arg constructor required by the Android Activity lifecycle. */
+    public AdminBrowseImagesActivity() {}
 
     private GridView imagesGrid;
     private AdminBrowseImagesAdapter adapter;

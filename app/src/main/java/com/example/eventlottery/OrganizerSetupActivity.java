@@ -1,9 +1,5 @@
 package com.example.eventlottery;
 
-/**
- * First-time organizer registration: firstName, lastName, email, phone. Writes Organizer
- * to organizers/{deviceId}, then starts MainActivity. Uses merge so fields like FCM token persist.
- */
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -16,7 +12,14 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
 
+/**
+ * First-time organizer registration screen. Collects firstName, lastName, email, and phone,
+ * writes an Organizer document to organizers/{deviceId}, then launches MainActivity.
+ */
 public class OrganizerSetupActivity extends BaseActivity {
+
+    /** No-arg constructor required by the Android Activity lifecycle. */
+    public OrganizerSetupActivity() {}
 
     private static final String COLLECTION_ORGANIZERS = "organizers";
 

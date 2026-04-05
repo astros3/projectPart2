@@ -34,6 +34,18 @@ public class AdminNotificationLogItemTemporary {
         this(notificationsenttimeinput, notificationtitleinput, notificationmessageinput, notificationrelatedeventidinput, notificationsendernameinput, notificationrelatedeventnameinput, notificationidinput, "");
     }
 
+    /**
+     * Full constructor including receiver name (resolved asynchronously after construction).
+     *
+     * @param notificationsenttimeinput       time (ms) when the notification was sent
+     * @param notificationtitleinput          title of the notification
+     * @param notificationmessageinput        body message of the notification
+     * @param notificationrelatedeventidinput Firestore ID of the related event
+     * @param notificationsendernameinput     display name of the organizer who sent the notification
+     * @param notificationrelatedeventnameinput display name of the related event
+     * @param notificationidinput             Firestore document ID of the notification
+     * @param notificationreceivernameinput   display name of the entrant who received the notification
+     */
     public AdminNotificationLogItemTemporary(long notificationsenttimeinput, String notificationtitleinput, String notificationmessageinput, String notificationrelatedeventidinput, String notificationsendernameinput, String notificationrelatedeventnameinput, String notificationidinput, String notificationreceivernameinput) {
         this.notificationsenttime = notificationsenttimeinput;
         this.notificationtitle = notificationtitleinput;
@@ -107,7 +119,9 @@ public class AdminNotificationLogItemTemporary {
     }
 
     /**
-     * setter for receiver name (resolved async after construction)
+     * Setter for receiver name (resolved async after construction).
+     *
+     * @param name display name of the entrant who received the notification
      */
     public void setReceiverName(String name){
         this.notificationreceivername = name != null ? name : "";

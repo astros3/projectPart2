@@ -10,7 +10,16 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.firestore.FirebaseFirestore;
 
+/**
+ * Admin hub screen that provides navigation to the admin sub-screens:
+ * event control, profile browse, image browse, notification log, and admin profile.
+ * Access is restricted to devices registered in the Firestore "admins" collection.
+ */
 public class AdminMainScreenActivity extends BaseActivity {
+
+    /** No-arg constructor required by the Android Activity lifecycle. */
+    public AdminMainScreenActivity() {}
+
     private ImageView backButton;
     private LinearLayout adminReviewEventsButton;
     private LinearLayout adminReviewProfileButton;
@@ -45,6 +54,10 @@ public class AdminMainScreenActivity extends BaseActivity {
                     finish();
                 });
     }
+    /**
+     * Binds UI views and sets up click listeners for all admin navigation buttons.
+     * Called after admin access is verified.
+     */
     public void MainNavigation(){
         backButton = findViewById(R.id.back_button);
         adminReviewEventsButton = findViewById(R.id.admin_review_events_button);

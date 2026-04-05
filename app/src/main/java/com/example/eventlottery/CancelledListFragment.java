@@ -1,8 +1,5 @@
 package com.example.eventlottery;
 
-/**
- * Lists entrants with status DECLINED or CANCELLED (Option B) for the current event.
- */
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ListView;
@@ -21,16 +18,23 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * Lists entrants with status DECLINED or CANCELLED for the current event.
+ * Allows the organizer to redraw a replacement from the pending pool or notify cancelled entrants.
+ */
 public class CancelledListFragment extends Fragment {
+
+    /**
+     * Creates a new CancelledListFragment and binds it to the cancelled_list layout.
+     */
+    public CancelledListFragment() {
+        super(R.layout.cancelled_list);
+    }
 
     private final ArrayList<WaitingListEntry> cancelledEntries = new ArrayList<>();
     private SelectedEntryAdapter adapter;
     private FirebaseFirestore db;
     private String eventId;
-
-    public CancelledListFragment() {
-        super(R.layout.cancelled_list);
-    }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {

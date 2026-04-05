@@ -21,6 +21,14 @@ public final class LotteryRedrawHelper {
 
     private LotteryRedrawHelper() {}
 
+    /**
+     * Randomly promotes one PENDING entrant to SELECTED and notifies them.
+     *
+     * @param context   context used for Toast messages and string resources
+     * @param db        Firestore instance
+     * @param eventId   Firestore ID of the event to redraw from
+     * @param onSuccess runnable executed after a successful redraw; may be null
+     */
     public static void redrawOneFromPending(Context context,
                                             FirebaseFirestore db,
                                             String eventId,

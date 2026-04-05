@@ -20,6 +20,10 @@ import java.util.List;
  * Implements US 03.05.01 (Browse)
  */
 public class AdminBrowseProfilesActivity extends BaseActivity {
+
+    /** No-arg constructor required by the Android Activity lifecycle. */
+    public AdminBrowseProfilesActivity() {}
+
     private ArrayList<Entrant> displayList;
     private ArrayList<Entrant> backupList;
     private AdminBrowseProfilesAdapter adapter;

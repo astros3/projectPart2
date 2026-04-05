@@ -19,6 +19,7 @@ import java.util.Map;
 
 public class NotificationHelper {
 
+    private NotificationHelper() {}
 
     /**
      * Notification type for when an entrant wins the lottery (US 01.04.01).
@@ -30,6 +31,7 @@ public class NotificationHelper {
      */
     public static final String TYPE_LOTTERY_LOST = "LOTTERY_LOST";
 
+    /** Notification type for when an entrant is personally invited to a private event (US 01.05.06). */
     public static final String TYPE_PRIVATE_INVITE = "PRIVATE_INVITE";
 
 
@@ -54,6 +56,7 @@ public class NotificationHelper {
      * Title/body for the “you won the lottery” / sign-up invitation.
      */
     public static final String LOTTERY_WIN_TITLE = "You've been selected! 🎉";
+    /** Default body text for the lottery-win notification. */
     public static final String LOTTERY_WIN_MESSAGE =
             "Congratulations! You were chosen from the waiting list. Open the event to accept or decline your spot.";
 
@@ -61,6 +64,7 @@ public class NotificationHelper {
      * Title/body for the “you were not selected” notification.
      */
     public static final String LOTTERY_LOST_TITLE = "Lottery update";
+    /** Default body text for the lottery-loss notification. */
     public static final String LOTTERY_LOST_MESSAGE =
             "Thank you for your interest. You were not selected from the waiting list this time.";
 
@@ -68,12 +72,17 @@ public class NotificationHelper {
      * Title/body for the private event invite notification (US 01.05.06).
      */
     public static final String PRIVATE_INVITE_TITLE = "You've been invited! 🔒";
+    /** Default body text for the private event invite notification. */
     public static final String PRIVATE_INVITE_MESSAGE =
             "You have been personally invited to join the waiting list for a private event. Open the event to accept or decline.";
 
 
     /**
      * Sends the standard lottery-win notification (US 01.04.01).
+     *
+     * @param db       Firestore instance
+     * @param deviceId target entrant's device ID
+     * @param eventId  Firestore ID of the related event
      */
     public static void sendLotteryWinNotification(FirebaseFirestore db,
                                                   String deviceId,
@@ -84,6 +93,10 @@ public class NotificationHelper {
 
     /**
      * Sends the standard lottery-loss notification (US 01.04.02).
+     *
+     * @param db       Firestore instance
+     * @param deviceId target entrant's device ID
+     * @param eventId  Firestore ID of the related event
      */
     public static void sendLotteryLossNotification(FirebaseFirestore db,
                                                    String deviceId,
@@ -110,6 +123,12 @@ public class NotificationHelper {
     /**
      * Notifies a user they were selected as co-organizer for an event.
      * Respects notification opt-out (US 01.04.03).
+     *
+     * @param db       Firestore instance
+     * @param deviceId target entrant's device ID
+     * @param eventId  Firestore ID of the related event
+     * @param title    notification title text
+     * @param message  notification body text
      */
     public static void sendCoOrganizerAssignedNotification(FirebaseFirestore db,
                                                           String deviceId,
@@ -121,8 +140,12 @@ public class NotificationHelper {
 
     /**
      * Notifies a cancelled or declined entrant that they may rejoin the event (organizer action).
-     * Title and body come from string resources notification_cancelled_rejoin_title and
-     * notification_cancelled_rejoin_message. Respects notification opt-out.
+     * Title and body come from string resources. Respects notification opt-out.
+     *
+     * @param db       Firestore instance
+     * @param context  context used to retrieve string resources
+     * @param deviceId target entrant's device ID
+     * @param eventId  Firestore ID of the related event
      */
     public static void sendCancelledEntrantRejoinNotification(FirebaseFirestore db,
                                                               Context context,
@@ -134,8 +157,13 @@ public class NotificationHelper {
     }
 
     /**
-     * Notifies pending waiting-list entrants with an encouraging update (organizer action).
-     * Does not use the lottery-win copy — see TYPE_WAITING_LIST_UPDATE.
+     * Notifies a pending waiting-list entrant with an encouraging update (organizer action).
+     * Uses TYPE_WAITING_LIST_UPDATE — not the lottery-win copy.
+     *
+     * @param db       Firestore instance
+     * @param context  context used to retrieve string resources
+     * @param deviceId target entrant's device ID
+     * @param eventId  Firestore ID of the related event
      */
     public static void sendWaitingListUpdateNotification(FirebaseFirestore db,
                                                          Context context,
@@ -192,8 +220,13 @@ public class NotificationHelper {
     }
 
     /**
-     * Stores a copy of every notification in a top-level collection for admin log review
-     * (US 03.08.01).
+     * Stores a copy of every notification in the top-level admin log collection (US 03.08.01).
+     *
+     * @param db         Firestore instance
+     * @param title      notification title to store
+     * @param message    notification body to store
+     * @param eventId    Firestore ID of the related event
+     * @param receiverID device ID of the entrant who received the notification
      */
     public static void NotificationMAINstorageForAdmin(FirebaseFirestore db,
                                                        String title,

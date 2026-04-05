@@ -1,10 +1,5 @@
 package com.example.eventlottery;
 
-/**
- * Edit entrant profile in Firestore users/{deviceId}. Load/save name, email, phone,
- * and notification preference (US 01.04.03). Optional delete profile.
- * Bottom nav: Home, Scan, History, Profile.
- */
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -19,7 +14,14 @@ import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.WriteBatch;
 
+/**
+ * Lets an entrant edit their profile (name, email, phone, notification preference) in Firestore.
+ * Also provides an option to delete the profile (US 01.04.03).
+ */
 public class EntrantProfileActivity extends BaseActivity {
+
+    /** No-arg constructor required by the Android Activity lifecycle. */
+    public EntrantProfileActivity() {}
 
     /** Firestore collection for entrant profiles (used when deleting user document). */
     public static final String USERS_COLLECTION = "users";

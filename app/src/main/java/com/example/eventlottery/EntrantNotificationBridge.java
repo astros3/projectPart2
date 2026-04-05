@@ -21,7 +21,10 @@ public final class EntrantNotificationBridge {
     private EntrantNotificationBridge() {}
 
     /**
-     * After verifying an entrant profile exists and notifications are enabled (async).
+     * Verifies the entrant profile exists and notifications are enabled before registering the listener.
+     * Safe to call at app startup; the Firestore check is performed asynchronously.
+     *
+     * @param appContext application context used to access Firestore and DeviceIdManager
      */
     public static void tryRegisterAfterEntrantCheck(Context appContext) {
         Context ctx = appContext.getApplicationContext();
@@ -46,7 +49,12 @@ public final class EntrantNotificationBridge {
                 });
     }
 
-    /** Idempotent; call from entrant home so late profile creation still registers. */
+    /**
+     * Attaches the Firestore notification listener if it is not already active.
+     * Idempotent — safe to call repeatedly (e.g. from onResume of the entrant home screen).
+     *
+     * @param context any Context; the application context is extracted internally
+     */
     public static void ensureRegistered(Context context) {
         Context ctx = context.getApplicationContext();
         ensureRegistered(ctx, DeviceIdManager.getDeviceId(ctx));

@@ -19,6 +19,9 @@ import java.util.Map;
  */
 public class AdminProfileActivity extends AppCompatActivity {
 
+    /** No-arg constructor required by the Android Activity lifecycle. */
+    public AdminProfileActivity() {}
+
     private static final String COLLECTION_ADMINS = "admins";
 
     private FirebaseFirestore db;

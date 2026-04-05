@@ -11,10 +11,20 @@ import android.os.Build;
  */
 public class NotificationChannelHelper {
 
+    /** No-arg constructor; this class is used as a static utility. */
+    private NotificationChannelHelper() {}
+
+    /** The notification channel ID used when building all app notifications. */
     public static final String CHANNEL_ID = "event_lottery_notifications";
     private static final String CHANNEL_NAME = "Event Notifications";
     private static final String CHANNEL_DESC = "Lottery results, invitations, and organizer messages";
 
+    /**
+     * Creates and registers the app notification channel on Android 8+.
+     * Safe to call multiple times; the system ignores duplicate channel registrations.
+     *
+     * @param context context used to access the NotificationManager system service
+     */
     public static void createChannel(Context context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(

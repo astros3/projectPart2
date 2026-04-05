@@ -14,7 +14,20 @@ public class WaitingListEntry {
      * (US 01.05.06 / 01.05.07). Accepting changes status to PENDING.
      */
     public enum Status {
-        WAITING, PENDING, SELECTED, ACCEPTED, DECLINED, CANCELLED, INVITED
+        /** Entrant is on the waiting list but has not yet been selected. */
+        WAITING,
+        /** Entrant was drawn in the lottery and is awaiting a response window. */
+        PENDING,
+        /** Entrant has been selected and notified; awaiting accept/decline. */
+        SELECTED,
+        /** Entrant accepted their lottery or private invitation. */
+        ACCEPTED,
+        /** Entrant declined their lottery or private invitation. */
+        DECLINED,
+        /** Entrant or organizer cancelled the registration. */
+        CANCELLED,
+        /** Entrant was personally invited to join a private event's waiting list. */
+        INVITED
     }
 
     private String deviceId;

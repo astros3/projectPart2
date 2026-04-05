@@ -6,6 +6,10 @@
     <string name="export_csv_success">CSV exported. Share or save the file.</string>
     <string name="export_csv_no_entrants">No entrants to export.</string>
     <string name="export_csv_failed">Could not export CSV.</string>
+    <string name="export_pdf">Export PDF</string>
+    <string name="export_final_list_pdf">Export final list (PDF)</string>
+    <string name="export_pdf_success">PDF exported. Share or save the file.</string>
+    <string name="export_pdf_failed">Could not export PDF.</string>
     <string name="notifications">Notifications</string>
     <string name="comments">Comments</string>
     <string name="notification_empty">No notifications yet</string>

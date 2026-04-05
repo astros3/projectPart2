@@ -25,6 +25,9 @@ import java.util.Map;
  */
 public class OrganizerEventAdapter extends RecyclerView.Adapter<OrganizerEventAdapter.EventCardViewHolder> {
 
+    /** No-arg constructor required by the RecyclerView.Adapter framework. */
+    public OrganizerEventAdapter() {}
+
     private final List<Event> events = new ArrayList<>();
     private OnEventActionListener listener;
     private String currentDeviceId = "";

@@ -15,6 +15,9 @@ import com.google.firebase.firestore.FirebaseFirestore;
  */
 public class OrganizerProfileActivity extends BaseActivity {
 
+    /** No-arg constructor required by the Android Activity lifecycle. */
+    public OrganizerProfileActivity() {}
+
     private static final String COLLECTION_ORGANIZERS = "organizers";
 
     private FirebaseFirestore db;

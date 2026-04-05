@@ -9,6 +9,10 @@ import java.io.Serializable;
 public class EventFilterCriteria implements Serializable {
     private static final long serialVersionUID = 1L;
 
+    /** Creates a new EventFilterCriteria with all fields at their default (no filtering). */
+    public EventFilterCriteria() {}
+
+    /** Keyword to match against event title or description; empty string means no keyword filter. */
     private String keyword = "";
     /** Empty or "Any type" means no event-type filter. */
     private String eventType = "";

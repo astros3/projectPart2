@@ -1,8 +1,5 @@
 package com.example.eventlottery;
 
-/**
- * Shows entrant location on a map. If only locationAddress is in DB, geocodes it for lat/lng.
- */
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
@@ -28,6 +25,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.Executors;
 
+/**
+ * Shows an entrant's location on a map for the organizer.
+ * If only a text address is stored, it is geocoded to obtain lat/lng before placing a marker.
+ */
 public class GeolocationFragment extends Fragment implements OnMapReadyCallback {
 
     private static final String TAG = "ViewGeolocation";
@@ -43,6 +44,9 @@ public class GeolocationFragment extends Fragment implements OnMapReadyCallback 
     private GoogleMap mMap;
     private FirebaseFirestore db;
 
+    /**
+     * Creates a new GeolocationFragment and binds it to the geolocation layout.
+     */
     public GeolocationFragment() {
         super(R.layout.geolocation);
     }

@@ -28,6 +28,10 @@ import java.util.Date;
  * Access restricted to devices that have an entry in Firestore "admins" collection (document ID = deviceId).
  */
 public class AdminEventControlScreenActivity extends BaseActivity {
+
+    /** No-arg constructor required by the Android Activity lifecycle. */
+    public AdminEventControlScreenActivity() {}
+
     private ArrayList<Event> admineventlist;
     private ArrayList<Event> alladmineventlistbackup;
     private AdminEventControlScreenAdapter admineventadapter;

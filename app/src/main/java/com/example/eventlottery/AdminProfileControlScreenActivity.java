@@ -24,9 +24,16 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 import java.util.Date;
 
-//US 03.02.01
-//US 03.07.01
+/**
+ * Admin screen for browsing and managing entrant/organizer profiles (US 03.02.01, US 03.07.01).
+ * Lists all profiles from Firestore with an in-memory search by name.
+ * Access is restricted to devices registered in the Firestore "admins" collection.
+ */
 public class AdminProfileControlScreenActivity extends BaseActivity {
+
+    /** No-arg constructor required by the Android Activity lifecycle. */
+    public AdminProfileControlScreenActivity() {}
+
     //declearation
     private ImageView confirmbackButton;
     private ImageView confirmsearchButton;

@@ -34,13 +34,23 @@ public class EntrantMainScreenAdapter extends ArrayAdapter<Event> {
     private Context context;
     private Map<String, String> eventIdToStatus = new HashMap<>();
 
+    /**
+     * Creates a new EntrantMainScreenAdapter.
+     *
+     * @param context the hosting context
+     * @param events  list of events to display
+     */
     public EntrantMainScreenAdapter(Context context, ArrayList<Event> events){
         super(context, 0, events);
         this.events = events;
         this.context = context;
     }
 
-    /** Sets per-event status (from waiting list) so we can show invitation CTA when status is SELECTED. */
+    /**
+     * Sets per-event status from the waiting list so invitation CTAs are shown for SELECTED/INVITED events.
+     *
+     * @param eventIdToStatus map of event ID to the entrant's waiting-list status string
+     */
     public void setEventIdToStatus(Map<String, String> eventIdToStatus) {
         this.eventIdToStatus = eventIdToStatus != null ? eventIdToStatus : new HashMap<>();
     }

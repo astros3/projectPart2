@@ -7,6 +7,9 @@ import android.app.Application;
  */
 public class EventLotteryApp extends Application {
 
+    /** No-arg constructor required by the Android Application lifecycle. */
+    public EventLotteryApp() {}
+
     @Override
     public void onCreate() {
         super.onCreate();

@@ -44,6 +44,9 @@ import java.util.Set;
  */
 public class EntrantMainScreenActivity extends BaseActivity {
 
+    /** No-arg constructor required by the Android Activity lifecycle. */
+    public EntrantMainScreenActivity() {}
+
     private final ActivityResultLauncher<ScanOptions> qrScanner =
             registerForActivityResult(new ScanContract(), result -> {
                 if (result.getContents() != null) {
@@ -279,6 +282,10 @@ public class EntrantMainScreenActivity extends BaseActivity {
         totalnumber.setText(String.valueOf(eventlist.size()));
     }
 
+    /**
+     * Clears the displayed event list and resets the count label to zero.
+     * Called when no events are available for the current entrant.
+     */
     public void listisempty() {
         eventlist.clear();
         allEvents.clear();
@@ -286,6 +293,10 @@ public class EntrantMainScreenActivity extends BaseActivity {
         totalnumber.setText("0");
     }
 
+    /**
+     * Counts the number of events where the entrant has a pending, accepted, or invited status,
+     * and passes the per-event status map to the adapter so invitation CTAs are shown correctly.
+     */
     public void CountAndCountHowManyPendingAndWin() {
         int howmanypendingforthisuser = 0;
         int howmanywinforthisuser = 0;

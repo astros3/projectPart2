@@ -1,11 +1,10 @@
 package com.example.eventlottery;
 
-/**
- * Lists entrants with status ACCEPTED (those who accepted the invitation) for current event.
- * Same structure as SelectedList but filtered by ACCEPTED. Event ID from EventEditActivity.getCurrentEventId().
- * Organizers can export the final list as CSV.
- */
 import android.content.Intent;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.pdf.PdfDocument;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
@@ -33,6 +32,11 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * Lists entrants with status ACCEPTED (those who accepted the invitation) for current event.
+ * Same structure as SelectedList but filtered by ACCEPTED. Event ID from EventEditActivity.getCurrentEventId().
+ * Organizers can export the final list as CSV.
+ */
 public class FinalList extends Fragment {
 
     private final ArrayList<WaitingListEntry> acceptedEntries = new ArrayList<>();
@@ -40,6 +44,9 @@ public class FinalList extends Fragment {
     private FirebaseFirestore db;
     private String eventId;
 
+    /**
+     * Required empty public constructor. Inflates the final_list layout.
+     */
     public FinalList() {
         super(R.layout.final_list);
     }
@@ -53,16 +60,8 @@ public class FinalList extends Fragment {
 
         ListView listFinalEntrants = view.findViewById(R.id.listFinalEntrants);
 
-        adapter = new SelectedEntryAdapter(requireActivity(), acceptedEntries, entry -> {
-            db.collection("events")
-                    .document(eventId)
-                    .collection("waitingList")
-                    .document(entry.getDeviceId())
-                    .update("status", WaitingListEntry.Status.CANCELLED.name())
-                    .addOnSuccessListener(unused -> loadAcceptedEntries())
-                    .addOnFailureListener(e ->
-                            Toast.makeText(getContext(), "Failed to remove from final list", Toast.LENGTH_SHORT).show());
-        });
+        // No delete callback — deletion is not allowed in the final list
+        adapter = new SelectedEntryAdapter(requireActivity(), acceptedEntries, null);
 
         listFinalEntrants.setAdapter(adapter);
 
@@ -71,7 +70,7 @@ public class FinalList extends Fragment {
                         .navigate(R.id.Final_list_to_OrganizerNavigationFragment));
 
         view.findViewById(R.id.buttonExportCsv).setOnClickListener(v -> exportFinalListCsv());
-        // view.findViewById(R.id.buttonNotifyCancelled).setOnClickListener(v -> notifyCancelledEntrants());
+        view.findViewById(R.id.buttonExportPdf).setOnClickListener(v -> exportFinalListPdf());
 
         loadAcceptedEntries();
     }
@@ -195,6 +194,134 @@ public class FinalList extends Fragment {
                         }
                     });
         }
+    }
+
+    /** Exports the final list (ACCEPTED entrants) to a PDF file and opens the share sheet. */
+    private void exportFinalListPdf() {
+        if (acceptedEntries.isEmpty()) {
+            Toast.makeText(requireContext(), R.string.export_csv_no_entrants, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        List<CsvRow> rows = new ArrayList<>();
+        AtomicInteger pending = new AtomicInteger(acceptedEntries.size());
+        for (WaitingListEntry entry : acceptedEntries) {
+            String deviceId = entry.getDeviceId();
+            if (deviceId == null || deviceId.isEmpty()) {
+                rows.add(new CsvRow("Unknown", "", "", entry.getStatus(), entry.getJoinTimestamp()));
+                if (pending.decrementAndGet() == 0) writePdf(rows);
+                continue;
+            }
+            db.collection("users").document(deviceId).get()
+                    .addOnSuccessListener(doc -> {
+                        String name = "Unknown Entrant", email = "", phone = "";
+                        if (doc != null && doc.exists()) {
+                            Entrant e = doc.toObject(Entrant.class);
+                            if (e != null) {
+                                name = e.getFullName();
+                                email = e.getEmail() != null ? e.getEmail() : "";
+                                phone = e.getPhone() != null ? e.getPhone() : "";
+                            }
+                        }
+                        rows.add(new CsvRow(name, email, phone, entry.getStatus(), entry.getJoinTimestamp()));
+                        if (pending.decrementAndGet() == 0) writePdf(rows);
+                    })
+                    .addOnFailureListener(e -> {
+                        rows.add(new CsvRow("Unknown Entrant", "", "", entry.getStatus(), entry.getJoinTimestamp()));
+                        if (pending.decrementAndGet() == 0) writePdf(rows);
+                    });
+        }
+    }
+
+    private void writePdf(List<CsvRow> rows) {
+        try {
+            int pageWidth = 595;
+            int pageHeight = 842;
+            int margin = 40;
+            int lineHeight = 22;
+            int[] colX = { margin, margin + 160, margin + 300, margin + 400 };
+            String[] headers = { "Name", "Email", "Phone", "Join Date" };
+
+            Paint titlePaint = new Paint();
+            titlePaint.setTextSize(18f);
+            titlePaint.setFakeBoldText(true);
+            titlePaint.setColor(Color.BLACK);
+
+            Paint headerPaint = new Paint();
+            headerPaint.setTextSize(12f);
+            headerPaint.setFakeBoldText(true);
+            headerPaint.setColor(Color.BLACK);
+
+            Paint bodyPaint = new Paint();
+            bodyPaint.setTextSize(11f);
+            bodyPaint.setColor(Color.DKGRAY);
+
+            Paint linePaint = new Paint();
+            linePaint.setColor(Color.GRAY);
+            linePaint.setStrokeWidth(0.5f);
+
+            PdfDocument pdfDoc = new PdfDocument();
+            int pageNum = 1;
+            PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder(pageWidth, pageHeight, pageNum).create();
+            PdfDocument.Page page = pdfDoc.startPage(pageInfo);
+            Canvas canvas = page.getCanvas();
+
+            int y = margin + 20;
+            canvas.drawText("Final List – Event Entrants", margin, y, titlePaint);
+            y += 8;
+            canvas.drawLine(margin, y, pageWidth - margin, y, linePaint);
+            y += 18;
+
+            for (int i = 0; i < headers.length; i++) {
+                canvas.drawText(headers[i], colX[i], y, headerPaint);
+            }
+            y += 6;
+            canvas.drawLine(margin, y, pageWidth - margin, y, linePaint);
+            y += lineHeight;
+
+            for (CsvRow row : rows) {
+                if (y + lineHeight > pageHeight - margin) {
+                    pdfDoc.finishPage(page);
+                    pageNum++;
+                    pageInfo = new PdfDocument.PageInfo.Builder(pageWidth, pageHeight, pageNum).create();
+                    page = pdfDoc.startPage(pageInfo);
+                    canvas = page.getCanvas();
+                    y = margin + 20;
+                }
+                String name  = truncate(row.name, 22);
+                String email = truncate(row.email, 18);
+                String phone = truncate(row.phone, 14);
+                String date  = row.joinDate != null ? row.joinDate : "";
+                canvas.drawText(name,  colX[0], y, bodyPaint);
+                canvas.drawText(email, colX[1], y, bodyPaint);
+                canvas.drawText(phone, colX[2], y, bodyPaint);
+                canvas.drawText(date,  colX[3], y, bodyPaint);
+                y += lineHeight;
+            }
+            pdfDoc.finishPage(page);
+
+            File dir = requireContext().getCacheDir();
+            File file = new File(dir, "final_list_" + System.currentTimeMillis() + ".pdf");
+            try (FileOutputStream fos = new FileOutputStream(file)) {
+                pdfDoc.writeTo(fos);
+            }
+            pdfDoc.close();
+
+            Uri uri = FileProvider.getUriForFile(requireContext(),
+                    requireContext().getPackageName() + ".fileprovider", file);
+            Intent share = new Intent(Intent.ACTION_SEND);
+            share.setType("application/pdf");
+            share.putExtra(Intent.EXTRA_STREAM, uri);
+            share.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            startActivity(Intent.createChooser(share, getString(R.string.export_final_list_pdf)));
+            Toast.makeText(requireContext(), R.string.export_pdf_success, Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            Toast.makeText(requireContext(), R.string.export_pdf_failed, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    static String truncate(String s, int max) {
+        if (s == null) return "";
+        return s.length() > max ? s.substring(0, max - 2) + ".." : s;
     }
 
     /** Exports the final list (ACCEPTED entrants) to a CSV file and opens the share sheet. */

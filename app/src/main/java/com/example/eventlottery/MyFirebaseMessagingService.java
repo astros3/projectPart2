@@ -22,6 +22,9 @@ import java.util.Map;
  */
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
+    /** No-arg constructor required by the FirebaseMessagingService lifecycle. */
+    public MyFirebaseMessagingService() {}
+
     /**
      * Called when a new FCM registration token is generated (first launch or token rotation).
      * Saves the token to the user's Firestore document so it can be used to send pushes.
@@ -67,8 +70,13 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     }
 
     /**
-     * High-importance heads-up style alert for organizer / lottery / invite messaging.
-     * Used for FCM and for mirroring Firestore in-app notifications (EntrantNotificationBridge).
+     * Posts a high-importance heads-up OS notification.
+     * Used for FCM push messages and for Firestore in-app notification mirroring.
+     *
+     * @param context context used to build and post the notification
+     * @param title   notification title text
+     * @param message notification body text
+     * @param id      unique notification ID (used to update or cancel the notification)
      */
     public static void postNotification(Context context, String title, String message, int id) {
         Intent intent = new Intent(context, EntrantMainScreenActivity.class);

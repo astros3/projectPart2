@@ -21,6 +21,9 @@ import java.util.Collections;
  */
 public class EntrantNotificationsActivity extends BaseActivity {
 
+    /** No-arg constructor required by the Android Activity lifecycle. */
+    public EntrantNotificationsActivity() {}
+
     private FirebaseFirestore db;
     private String deviceId;
     private ListView listView;

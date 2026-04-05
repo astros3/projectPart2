@@ -21,6 +21,12 @@ import java.util.Locale;
  */
 public class EntrantNotificationsAdapter extends ArrayAdapter<InAppNotification> {
 
+    /**
+     * Creates a new EntrantNotificationsAdapter.
+     *
+     * @param context the hosting context
+     * @param items   list of in-app notifications to display
+     */
     public EntrantNotificationsAdapter(Context context, ArrayList<InAppNotification> items) {
         super(context, 0, items);
     }
