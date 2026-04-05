@@ -42,7 +42,6 @@ public class OrganizerInviteEntrantActivity extends BaseActivity {
 
     private FirebaseFirestore db;
     private String eventId;
-    private String organizerDeviceId;
 
     private TextInputEditText inputSearch;
     private TextView emptyView;
@@ -65,7 +64,6 @@ public class OrganizerInviteEntrantActivity extends BaseActivity {
         }
 
         db = FirebaseFirestore.getInstance();
-        organizerDeviceId = DeviceIdManager.getDeviceId(this);
 
         setupToolbar();
         bindViews();
@@ -107,10 +105,7 @@ public class OrganizerInviteEntrantActivity extends BaseActivity {
                     for (QueryDocumentSnapshot doc : querySnapshot) {
                         Entrant e = doc.toObject(Entrant.class);
                         if (e.getDeviceID() == null) e.setDeviceID(doc.getId());
-                        // Exclude the organizer themselves from the invite list
-                        if (!organizerDeviceId.equals(e.getDeviceID())) {
-                            allEntrants.add(e);
-                        }
+                        allEntrants.add(e);
                     }
                     filterEntrants(inputSearch.getText() != null
                             ? inputSearch.getText().toString() : "");
