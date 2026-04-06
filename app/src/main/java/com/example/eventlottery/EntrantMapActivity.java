@@ -32,10 +32,8 @@ import com.google.maps.android.clustering.ClusterManager;
  */
 public class EntrantMapActivity extends BaseActivity implements OnMapReadyCallback {
 
-    /** No-arg constructor required by the Android Activity lifecycle. */
     public EntrantMapActivity() {}
 
-    /** Intent extra key for the serialised EventFilterCriteria passed to this activity. */
     public static final String EXTRA_FILTER = "entrant_map_filter";
 
     private static final int REQ_LOC = 7101;
